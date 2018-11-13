@@ -1,6 +1,7 @@
 #include "server.h"
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 #define MSG_MAX_SIZE 350
 #define BUFFER_SIZE (MSG_MAX_SIZE + 100)
@@ -11,6 +12,12 @@
 #define X_MAX 500
 #define Y_MAX 500
 #define N_ARMADILHAS 20
+#define TEMPO_LIMITE 120
+#define direita 
+#define esquerda
+#define cima 
+#define baixo
+
 
 typedef struct{
   int x, y;
@@ -19,15 +26,30 @@ typedef struct{
 typedef struct{
   char name[LOGIN_MAX_SIZE];
   int helmet, team, armadilhas;
+  int id;
   Position position;
 }Player;
 
 int main() {
   char client_names[MAX_CLIENTS][LOGIN_MAX_SIZE];
   char str_buffer[BUFFER_SIZE], aux_buffer[BUFFER_SIZE];
+
   Player players[10];
+
   char helmetChoice[] = ""; 
   int jogadores=0, capacete, ready=0;
+  double tempoInicio;
+  int fim=0,comecou=1;
+  int teclado,i;
+  int time_1=0,time_2=0; //quantidade de indivíduos nas equipes
+  int armadilhas_1,armadilhas_2; //quantidade de armadilha por pessoa
+  char mapa [X_MAX][Y_MAX];
+
+  struct msg_ret_t input;
+
+  //CRIANDO MAPA
+
+  //
 
   serverInit(MAX_CLIENTS);
   puts("Server is running!!");
@@ -54,6 +76,8 @@ int main() {
         players[jogadores].position.x=0;
         players[jogadores].position.y=0;
         players[jogadores].helmet=capacete;
+        players[jogadores].id = id;
+        time_1++;
       }
       else{
         strcpy(players[jogadores].name, client_names[id]);
@@ -61,6 +85,8 @@ int main() {
         players[jogadores].position.x= X_MAX;
         players[jogadores].position.y= Y_MAX;
         players[jogadores].helmet=capacete;
+        players[jogadores].id = id;
+        time_2++;
       }
       jogadores++;
     }
@@ -75,6 +101,40 @@ int main() {
              client_names[msg_ret.client_id], msg_ret.client_id);
       broadcast(str_buffer, (int)strlen(str_buffer) + 1);
     }
+  }
+
+  //jogo
+  armadilhas_1 = ceil((float)N_ARMADILHAS/(float)time_1);
+  armadilhas_2 = ceil((float)N_ARMADILHAS/(float)time_2);
+  for(i=0;i<jogadores;i++){
+    if(jogadores.team == 1)
+      jogadores.armadilhas = armadilhas_1;
+    else
+      jogadores.armadilhas = armadilhas_2;
+
+  }
+
+  tempoInicio = al_get_time();
+  while(al_get_time() - tempoInicio < TEMPO_LIMITE && !fim){
+    input = recvMsg(&teclado);
+
+    for(i=0;i<jogadores;i++){ 
+      if(players[i].id == input.client_id){
+        
+        if(teclado == cima){
+
+          if(players[i].position.y !=0){ // espaco livre
+            if(mapa[players[i].position.x][players[i].position.y+1] == '0'){
+              
+
+            }
+
+        } 
+
+      }
+      
+    }
+    
   }
 
   

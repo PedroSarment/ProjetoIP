@@ -204,18 +204,18 @@ bool fontInit()
 //MODIFY THIS TO LOAD YOUR OWN GRAPHICS (BITMAP POINTERS ARE DEFINED AT ACORE.H)
 bool loadGraphics()
 {
-    menuScreen = al_load_bitmap("examples/graphicChat/Resources/Etc/titleScreen2.png");
+    menuScreen = al_load_bitmap("examples/graphicChat/Resources/Etc/gloriaadeux.jpg");
     if (!menuScreen)
     {
         fprintf(stderr, "Falha carregando menuScreen\n");
         return false;
     }
 
-    objects = al_load_bitmap("examples/graphicChat/Resources/Tilesets/objects.png");
-    if (!objects){
-        fprintf(stderr, "Falha carregando objects.png\n");
-        return false;
-    }
+    // objects = al_load_bitmap("examples/graphicChat/Resources/Tilesets/objects.png");
+    // if (!objects){
+    //     fprintf(stderr, "Falha carregando objects.png\n");
+    //     return false;
+    // }
 
     return true;
 }
