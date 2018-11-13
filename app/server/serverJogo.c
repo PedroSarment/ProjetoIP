@@ -10,6 +10,7 @@
 #define MAX_CLIENTS_TIMES 5
 #define X_MAX 500
 #define Y_MAX 500
+#define N_ARMADILHAS 20
 
 typedef struct{
   int x, y;
@@ -17,7 +18,7 @@ typedef struct{
 
 typedef struct{
   char name[LOGIN_MAX_SIZE];
-  int helmet, team;
+  int helmet, team, armadilhas;
   Position position;
 }Player;
 
@@ -26,11 +27,11 @@ int main() {
   char str_buffer[BUFFER_SIZE], aux_buffer[BUFFER_SIZE];
   Player players[10];
   char helmetChoice[] = ""; 
-  int jogadores=0, capacete;
+  int jogadores=0, capacete, ready=0;
 
   serverInit(MAX_CLIENTS);
   puts("Server is running!!");
-  while (jogadores<MAX_CLIENTS) {
+  while (jogadores<MAX_CLIENTS || (jogadores<4 && ready!=jogadores)) {
     int id = acceptConnection();
     if (id != NO_CONNECTION) {
       recvMsgFromClient(client_names[id], id, WAIT_FOR_IT);
