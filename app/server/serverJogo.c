@@ -11,8 +11,8 @@
 #define MAX_CLIENTS 10
 #define QTD_TIMES 2
 #define MAX_CLIENTS_TIMES 5
-#define X_MAX 500
-#define Y_MAX 500
+#define X_MAX 1280
+#define Y_MAX 720
 #define N_ARMADILHAS 20
 #define TEMPO_LIMITE 120
 #define DIREITA 0x44
@@ -25,10 +25,10 @@
 #define BOTAR_TRAP 0
 #define TRAP_TEAM1 0
 #define TRAP_TEAM2 0
-#define X_FLAG_RED 200
-#define Y_FLAG_RED 200
-#define X_FLAG_BLUE 400
-#define Y_FLAG_BLUE 400
+#define X_FLAG_RED 0
+#define Y_FLAG_RED 720
+#define X_FLAG_BLUE 1280
+#define Y_FLAG_BLUE 0
 
 typedef struct{
     int x, y;
@@ -132,14 +132,6 @@ int main() {
 
     tempoInicio = al_get_time();
     while( (al_get_time() - tempoInicio < TEMPO_LIMITE) && !fim){
-
-        for(i=0;i<X_MAX;i++){
-            for(int j=0;j<Y_MAX;j++){
-
-            }
-        }
-
-
 
         input = recvMsg(&teclado);
         for(i=0;i<players;i++){ 
