@@ -24,6 +24,8 @@
 #define LARGURA_TELA 1280
 #define ALTURA_TELA 720
 
+
+
 //gcc Jogo.c -lm -lallegro -lallegro_image -lallegro_primitives -lallegro_font -lallegro_ttf -lallegro_audio -lallegro_acodec
 typedef struct{
     int helmet;
@@ -57,17 +59,30 @@ void error_msg(char *text){
     al_set_window_position(error,860,600);
 }
 
-void runChat() {
-  char str_buffer[BUFFER_SIZE], type_buffer[MSG_MAX_SIZE] = {0};
-  char msg_history[HIST_MAX_SIZE][MSG_MAX_SIZE] = {{0}};
-  int type_pointer = 0;
-  
+void runChat(int *state) {
+    char str_buffer[BUFFER_SIZE], type_buffer[MSG_MAX_SIZE] = {0};
+    char msg_history[HIST_MAX_SIZE][MSG_MAX_SIZE] = {{0}};
+    int type_pointer = 0;
+    DADOS_LOBBY *msg = NULL;
+    DADOS_LOBBY *msg_server = NULL;
+    msg = (DADOS_LOBBY *) malloc(sizeof(DADOS_LOBBY));
+    if(msg == NULL){
+        char erro[20] = "sem memoria.";
+        error_msg(erro);
+    }
+    if(msg_server == NULL){
+        char erro[20] = "sem memoria.";
+        error_msg(erro);
+    }
+    msg[0].funcao=CHAT;
+   
   while (1) {
     // LER UMA TECLA DIGITADA
     char ch = getch();
     if (ch == '\n') {
       type_buffer[type_pointer++] = '\0';
-      int ret = sendMsgToServer((void *)type_buffer, type_pointer);
+      strcpy(msg[0].mensagem, type_buffer);
+      int ret = sendMsgToServer((DADOS_LOBBY *)msg, sizeof(DADOS_LOBBY));
       if (ret == SERVER_DISCONNECTED) {
         return;
       }
@@ -85,15 +100,20 @@ void runChat() {
     }
 
     // LER UMA MENSAGEM DO SERVIDOR
-    int ret = recvMsgFromServer(str_buffer, DONT_WAIT);
+    int ret = recvMsgFromServer(msg_server, DONT_WAIT);
     if (ret == SERVER_DISCONNECTED) {
       return;
-    } else if (ret != NO_MESSAGE) {
+    } 
+    else if (ret != NO_MESSAGE && msg_server[0].funcao==CHAT && msg_server[0].tipo==CLIENT_TO_CLIENT) {
       int i;
       for (i = 0; i < HIST_MAX_SIZE - 1; ++i) {
         strcpy(msg_history[i], msg_history[i + 1]);
       }
-      strcpy(msg_history[HIST_MAX_SIZE - 1], str_buffer);
+      strcpy(msg_history[HIST_MAX_SIZE - 1], msg_server[0].mensagem);
+    }
+    else if(ret != NO_MESSAGE && msg_server[0].tipo==COMECOU){
+        *state=COMECOU;
+        break; 
     }
 
     // PRINTAR NOVO ESTADO DO CHAT
@@ -102,7 +122,7 @@ void runChat() {
     for (i = 0; i < HIST_MAX_SIZE; ++i) {
       printf("%s\n", msg_history[i]);
     }
-    printf("\nYour message: %s\n", type_buffer);
+    printf("\nYour message: %s\n", msg[0].mensagem);
   }
 }
 
@@ -110,13 +130,23 @@ void defineNick(ALLEGRO_FONT *fonte){
     char type_buffer[LOGIN_MAX_SIZE+1] = {0};
     int type_pointer = 0;
 
+    DADOS_LOBBY *msg = NULL;
+    msg = (DADOS_LOBBY *) malloc(sizeof(DADOS_LOBBY));
+    if(msg == NULL){
+        char erro[20] = "sem memoria.";
+        error_msg(erro);
+    }
+    msg[0].funcao = NICK;
+    msg[0].tipo = CLIENT_TO_SERVER;
+
     al_draw_text(fonte, al_map_rgb(255, 0, 0), 10, 10, ALLEGRO_ALIGN_LEFT, "Nick: ");
     while (1) {
         // LER UMA TECLA DIGITADA
         char ch = getch();
         if (ch == '\n') {
             type_buffer[type_pointer++] = '\0';
-            int ret = sendMsgToServer((void *)type_buffer, type_pointer);
+            strcpy(msg[0].mensagem, type_buffer);
+            int ret = sendMsgToServer((DADOS_LOBBY *) msg, sizeof(DADOS_LOBBY));
         if (ret == SERVER_DISCONNECTED) {
             return;
         }
@@ -142,6 +172,16 @@ void selectHelmet(ALLEGRO_FONT *fonte){
     capacetes = al_load_bitmap("/app/Resources/capacetes/chapeusfinalizados.png");
 
     int capacete;
+
+    DADOS_LOBBY *msg = NULL;
+    msg = (DADOS_LOBBY *) malloc(sizeof(DADOS_LOBBY));
+    if(msg == NULL){
+        char erro[20] = "sem memoria.";
+        error_msg(erro);
+    }
+    msg[0].funcao = CAPACETE;
+    msg[0].tipo = CLIENT_TO_SERVER;
+
 
     al_draw_text(fonte, al_map_rgb(0, 255, 0), LARGURA_TELA / 2, 90, ALLEGRO_ALIGN_CENTRE, "Selecione o Capacete");
     al_draw_bitmap(capacetes, 0,0,0);
@@ -184,8 +224,9 @@ void selectHelmet(ALLEGRO_FONT *fonte){
                     tecla=4;
                     break;
             }
-        }    
-        int ret = sendMsgToServer((int *)&tecla, (int)sizeof(int));
+        }
+        msg[0].msg=tecla;    
+        int ret = sendMsgToServer((DADOS_LOBBY *)msg, sizeof(DADOS_LOBBY));
         if (ret == SERVER_DISCONNECTED) {
             return;
         }
@@ -263,14 +304,14 @@ int iniciar(){
     return 1;
 }
 
-int lobby(ALLEGRO_FONT *fonte, char *nick){
+int lobby(ALLEGRO_FONT *fonte){
     int state=0;
+    DADOS_LOBBY msg[1];
 
     defineNick(fonte);
     selectHelmet(fonte);
-    runChat();
     
-    recvMsgFromServer(&state, DONT_WAIT);
+    runChat(&state);
 
     return state;
 }
@@ -278,15 +319,17 @@ int lobby(ALLEGRO_FONT *fonte, char *nick){
 int main(){
     int state;
 
-    state = lobby();
-    iniciar();
-    al_flip_display();
-    int sair = 0,tecla = 0;
-    int current_x = 0,current_y = 0;
-    al_draw_bitmap(personagem,current_x,current_y,0);
-    al_flip_display();
+    state = lobby(fonte);
+    if(state == COMECOU){
+    
+        iniciar();
+        al_flip_display();
+        int sair = 0,tecla = 0;
+        int current_x = 0,current_y = 0;
+        al_draw_bitmap(personagem,current_x,current_y,0);
+        al_flip_display();
 
-    while(!sair){
+        while(!sair){
             //enquanto esc nao for pressionado
             while(!al_event_queue_is_empty(fila_eventos)){
                 ALLEGRO_EVENT evento;
@@ -349,6 +392,7 @@ int main(){
             }
 
         }
+    }
     al_destroy_display(janela);
     al_destroy_audio_stream(musica_fundo);
     al_destroy_event_queue(fila_eventos);

@@ -16,6 +16,15 @@
 #define WIDTH  640
 #define HEIGHT 480
 #define IP_MAX_SIZE 100
+#define LOGIN_MAX_SIZE 13
+
+#define CLIENT_TO_SERVER 0
+#define CLIENT_TO_CLIENT 1
+
+#define NICK 0
+#define CAPACETE 1
+#define CHAT 2
+#define COMECOU 6
 
 double startingTime;
 
@@ -35,15 +44,38 @@ ALLEGRO_BITMAP *menuScreen;
 //EXAMPLE STRUCT
 typedef struct DADOS
 {
+    int tipo;
     char mensagem[100];
     int valor, tecla;
-
 }DADOS;
 
 typedef struct{
-    int tipo;
+    int tipo, msg;
     char mensagem[100];
+    int funcao;
 }DADOS_LOBBY;
+
+
+typedef struct{
+    int x, y;
+}Position;
+
+typedef struct{
+    char name[LOGIN_MAX_SIZE];
+    int helmet, team, armadilhas;
+    int id;
+    int comBandeira;
+    int congelado;
+    char movimentoAnterior;
+    Position position;
+}Player;
+
+typedef struct{
+    int modo; 
+    int xAnterior, yAnterior;
+    char itemAnterior, acaoAnterior;
+    Player jogadorAtual;
+}PROTOCOLO_JOGO;
 
 
 //MAIN ALLEGRO FUNCTIONS
