@@ -52,7 +52,7 @@ int main() {
     int jogadores=0, capacete, ready=0;
     double tempoInicio;
     int fim=0,comecou=1;
-    int teclado,i;
+    int teclado, i, j;
     int time_1=0,time_2=0; //quantidade de indivíduos nas equipes
     int armadilhas_1,armadilhas_2; //quantidade de armadilha por pessoa
     char mapa [X_MAX][Y_MAX];

@@ -32,6 +32,17 @@ void printHello() {
   puts("GLORIA!");
 }
 
+void selectHelmet(){
+    int capacete;
+    printf("Selecione o capacete:\n");
+    scanf("%d", &capacete);
+
+    int ret = sendMsgToServer((int *)&capacete, (int)sizeof(int));
+    if (ret == SERVER_DISCONNECTED) {
+        return;
+    }
+}
+
 void assertConnection(char IP[], char login[]) {
   printHello();
   enum conn_ret_t ans = tryConnect(IP);
@@ -113,17 +124,6 @@ void runChat() {
     }
     printf("\nYour message: %s\n", type_buffer);
   }
-}
-
-void selectHelmet(){
-    int capacete;
-    printf("Selecione o capacete:\n");
-    scanf("%d", &capacete);
-
-    int ret = sendMsgToServer((int *)&capacete, (int)sizeof(int));
-    if (ret == SERVER_DISCONNECTED) {
-        return;
-    }
 }
 
 int main() {
