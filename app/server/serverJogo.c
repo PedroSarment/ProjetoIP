@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <ACore.h>
+#include "ACore.h"
 
 
 // Definição de constantes (NOMES MAIÚSCULOS)
@@ -16,17 +16,17 @@
 #define Y_MAX 720
 #define N_ARMADILHAS 20
 #define TEMPO_LIMITE 120
-#define DIREITA 0x44
-#define ESQUERDA 0x41
-#define CIMA 0x57
-#define BAIXO 0x53
-#define VAZIO 0x30
-#define BANDEIRA 0x42
-#define PLAYER 0x50
-#define TRAP_TEAM_BLUE 0x41
-#define TRAP_TEAM_RED 0x56
-#define PLAYER_COM_TRAP 0x71
-#define BOTAR_TRAP 0
+#define DIREITA 0x44            //D
+#define ESQUERDA 0x41           //A
+#define CIMA 0x57               //W
+#define BAIXO 0x53              //S
+#define VAZIO 0x30              //0
+#define BANDEIRA 0x42           //B 
+#define PLAYER 0x50             //P
+#define TRAP_TEAM_BLUE 0x41     //A
+#define TRAP_TEAM_RED 0x56      //V
+#define PLAYER_COM_TRAP 0x51    //Q
+#define BOTAR_TRAP 0x4A         //J
 #define X_FLAG_BLUE 1280
 #define Y_FLAG_BLUE 0
 #define X_FLAG_RED 0

@@ -11,8 +11,6 @@
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
 #include <allegro5/allegro_native_dialog.h>
-//#include "server.h"
-//#include "client.h"
 
 #define MSG_MAX_SIZE 350
 #define BUFFER_SIZE (MSG_MAX_SIZE + 100)
