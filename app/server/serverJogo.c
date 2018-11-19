@@ -52,15 +52,18 @@ int main() {
     Player players[10];
 
     char helmetChoice[] = ""; 
-    int jogadores=0, capacete, ready=0;
+    int jogadores = 0, capacete, ready = 0;
     double tempoInicio;
-    int fim=0,comecou=1;
-    int teclado, i, j;
-    int time_1=0,time_2=0; //quantidade de indivíduos nas equipes
+    int fim = 0,comecou = 1;
+    int teclado;
+    int time_1 = 0,time_2 = 0; //quantidade de indivíduos nas equipes
     int armadilhas_1,armadilhas_2; //quantidade de armadilha por pessoa
     char mapa [X_MAX][Y_MAX];
     int xAnterior,yAnterior;
     int scoreBlue = 0, scoreRed = 0;
+    int i, j;
+
+    PROTOCOLO_JOGO jogada;  // Protocolo de envio a ser enviado para o cliente com as infos do jogo;
 
     struct msg_ret_t input;
 
@@ -70,7 +73,7 @@ int main() {
 
     serverInit(MAX_CLIENTS);
     puts("Server is running!!");
-    while (jogadores<MAX_CLIENTS || (jogadores<4 && ready!=jogadores)) {
+    while (jogadores < MAX_CLIENTS || (jogadores < 4 && ready != jogadores)) {
         int id = acceptConnection();
         if (id != NO_CONNECTION) {
             recvMsgFromClient(client_names[id], id, WAIT_FOR_IT);
@@ -79,7 +82,7 @@ int main() {
             broadcast(str_buffer, (int)strlen(str_buffer) + 1);
             printf("%s connected id = %d\n", client_names[id], id);
 
-            //escolha do capacete
+            // Escolha do capacete
             
             recvMsgFromClient(&capacete, id, WAIT_FOR_IT);
             //char msg[20];
@@ -88,7 +91,7 @@ int main() {
             sendMsgToClient(&protocolo, sizeof(protocolo) +1, id);
 
             //inicializando jogadores
-            if(jogadores%2==0){
+            if(jogadores%2 == 0){
             strcpy(players[jogadores].name, client_names[id]);
             players[jogadores].team = 1;
             players[jogadores].position.x = 0;
@@ -127,7 +130,7 @@ int main() {
     //jogo
     armadilhas_1 = ceil((float)N_ARMADILHAS/(float)time_1);
     armadilhas_2 = ceil((float)N_ARMADILHAS/(float)time_2);
-    for(i=0;i<jogadores;i++){
+    for(i = 0; i < jogadores; i++){
         if(players[i].team == 1)
             players[i].armadilhas = armadilhas_1;
         else
@@ -137,9 +140,8 @@ int main() {
 
     tempoInicio = al_get_time();
     while( (al_get_time() - tempoInicio < TEMPO_LIMITE) && !fim){
-        PROTOCOLO_JOGO jogada;
         input = recvMsg(&teclado);
-        for(i=0;i<players;i++){ 
+        for(i = 0; i < players; i++){ 
             if(players[i].id == input.client_id){
                 if(!players[i].congelado){
 
