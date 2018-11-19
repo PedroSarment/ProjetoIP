@@ -69,7 +69,7 @@ int iniciar(){
         printf("Nao foi possivel reservar os audios.");
         return 0;
     }
-    musica_fundo = al_load_audio_stream("/home/CIN/ahac/Downloads/Joguinho/Musics/Musica_fundo.ogg",4,1024);
+    musica_fundo = al_load_audio_stream("/app/Resources/Musics/Musica_fundo.ogg",4,1024);
     if(!musica_fundo){
         error_msg("Musica nao foi carregada.");
         return 0;
@@ -90,10 +90,10 @@ int iniciar(){
         return 0;
     }
     al_clear_to_color(al_map_rgb(255,255,255));
-    personagem = al_load_bitmap("/home/CIN/ahac/Downloads/Joguinho/Characters/Personagem(1).png");
-    personagemm = al_load_bitmap("/home/CIN/ahac/Downloads/Joguinho/Characters/Personagem_C3R.png");
-    logo = al_load_bitmap("/home/CIN/ahac/Downloads/Joguinho/Characters/index.png");
-    mapa = al_load_bitmap("/home/CIN/ahac/Downloads/Joguinho/Characters/mapa.jpeg");
+    personagem = al_load_bitmap("/app/Resources/Characters/Personagem(1).png");
+    personagemm = al_load_bitmap("/app/Resources/Characters/Personagem_C3R.png");
+    logo = al_load_bitmap("/app/Resources/Characters/index.png");
+    mapa = al_load_bitmap("/app/Resources/Characters/mapa.jpeg");
 
     if(!personagem){
         printf("Nao foi possivel carregar o personagem.");
