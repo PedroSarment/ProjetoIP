@@ -148,7 +148,7 @@ int main() {
 
                     if(teclado == CIMA){
                         if(players[i].position.x !=0){ // espaco livre
-                            if(mapa[players[i].position.x-1][players[i].position.y] == vazio){ //considerando 0 um espaco livre
+                            if(mapa[players[i].position.x-1][players[i].position.y] == VAZIO){ //considerando 0 um espaco livre
                                 players[i].position.x--;
                                 if(players[i].team==1){
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM2)
@@ -161,7 +161,7 @@ int main() {
                                     mapa[players[i].position.x][players[i].position.y] = PLAYER_TEAM_2; //jogador time 2
                                 }   
 
-                                mapa[players[i].position.x+1][players[i].position.y] = vazio;
+                                mapa[players[i].position.x+1][players[i].position.y] = VAZIO;
                                 //posicao antiga do personagem
                                 broadcast((int)players[i].position.x+1,sizeof(int));
                                 broadcast((int)players[i].position.y,sizeof(int));
@@ -176,7 +176,7 @@ int main() {
                     }
                     else if(teclado == BAIXO){
                         if(players[i].position.x != X_MAX){
-                            if(mapa[players[i].position.x+1][players[i].position.y] == vazio){
+                            if(mapa[players[i].position.x+1][players[i].position.y] == VAZIO){
 
                                 players[i].position.x++;
                                 if(players[i].team==1){
@@ -190,7 +190,7 @@ int main() {
                                     mapa[players[i].position.x][players[i].position.y] = PLAYER_TEAM_2; //jogador time 2
                                 } 
 
-                                mapa[players[i].position.x-1][players[i].position.y] = vazio;
+                                mapa[players[i].position.x-1][players[i].position.y] = VAZIO;
                                 //posicao antiga do personagem
                                 broadcast((int)players[i].position.x-1,sizeof(int));
                                 broadcast((int)players[i].position.y,sizeof(int));
@@ -205,7 +205,7 @@ int main() {
                     }
                     else if(teclado == DIREITA){
                         if(players[i].position.y != Y_MAX){
-                            if(mapa[players[i].position.x][players[i].position.y+1] == vazio){
+                            if(mapa[players[i].position.x][players[i].position.y+1] == VAZIO){
                                 players[i].position.y++;
                                 
                                 if(players[i].team==1){
@@ -219,7 +219,7 @@ int main() {
                                     mapa[players[i].position.x][players[i].position.y] = PLAYER_TEAM_2; //jogador time 2
                                 } 
 
-                                mapa[players[i].position.x][players[i].position.y-1] = vazio;
+                                mapa[players[i].position.x][players[i].position.y-1] = VAZIO;
                                 //posicao antiga do personagem
                                 broadcast((int)players[i].position.x,sizeof(int));
                                 broadcast((int)players[i].position.y-1,sizeof(int));
@@ -234,7 +234,7 @@ int main() {
                     }
                     else if(teclado == ESQUERDA){
                         if(players[i].position.y != 0){
-                            if(mapa[players[i].positon.x][players[i].position.y-1] == vazio){
+                            if(mapa[players[i].position.x][players[i].position.y-1] == VAZIO){
                             
                                 players[i].position.y--;
                                 
@@ -249,7 +249,7 @@ int main() {
                                     mapa[players[i].position.x][players[i].position.y] = PLAYER_TEAM_2; //jogador time 2
                                 } 
 
-                                mapa[players[i].position.x][players[i].position.y+1] = vazio;
+                                mapa[players[i].position.x][players[i].position.y+1] = VAZIO;
                                 //posicao antiga do personagem
                                 broadcast((int)players[i].position.x,sizeof(int));
                                 broadcast((int)players[i].position.y+1,sizeof(int));
