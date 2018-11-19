@@ -242,11 +242,16 @@ int iniciar(){
         printf("Falha ao iniciar o audio.");
         return 0;
     }
+    al_init_font_addon();
+    if(!al_init_ttf_addon()){
+        printf("Falha ao iniciar o ttf addon.");
+        return 0;
+    }
     if(!al_init_acodec_addon()){
         printf("Falha ao iniciar Codec de Audio.");
         return 0;
     }
-    fonte = al_load_font("arial.ttf", 48, 0);
+    fonte = al_load_font("app/Resources/Fontes/arial.ttf", 48, 0);
     if(!al_install_keyboard()){
         printf("Falha ao instalar o teclado.");
         return 0;
@@ -291,6 +296,11 @@ int iniciar(){
         al_destroy_audio_stream(musica_fundo);
         return 0;
     }
+    puts("dmankdjhak");
+    return 1;
+}
+
+void comeca(){
     al_draw_bitmap(logo,0,0,0);
     al_flip_display();
     al_rest(10.0);
@@ -299,7 +309,6 @@ int iniciar(){
     al_draw_bitmap(mapa,0,0,0);
     al_flip_display();
     al_register_event_source(fila_eventos, al_get_keyboard_event_source());
-    return 1;
 }
 
 int lobby(ALLEGRO_FONT *fonte){
@@ -316,11 +325,15 @@ int lobby(ALLEGRO_FONT *fonte){
 
 int main(){
     int state;
-
+    iniciar();
+    if (fonte == NULL) {
+        puts("flkaslfkahld");
+        return 0;
+    }
     state = lobby(fonte);
-    if(state == COMECOU){
     
-        iniciar();
+    if(state == COMECOU){
+        comeca();
         al_flip_display();
         int sair = 0,tecla = 0;
         int current_x = 0,current_y = 0;

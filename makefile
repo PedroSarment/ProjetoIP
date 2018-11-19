@@ -20,13 +20,18 @@ SERVERNAME := server
 LIBDIR := lib
 
 # add C flags, like: CFLAGS := -Wall -Werror -Wconversion -Wextra
-CFLAGS :=
+CFLAGS := -g
 
 # add load flags, others like -pthread
+<<<<<<< HEAD
+LDLIB := -lm -lallegro -lallegro_image -lallegro_primitives -lallegro_font -lallegro_ttf -lallegro_audio -lallegro_acodec
+CC := gcc -std=c99 -g
+=======
 # LDLIB := -lm -lallegro -lallegro_image -lallegro_primitives -lallegro_font -lallegro_ttf
 LDLIB := -lm -lallegro -lallegro_image -lallegro_primitives -lallegro_font -lallegro_ttf -lallegro_audio -lallegro_acodec
 
 CC := gcc -std=c99
+>>>>>>> 162b39368be9554abc4dd53922e1b9b3f717830c
 RM := rm -f
 MK := mkdir -p
 
