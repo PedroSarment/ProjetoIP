@@ -32,7 +32,7 @@ void printHello() {
   puts("GLORIA!");
 }
 
-void selectHelmet(){
+void selectHelmet(ALLEGRO_FONT *fonte){
     int capacete;
     printf("Selecione o capacete:\n");
     scanf("%d", &capacete);

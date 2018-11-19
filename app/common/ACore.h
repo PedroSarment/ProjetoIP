@@ -36,8 +36,14 @@ ALLEGRO_BITMAP *menuScreen;
 typedef struct DADOS
 {
     char mensagem[100];
-    int valor;
+    int valor, tecla;
+
 }DADOS;
+
+typedef struct{
+    int tipo;
+    char mensagem[100];
+}DADOS_LOBBY;
 
 
 //MAIN ALLEGRO FUNCTIONS
