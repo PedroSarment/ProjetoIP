@@ -134,7 +134,7 @@ int main() {
     while( (al_get_time() - tempoInicio < TEMPO_LIMITE) && !fim){
 
         for(i=0;i<X_MAX;i++){
-            for(j=0;j<Y_MAX;j++){
+            for(int j=0;j<Y_MAX;j++){
 
             }
         }
@@ -265,11 +265,26 @@ int main() {
                     if(teclado == BOTAR_TRAP){ 
                         if(players[i].armadilhas>0){
 
-                            if(players[i].team == 1)
-                                mapa[players[i].position.x][players[i].position.y] = TRAP_TEAM1;
-                            else
-                                mapa[players[i].position.x][players[i].position.y] = TRAP_TEAM2;
-                            players[i].armadilhas--;
+                            if(players[i].team == 1){
+                                if(mapa[players[i].position.x][players[i].position.y] != TRAP_TEAM1){
+                                    mapa[players[i].position.x][players[i].position.y] = TRAP_TEAM1;
+                                    players[i].armadilhas--;
+                                }
+                                else{
+                                    char msg[20] = "armadilha ja existente";
+                                    sendMsgToClient(msg, sizeof(msg) +1, players[i].id);
+                                }
+                            }    
+                            else{
+                                if(mapa[players[i].position.x][players[i].position.y] != TRAP_TEAM2){
+                                    mapa[players[i].position.x][players[i].position.y] = TRAP_TEAM2;
+                                    players[i].armadilhas--;
+                                }
+                                else{
+                                    char msg[20] = "armadilha ja existente";
+                                    sendMsgToClient(msg, sizeof(msg) +1, players[i].id);
+                                }
+                            }
                         }
                     }
                 }
