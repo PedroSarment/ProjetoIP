@@ -72,7 +72,7 @@ typedef struct{
 typedef struct{
     int modo; 
     int xAnterior, yAnterior;
-    char itemAnterior, acaoAnterior;
+    char itemAnterior;
     Player jogadorAtual;
 }PROTOCOLO_JOGO;
 
