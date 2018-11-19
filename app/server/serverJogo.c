@@ -3,6 +3,8 @@
 #include <string.h>
 #include <math.h>
 
+
+// Definição de constantes (NOMES MAIÚSCULOS)
 #define MSG_MAX_SIZE 350
 #define BUFFER_SIZE (MSG_MAX_SIZE + 100)
 #define LOGIN_MAX_SIZE 13
@@ -13,16 +15,20 @@
 #define Y_MAX 500
 #define N_ARMADILHAS 20
 #define TEMPO_LIMITE 120
-#define direita 
-#define esquerda
-#define cima 
-#define baixo
-#define BOTAR_TRAP
-#define vazio '0'
-#define playerTeam1 '1'
-#define playerTeam2 '2'
-#define TRAP_TEAM1
-#define TRAP_TEAM2
+#define DIREITA 0x44
+#define ESQUERDA 0x41
+#define CIMA 0x57
+#define BAIXO 0x53
+#define VAZIO 0x30
+#define PLAYER_TEAM_1 0x31
+#define PLAYER_TEAM_2 0x32
+#define BOTAR_TRAP 0
+#define TRAP_TEAM1 0
+#define TRAP_TEAM2 0
+#define X_FLAG_RED 200
+#define Y_FLAG_RED 200
+#define X_FLAG_BLUE 400
+#define Y_FLAG_BLUE 400
 
 typedef struct{
     int x, y;
@@ -117,10 +123,10 @@ int main() {
     armadilhas_1 = ceil((float)N_ARMADILHAS/(float)time_1);
     armadilhas_2 = ceil((float)N_ARMADILHAS/(float)time_2);
     for(i=0;i<jogadores;i++){
-        if(jogadores.team == 1)
-            jogadores.armadilhas = armadilhas_1;
+        if(players[i].team == 1)
+            players[i].armadilhas = armadilhas_1;
         else
-            jogadores.armadilhas = armadilhas_2;
+            players[i].armadilhas = armadilhas_2;
     }
 
 
@@ -128,30 +134,31 @@ int main() {
     while( (al_get_time() - tempoInicio < TEMPO_LIMITE) && !fim){
 
         for(i=0;i<X_MAX;i++){
-            for(j=0;j<Y_MAX;j++)
+            for(j=0;j<Y_MAX;j++){
 
+            }
         }
 
 
 
         input = recvMsg(&teclado);
-        for(i=0;i<jogadores;i++){ 
+        for(i=0;i<players;i++){ 
             if(players[i].id == input.client_id){
-                if( !players.i.congelado ){
+                if( !players[i].congelado ){
 
-                    if(teclado == cima){
+                    if(teclado == CIMA){
                         if(players[i].position.x !=0){ // espaco livre
                             if(mapa[players[i].position.x-1][players[i].position.y] == vazio){ //considerando 0 um espaco livre
                                 players[i].position.x--;
                                 if(players[i].team==1){
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM2)
                                         players[i].congelado=1;
-                                    mapa[players[i].position.x][players[i].position.y] = playerTeam1; //jogador time1
+                                    mapa[players[i].position.x][players[i].position.y] = PLAYER_TEAM_1; //jogador time1
                                 }
                                 else{
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM1)
                                         players[i].congelado=1;
-                                    mapa[players[i].position.x][players[i].position.y] = playerTeam2; //jogador time 2
+                                    mapa[players[i].position.x][players[i].position.y] = PLAYER_TEAM_2; //jogador time 2
                                 }   
 
                                 mapa[players[i].position.x+1][players[i].position.y] = vazio;
@@ -167,7 +174,7 @@ int main() {
                             }
                         } 
                     }
-                    else if(teclado == baixo){
+                    else if(teclado == BAIXO){
                         if(players[i].position.x != X_MAX){
                             if(mapa[players[i].position.x+1][players[i].position.y] == vazio){
 
@@ -175,12 +182,12 @@ int main() {
                                 if(players[i].team==1){
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM2)
                                         players[i].congelado=1;
-                                    mapa[players[i].position.x][players[i].position.y] = playerTeam1; //jogador time1
+                                    mapa[players[i].position.x][players[i].position.y] = PLAYER_TEAM_1; //jogador time1
                                 }
                                 else{
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM1)
                                         players[i].congelado=1;
-                                    mapa[players[i].position.x][players[i].position.y] = playerTeam2; //jogador time 2
+                                    mapa[players[i].position.x][players[i].position.y] = PLAYER_TEAM_2; //jogador time 2
                                 } 
 
                                 mapa[players[i].position.x-1][players[i].position.y] = vazio;
@@ -196,7 +203,7 @@ int main() {
                             }
                         }
                     }
-                    else if(teclado == direita){
+                    else if(teclado == DIREITA){
                         if(players[i].position.y != Y_MAX){
                             if(mapa[players[i].position.x][players[i].position.y+1] == vazio){
                                 players[i].position.y++;
@@ -204,12 +211,12 @@ int main() {
                                 if(players[i].team==1){
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM2)
                                         players[i].congelado=1;
-                                    mapa[players[i].position.x][players[i].position.y] = playerTeam1; //jogador time1
+                                    mapa[players[i].position.x][players[i].position.y] = PLAYER_TEAM_1; //jogador time1
                                 }
                                 else{
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM1)
                                         players[i].congelado=1;
-                                    mapa[players[i].position.x][players[i].position.y] = playerTeam2; //jogador time 2
+                                    mapa[players[i].position.x][players[i].position.y] = PLAYER_TEAM_2; //jogador time 2
                                 } 
 
                                 mapa[players[i].position.x][players[i].position.y-1] = vazio;
@@ -225,7 +232,7 @@ int main() {
                             }
                         }
                     }
-                    else if(teclado == esquerda){
+                    else if(teclado == ESQUERDA){
                         if(players[i].position.y != 0){
                             if(mapa[players[i].positon.x][players[i].position.y-1] == vazio){
                             
@@ -234,12 +241,12 @@ int main() {
                                 if(players[i].team==1){
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM2)
                                         players[i].congelado=1;
-                                    mapa[players[i].position.x][players[i].position.y] = playerTeam1; //jogador time1
+                                    mapa[players[i].position.x][players[i].position.y] = PLAYER_TEAM_1; //jogador time1
                                 }
                                 else{
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM1)
                                         players[i].congelado=1;
-                                    mapa[players[i].position.x][players[i].position.y] = playerTeam2; //jogador time 2
+                                    mapa[players[i].position.x][players[i].position.y] = PLAYER_TEAM_2; //jogador time 2
                                 } 
 
                                 mapa[players[i].position.x][players[i].position.y+1] = vazio;
