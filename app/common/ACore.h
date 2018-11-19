@@ -66,7 +66,6 @@ typedef struct{
     int id;
     int comBandeira;
     int congelado;
-    char movimentoAnterior;
     Position position;
 }Player;
 
