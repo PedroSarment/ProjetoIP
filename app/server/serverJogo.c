@@ -147,9 +147,9 @@ int main() {
                 if( !players[i].congelado ){
 
                     if(teclado == CIMA){
-                        if(players[i].position.x !=0){ // espaco livre
-                            if(mapa[players[i].position.x-1][players[i].position.y] == VAZIO){ //considerando 0 um espaco livre
-                                players[i].position.x--;
+                        if(players[i].position.y != Y_MAX){ // espaco livre
+                            if(mapa[players[i].position.x][players[i].position.y+1] == VAZIO){ //considerando 0 um espaco livre
+                                players[i].position.y++;
                                 if(players[i].team==1){
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM2)
                                         players[i].congelado=1;
