@@ -25,16 +25,15 @@
 
 
 //gcc Jogo.c -lm -lallegro -lallegro_image -lallegro_primitives -lallegro_font -lallegro_ttf -lallegro_audio -lallegro_acodec
-typedef struct{
-    int helmet;
-    int team;
-    int traps;
-    int freezes;
-    char nick[13];
-    int x,y;
+// typedef struct{
+//     int helmet;
+//     int team;
+//     int traps;
+//     int freezes;
+//     char nick[13];
+//     int x,y;
 
-}player;
-
+// }player;
 
 
 ALLEGRO_FONT *fonte = NULL;
@@ -61,81 +60,99 @@ void runChat(int *state) {
     char str_buffer[BUFFER_SIZE], type_buffer[MSG_MAX_SIZE] = {0};
     char msg_history[HIST_MAX_SIZE][MSG_MAX_SIZE] = {{0}};
     int type_pointer = 0;
-    DADOS_LOBBY *msg = NULL;
-    DADOS_LOBBY *msg_server = NULL;
-    msg = (DADOS_LOBBY *) malloc(sizeof(DADOS_LOBBY));
-    if(msg == NULL){
-        char erro[20] = "sem memoria.";
-        error_msg(erro);
-    }
-    if(msg_server == NULL){
-        char erro[20] = "sem memoria.";
-        error_msg(erro);
-    }
-    msg[0].funcao=CHAT;
-   
-  while (1) {
-    // LER UMA TECLA DIGITADA
-    char ch = getch();
-    if (ch == '\n') {
-      type_buffer[type_pointer++] = '\0';
-      strcpy(msg[0].mensagem, type_buffer);
-      int ret = sendMsgToServer((DADOS_LOBBY *)msg, sizeof(DADOS_LOBBY));
-      if (ret == SERVER_DISCONNECTED) {
-        return;
-      }
-      type_pointer = 0;
-      type_buffer[type_pointer] = '\0';
-    } else if (ch == 127 || ch == 8) {
-      if (type_pointer > 0) {
-        --type_pointer;
+    DADOS_LOBBY msg;
+    DADOS_LOBBY msg_server;
+       
+    while (1) {
+        // Lê uma tecla digitada
+        char ch = getch();
+        if (ch == '\n') {
+        type_buffer[type_pointer++] = '\0';
+        strcpy(msg.mensagem, type_buffer);
+        int ret = sendMsgToServer((DADOS_LOBBY *)&msg, sizeof(DADOS_LOBBY));
+        if (ret == SERVER_DISCONNECTED) {
+            return;
+        }
+        type_pointer = 0;
         type_buffer[type_pointer] = '\0';
-      }
-    } else if (ch != NO_KEY_PRESSED && type_pointer + 1 < MSG_MAX_SIZE) {
-      type_buffer[type_pointer++] = ch;
-      type_buffer[type_pointer] = '\0';
+        } else if (ch == 127 || ch == 8) {
+        if (type_pointer > 0) {
+            --type_pointer;
+            type_buffer[type_pointer] = '\0';
+        }
+        } else if (ch != NO_KEY_PRESSED && type_pointer + 1 < MSG_MAX_SIZE) {
+        type_buffer[type_pointer++] = ch;
+        type_buffer[type_pointer] = '\0';
+        
+        }
+
+        // Lê uma mensagem do servidor
+        int ret = recvMsgFromServer(&msg_server, DONT_WAIT);
+        if (ret == SERVER_DISCONNECTED) {
+        return;
+        } 
+        else if (ret != NO_MESSAGE && msg_server.funcao == CHAT && msg_server.tipo==CLIENT_TO_CLIENT) {
+        int i;
+        for (i = 0; i < HIST_MAX_SIZE - 1; ++i) {
+            strcpy(msg_history[i], msg_history[i + 1]);
+        }
+        strcpy(msg_history[HIST_MAX_SIZE - 1], msg_server.mensagem);
+        }
+        else if(ret != NO_MESSAGE && msg_server.tipo == COMECOU){
+            *state = COMECOU;
+            break; 
+        }
+
+        // Printa novo estado no chat
+        system("clear");
+        int i;
+        for (i = 0; i < HIST_MAX_SIZE; ++i) {
+        printf("%s\n", msg_history[i]);
+        }
+        printf("\nYour message: %s\n", msg.mensagem);
+    }
+}
+
+void lerIP(char * ipAdress){
+    char ch;
+    int type_pointer = 0;
+
+    al_draw_text(fonte, al_map_rgb(255, 0, 0), 10, 10, ALLEGRO_ALIGN_LEFT, "IP Adress: ");
+
+    ch = getch();
+    while(ch != '\n'){
+        type_pointer++;
+        ipAdress = (char *) realloc(ipAdress, type_pointer*(sizeof(char)));
+        if(ipAdress != NULL){
+            if(ch == '\n') {
+                ipAdress[type_pointer++] = '\0';
+            } 
+            else if (ch == 127 || ch == 8) {
+                if (type_pointer > 0) {
+                    --type_pointer;
+                    ipAdress[type_pointer] = '\0';
+                }
+            } 
+            else if (ch != NO_KEY_PRESSED && type_pointer + 1 < MSG_MAX_SIZE) {
+                ipAdress[type_pointer] = ipAdress;
+                ipAdress[type_pointer++] = '\0';
+                
+            }
+            ch = getch();
+        }
       
     }
-
-    // LER UMA MENSAGEM DO SERVIDOR
-    int ret = recvMsgFromServer(msg_server, DONT_WAIT);
-    if (ret == SERVER_DISCONNECTED) {
-      return;
-    } 
-    else if (ret != NO_MESSAGE && msg_server[0].funcao==CHAT && msg_server[0].tipo==CLIENT_TO_CLIENT) {
-      int i;
-      for (i = 0; i < HIST_MAX_SIZE - 1; ++i) {
-        strcpy(msg_history[i], msg_history[i + 1]);
-      }
-      strcpy(msg_history[HIST_MAX_SIZE - 1], msg_server[0].mensagem);
-    }
-    else if(ret != NO_MESSAGE && msg_server[0].tipo==COMECOU){
-        *state=COMECOU;
-        break; 
-    }
-
-    // PRINTAR NOVO ESTADO DO CHAT
-    system("clear");
-    int i;
-    for (i = 0; i < HIST_MAX_SIZE; ++i) {
-      printf("%s\n", msg_history[i]);
-    }
-    printf("\nYour message: %s\n", msg[0].mensagem);
-  }
 }
 
 void defineNick(ALLEGRO_FONT *fonte){
     char type_buffer[LOGIN_MAX_SIZE+1] = {0};
     int type_pointer = 0;
+    char *ipAdress = NULL;
+    enum conn_ret_t serverConnection;
 
-    DADOS_LOBBY *msg = NULL;
-    msg = (DADOS_LOBBY *) malloc(sizeof(DADOS_LOBBY));
-    if(msg == NULL){
-        char erro[20] = "sem memoria.";
-        error_msg(erro);
-    }
-    msg[0].funcao = NICK;
-    msg[0].tipo = CLIENT_TO_SERVER;
+    DADOS_LOBBY msg;
+    msg.funcao = NICK;
+    msg.tipo = CLIENT_TO_SERVER;
 
     al_draw_text(fonte, al_map_rgb(255, 0, 0), 10, 10, ALLEGRO_ALIGN_LEFT, "Nick: ");
     while (1) {
@@ -143,14 +160,10 @@ void defineNick(ALLEGRO_FONT *fonte){
         char ch = getch();
         if (ch == '\n') {
             type_buffer[type_pointer++] = '\0';
-            strcpy(msg[0].mensagem, type_buffer);
-            int ret = sendMsgToServer((DADOS_LOBBY *) msg, sizeof(DADOS_LOBBY));
-        if (ret == SERVER_DISCONNECTED) {
-            return;
-        }
-        type_pointer = 0;
-        type_buffer[type_pointer] = '\0';
-
+            strcpy(msg.mensagem, type_buffer);
+            type_pointer = 0;
+            type_buffer[type_pointer] = '\0';
+            break;
         } 
         else if (ch == 127 || ch == 8) {
             if (type_pointer > 0) {
@@ -159,11 +172,33 @@ void defineNick(ALLEGRO_FONT *fonte){
             }
         } 
         else if (ch != NO_KEY_PRESSED && type_pointer + 1 < MSG_MAX_SIZE) {
-            type_buffer[type_pointer++] = ch;
-            type_buffer[type_pointer] = '\0';
+            type_buffer[type_pointer] = ch;
+            type_buffer[type_pointer++] = '\0';
+            
         }
         al_draw_text(fonte, al_map_rgb(255, 0, 0), 10, 10, 7, type_buffer);
     }
+
+    lerIP(ipAdress);
+    serverConnection = connectToServer(ipAdress);
+    if(serverConnection == SERVER_UP){
+        int ret = sendMsgToServer((DADOS_LOBBY *) &msg, sizeof(DADOS_LOBBY));
+            if (ret == SERVER_DISCONNECTED) {
+            return;
+        }
+    }
+    else if(serverConnection == SERVER_DOWN){
+        al_draw_text(fonte, al_map_rgb(255, 0, 0), 10, 10, ALLEGRO_ALIGN_LEFT, "Nao foi possivel encontrar o servidor");
+    }
+    else if(serverConnection == SERVER_FULL){
+        al_draw_text(fonte, al_map_rgb(255, 0, 0), 10, 10, ALLEGRO_ALIGN_LEFT, "O servidor esta cheio");
+    }
+    else if(serverConnection == SERVER_CLOSED){
+        al_draw_text(fonte, al_map_rgb(255, 0, 0), 10, 10, ALLEGRO_ALIGN_LEFT, "o servidor está fechado para conexões");
+    }
+    else if(serverConnection == SERVER_TIMEOUT){
+        al_draw_text(fonte, al_map_rgb(255, 0, 0), 10, 10, ALLEGRO_ALIGN_LEFT, "o servidor demorou para dar uma resposta sobre o status da conexão");
+    }   
 }
 
 void selectHelmet(ALLEGRO_FONT *fonte){
@@ -171,14 +206,9 @@ void selectHelmet(ALLEGRO_FONT *fonte){
 
     int capacete;
 
-    DADOS_LOBBY *msg = NULL;
-    msg = (DADOS_LOBBY *) malloc(sizeof(DADOS_LOBBY));
-    if(msg == NULL){
-        char erro[20] = "sem memoria.";
-        error_msg(erro);
-    }
-    msg[0].funcao = CAPACETE;
-    msg[0].tipo = CLIENT_TO_SERVER;
+    DADOS_LOBBY msg;
+    msg.funcao = CAPACETE;
+    msg.tipo = CLIENT_TO_SERVER;
 
 
     al_draw_text(fonte, al_map_rgb(0, 255, 0), LARGURA_TELA / 2, 90, ALLEGRO_ALIGN_CENTRE, "Selecione o Capacete");
@@ -223,8 +253,8 @@ void selectHelmet(ALLEGRO_FONT *fonte){
                     break;
             }
         }
-        msg[0].msg=tecla;    
-        int ret = sendMsgToServer((DADOS_LOBBY *)msg, sizeof(DADOS_LOBBY));
+        msg.msg = tecla;    
+        int ret = sendMsgToServer((DADOS_LOBBY *)&msg, sizeof(DADOS_LOBBY));
         if (ret == SERVER_DISCONNECTED) {
             return;
         }
@@ -312,7 +342,7 @@ void comeca(){
 }
 
 int lobby(ALLEGRO_FONT *fonte){
-    int state=0;
+    int state = 0;
     DADOS_LOBBY msg[1];
 
     defineNick(fonte);

@@ -56,65 +56,68 @@ int main() {
     double tempoInicio;
     int fim = 0,comecou = 1;
     int teclado;
-    int time_1 = 0,time_2 = 0; //quantidade de indivíduos nas equipes
-    int armadilhas_1,armadilhas_2; //quantidade de armadilha por pessoa
-    char mapa [X_MAX][Y_MAX];
+    int time_1 = 0,time_2 = 0;              // Quantidade de indivíduos nas equipes
+    int armadilhas_1,armadilhas_2;          // Quantidade de armadilha por pessoa
+    char mapa [X_MAX][Y_MAX] = {'0'};
     int xAnterior,yAnterior;
     int scoreBlue = 0, scoreRed = 0;
     int i, j;
 
-    PROTOCOLO_JOGO jogada;  // Protocolo de envio a ser enviado para o cliente com as infos do jogo;
+    PROTOCOLO_JOGO jogada;                  // Protocolo de envio a ser enviado para o cliente com as infos do jogo;
 
     struct msg_ret_t input;
 
     //CRIANDO MAPA
 
     //
-
+    DADOS_LOBBY msg;
+    
     serverInit(MAX_CLIENTS);
     puts("Server is running!!");
     while (jogadores < MAX_CLIENTS || (jogadores < 4 && ready != jogadores)) {
+        
         int id = acceptConnection();
         if (id != NO_CONNECTION) {
-            recvMsgFromClient(client_names[id], id, WAIT_FOR_IT);
-            strcpy(str_buffer, client_names[id]);
+            // Recebe o nick e o id das novas conexões
+            recvMsgFromClient((DADOS_LOBBY *)&msg, id, WAIT_FOR_IT);
+            if(msg.funcao == NICK){
+                strcpy(players[jogadores].name, msg.mensagem); // Salvou o nick
+                strcpy(players[jogadores].id, id);              // Salvou o id
+            }
+            strcpy(str_buffer, msg.mensagem);
             strcat(str_buffer, " connected");
             broadcast(str_buffer, (int)strlen(str_buffer) + 1);
-            printf("%s connected id = %d\n", client_names[id], id);
+            printf("%s connected id = %d\n", players[jogadores].name, id);
 
             // Escolha do capacete
+            recvMsgFromClient((DADOS_LOBBY *)&msg, id, WAIT_FOR_IT);
+            if(msg.funcao == CAPACETE){
+                players[jogadores].helmet = msg.msg;
+                sprintf(&msg.msg, "Seu capacete: %d", msg.msg);
+                sendMsgToClient(&msg.msg, sizeof(DADOS_LOBBY)+1, id);
+            }
             
-            recvMsgFromClient(&capacete, id, WAIT_FOR_IT);
-            //char msg[20];
-            DADOS_LOBBY protocolo;
-            sprintf(&protocolo, "Seu capacete: %d", capacete);
-            sendMsgToClient(&protocolo, sizeof(protocolo) +1, id);
-
-            //inicializando jogadores
+            // Inicializando jogadores
             if(jogadores%2 == 0){
-            strcpy(players[jogadores].name, client_names[id]);
-            players[jogadores].team = 1;
-            players[jogadores].position.x = 0;
-            players[jogadores].position.y = 0;
-            players[jogadores].helmet = capacete;
-            players[jogadores].id = id;
-            players[jogadores].congelado = 0;
-            time_1++;
+                players[jogadores].team = 1;
+                players[jogadores].position.x = 0;
+                players[jogadores].position.y = 0;
+                players[jogadores].congelado = 0;
+                time_1++;
             }
             else{
-            strcpy(players[jogadores].name, client_names[id]);
-            players[jogadores].team = 2;
-            players[jogadores].position.x = X_MAX;
-            players[jogadores].position.y = Y_MAX;
-            players[jogadores].helmet = capacete;
-            players[jogadores].id = id;
-            time_2++;
-            players[jogadores].congelado = 0;
+                players[jogadores].team = 2;
+                players[jogadores].position.x = X_MAX;
+                players[jogadores].position.y = Y_MAX;
+                players[jogadores].congelado = 0;
+                time_2++;
             }
+
             jogadores++;
         }
-        //chat
-        struct msg_ret_t msg_ret = recvMsg(aux_buffer);
+
+        // Chat
+        struct msg_ret_t msg_ret = recvMsg(msg.mensagem);
         if (msg_ret.status == MESSAGE_OK) {
             sprintf(str_buffer, "%s-%d: %s", client_names[msg_ret.client_id],
                     msg_ret.client_id, aux_buffer);
