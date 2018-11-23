@@ -296,7 +296,7 @@ int main() {
                                     players[i].armadilhas--;
                                 }
                                 else{
-                                    char msg[20] = "armadilha ja existente";
+                                    char msg[50] = "armadilha ja existente";
                                     sendMsgToClient(msg, sizeof(msg) + 1, players[i].id);
                                 }
                             }

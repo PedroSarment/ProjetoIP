@@ -24,12 +24,12 @@ bool coreInit()
         fprintf(stderr, "Falha ao inicializar add-on allegro_image.\n");
         return false;
     }
-
-    if (!al_init_font_addon())
-    {
-        fprintf(stderr, "Falha ao inicializar add-on allegro_font.\n");
-        return false;
-    }
+    al_init_font_addon();
+    // if (!al_init_font_addon())
+    // {
+    //     fprintf(stderr, "Falha ao inicializar add-on allegro_font.\n");
+    //     return false;
+    // }
 
     if (!al_init_ttf_addon())
     {

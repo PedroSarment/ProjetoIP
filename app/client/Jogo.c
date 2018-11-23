@@ -243,10 +243,10 @@ int iniciar(){
         return 0;
     }
     al_init_font_addon();
-    if(!al_init_ttf_addon()){
-        printf("Falha ao iniciar o ttf addon.");
-        return 0;
-    }
+    // if(!al_init_ttf_addon()){ 
+    //     printf("Falha ao iniciar o ttf addon.");
+    //     return 0;
+    // }
     if(!al_init_acodec_addon()){
         printf("Falha ao iniciar Codec de Audio.");
         return 0;
@@ -296,7 +296,7 @@ int iniciar(){
         al_destroy_audio_stream(musica_fundo);
         return 0;
     }
-    puts("dmankdjhak");
+    //puts("dmankdjhak");
     return 1;
 }
 
