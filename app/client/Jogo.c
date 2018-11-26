@@ -25,16 +25,6 @@
 
 
 //gcc Jogo.c -lm -lallegro -lallegro_image -lallegro_primitives -lallegro_font -lallegro_ttf -lallegro_audio -lallegro_acodec
-// typedef struct{
-//     int helmet;
-//     int team;
-//     int traps;
-//     int freezes;
-//     char nick[13];
-//     int x,y;
-
-// }player;
-
 
 ALLEGRO_FONT *fonte = NULL;
 ALLEGRO_DISPLAY *janela = NULL;
@@ -91,14 +81,14 @@ void runChat(int *state) {
         if (ret == SERVER_DISCONNECTED) {
         return;
         } 
-        else if (ret != NO_MESSAGE && msg_server.funcao == CHAT && msg_server.tipo==CLIENT_TO_CLIENT) {
+        else if (ret != NO_MESSAGE && msg_server.tipo == CHAT && msg_server.funcao==CLIENT_TO_CLIENT) {
         int i;
         for (i = 0; i < HIST_MAX_SIZE - 1; ++i) {
             strcpy(msg_history[i], msg_history[i + 1]);
         }
         strcpy(msg_history[HIST_MAX_SIZE - 1], msg_server.mensagem);
         }
-        else if(ret != NO_MESSAGE && msg_server.tipo == COMECOU){
+        else if(ret != NO_MESSAGE && msg_server.funcao == COMECOU){
             *state = COMECOU;
             break; 
         }
@@ -151,8 +141,8 @@ void defineNick(ALLEGRO_FONT *fonte){
     enum conn_ret_t serverConnection;
 
     DADOS_LOBBY msg;
-    msg.funcao = NICK;
-    msg.tipo = CLIENT_TO_SERVER;
+    msg.tipo = NICK;
+    msg.funcao = CLIENT_TO_SERVER;
 
     al_draw_text(fonte, al_map_rgb(255, 0, 0), 10, 10, ALLEGRO_ALIGN_LEFT, "Nick: ");
     while (1) {
@@ -207,8 +197,8 @@ void selectHelmet(ALLEGRO_FONT *fonte){
     int capacete;
 
     DADOS_LOBBY msg;
-    msg.funcao = CAPACETE;
-    msg.tipo = CLIENT_TO_SERVER;
+    msg.tipo = CAPACETE;
+    msg.funcao = CLIENT_TO_SERVER;
 
 
     al_draw_text(fonte, al_map_rgb(0, 255, 0), LARGURA_TELA / 2, 90, ALLEGRO_ALIGN_CENTRE, "Selecione o Capacete");
@@ -355,6 +345,8 @@ int lobby(ALLEGRO_FONT *fonte){
 
 int main(){
     int state;
+    PROTOCOLO_JOGO jogada, jogada_server;
+
     iniciar();
     if (fonte == NULL) {
         puts("flkaslfkahld");
@@ -433,6 +425,9 @@ int main(){
             }
 
         }
+    }
+    else if(state == ENDGAME){
+
     }
     al_destroy_display(janela);
     al_destroy_audio_stream(musica_fundo);

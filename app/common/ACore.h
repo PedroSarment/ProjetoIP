@@ -24,7 +24,12 @@
 #define NICK 0
 #define CAPACETE 1
 #define CHAT 2
-#define COMECOU 6
+#define COMECOU 3
+#define ANDAR 4
+#define BOTARTRAPS 5
+#define GAME 6
+#define ENDGAME 7
+
 
 double startingTime;
 
@@ -70,9 +75,10 @@ typedef struct{
 }Player;
 
 typedef struct{
-    int modo; 
+    int tipo; 
     int xAnterior, yAnterior;
     char itemAnterior;
+    char teclado;
     Player jogadorAtual;
 }PROTOCOLO_JOGO;
 
