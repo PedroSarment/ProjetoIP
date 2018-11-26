@@ -26,7 +26,7 @@
 #define TRAP_TEAM_BLUE 0x41     //A
 #define TRAP_TEAM_RED 0x56      //V
 #define PLAYER_COM_TRAP 0x51    //Q
-#define BOTAR_TRAP 0x4A         //J
+#define TRAP 0x4A               //J
 #define X_FLAG_BLUE 1280
 #define Y_FLAG_BLUE 0
 #define X_FLAG_RED 0
@@ -292,7 +292,7 @@ int main() {
                             }
                         }
                     }
-                    else if(jogada.teclado == BOTAR_TRAP){ 
+                    else if(jogada.teclado == TRAP){ 
                         if(players[i].armadilhas > 0){
                             jogada_server.tipo = BOTARTRAPS; // Modo botar armadilha = 5
                             if(players[i].team == 1){
