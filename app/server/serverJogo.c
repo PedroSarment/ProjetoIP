@@ -82,7 +82,7 @@ int main() {
             recvMsgFromClient((DADOS_LOBBY *) &msg, id, WAIT_FOR_IT);
             if(msg.tipo == NICK){
                 strcpy(players[jogadores].name, msg.mensagem); // Salvou o nick
-                strcpy(players[jogadores].id, id);              // Salvou o id
+                players[jogadores].id = id;                    // Salvou o id
             }
             strcpy(msg_server.mensagem, msg.mensagem);
             strcat(msg_server.mensagem, " connected");
@@ -125,7 +125,7 @@ int main() {
         // Chat
         struct msg_ret_t msg_ret = recvMsg((char *)msg.mensagem);
         if (msg_ret.status == MESSAGE_OK) {
-            if((strcasecmp(msg.mensagem, "start 1") == 0) && (msg_ret.client_id == 0)){  // Só o jogador inicial pode começar o jogo e ele começa qnd ele digitar "start 1"
+            if((strcmp(msg.mensagem, "start 1") == 0) && (msg_ret.client_id == 0)){  // Só o jogador inicial pode começar o jogo e ele começa qnd ele digitar "start 1"
                ready = 1; 
                if(jogadores < 4){
                    msg_server.tipo = CHAT;
@@ -134,9 +134,8 @@ int main() {
                }           
             }
             else{
-                sprintf(msg_server.mensagem, "%s(%d): %s", players[msg_ret.client_id].name,
-                    msg_ret.client_id, msg.mensagem);
-                 msg_server.tipo = CHAT;
+                sprintf(msg_server.mensagem, "%s(%d): %s", players[msg_ret.client_id].name,msg_ret.client_id, msg.mensagem);
+                msg_server.tipo = CHAT;
                 broadcast((DADOS_LOBBY *) &msg_server, (int)sizeof(DADOS_LOBBY));
             }          
         } else if (msg_ret.status == DISCONNECT_MSG) {
@@ -162,7 +161,7 @@ int main() {
     tempoInicio = al_get_time();
     while( (al_get_time() - tempoInicio < TEMPO_LIMITE) && !fim){
         input = recvMsg((PROTOCOLO_JOGO *) &jogada);
-        for(i = 0; i < players; i++){ 
+        for(i = 0; i < jogadores; i++){ 
             if((players[i].id == input.client_id) && (jogada.tipo == GAME)){
                 if(!players[i].congelado){
                     if(jogada.teclado == CIMA){
@@ -365,8 +364,8 @@ int main() {
             }
         }
         tempoAtual = al_get_time() - tempoInicio;
-        tempo.tipo=TEMPO;
-        sprintf(tempo.msg, "%lf", &tempoAtual);
+        tempo.tipo = TEMPO;
+        sprintf(tempo.mensagem, "%lf", tempoAtual);
         broadcast((PROTOCOLO_JOGO *) &tempo, sizeof(PROTOCOLO_JOGO)); 
     }
 

@@ -19,8 +19,8 @@
 
 #define MAX_LOG_SIZE 17
 
-#define LARGURA_TELA 1280
-#define ALTURA_TELA 720
+#define LARGURA_TELA 640
+#define ALTURA_TELA 480
 
 
 
@@ -114,7 +114,7 @@ void lerIP(char * ipAdress){
     ch = getch();
     while(ch != '\n'){
         type_pointer++;
-        ipAdress = (char ) realloc(ipAdress, type_pointer(sizeof(char)));
+        ipAdress = (char *) realloc(ipAdress, (type_pointer)*(sizeof(char)));
         if(ipAdress != NULL){
             if(ch == '\n') {
                 ipAdress[type_pointer++] = '\0';
@@ -126,8 +126,8 @@ void lerIP(char * ipAdress){
                 }
             } 
             else if (ch != NO_KEY_PRESSED && type_pointer + 1 < MSG_MAX_SIZE) {
-                ipAdress[type_pointer] = ipAdress;
-                ipAdress[type_pointer++] = '\0';
+                ipAdress[type_pointer] = ch;
+                ipAdress[++type_pointer] = '\0';
                 
             }
             ch = getch();
@@ -136,7 +136,8 @@ void lerIP(char * ipAdress){
     }
 }
 
-void defineNick(ALLEGRO_FONT *fonte){
+void defineNick(){
+    puts("dfnick");
     char type_buffer[LOGIN_MAX_SIZE+1] = {0};
     int type_pointer = 0;
     char *ipAdress = NULL;
@@ -146,29 +147,41 @@ void defineNick(ALLEGRO_FONT *fonte){
     msg.tipo = NICK;
     msg.funcao = CLIENT_TO_SERVER;
 
-    al_draw_text(fonte, al_map_rgb(255, 0, 0), 10, 10, ALLEGRO_ALIGN_LEFT, "Nick: ");
+   // janela = al_create_display(1280,720);
+    fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
+    //al_clear_to_color(al_map_rgb(255,255,255));
+    al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA / 2, ALTURA_TELA / 2, ALLEGRO_ALIGN_CENTRE, "Nick:");
+    al_flip_display();
+    //al_rest(10.0);
     while (1) {
         // LER UMA TECLA DIGITADA
+        puts("oi?");
         char ch = getch();
         if (ch == '\n') {
-            type_buffer[type_pointer++] = '\0';
+            puts("IF1");
+            type_buffer[++type_pointer] = '\0';
             strcpy(msg.mensagem, type_buffer);
             type_pointer = 0;
             type_buffer[type_pointer] = '\0';
+            puts(type_buffer);
             break;
         } 
         else if (ch == 127 || ch == 8) {
+            puts("IF2");
             if (type_pointer > 0) {
+                puts("IF2.1");
                 --type_pointer;
                 type_buffer[type_pointer] = '\0';
             }
         } 
         else if (ch != NO_KEY_PRESSED && type_pointer + 1 < MSG_MAX_SIZE) {
+            puts("IF3");
             type_buffer[type_pointer] = ch;
-            type_buffer[type_pointer++] = '\0';
+            type_buffer[++type_pointer] = '\0';
             
         }
-        al_draw_text(fonte, al_map_rgb(255, 0, 0), 10, 10, 7, type_buffer);
+        al_draw_text(fonte, al_map_rgb(255, 0, 0), LARGURA_TELA / 2 + 10, ALTURA_TELA / 2, ALLEGRO_ALIGN_CENTRE, type_buffer);
+        al_flip_display();
     }
 
     lerIP(ipAdress);
@@ -193,8 +206,8 @@ void defineNick(ALLEGRO_FONT *fonte){
     }   
 }
 
-void selectHelmet(ALLEGRO_FONT *fonte){
-    capacetes = al_load_bitmap("/app/Resources/capacetes/chapeusfinalizados.png");
+void selectHelmet(){
+    capacetes = al_load_bitmap("./app/Resources/capacetes/chapeusfinalizados.png");
 
     int capacete;
 
@@ -265,15 +278,15 @@ int iniciar(){
         return 0;
     }
     al_init_font_addon();
-    // if(!al_init_ttf_addon()){ 
-    //     printf("Falha ao iniciar o ttf addon.");
-    //     return 0;
-    // }
+    if(!al_init_ttf_addon()){ 
+        printf("Falha ao iniciar o ttf addon.");
+        return 0;
+    }
     if(!al_init_acodec_addon()){
         printf("Falha ao iniciar Codec de Audio.");
         return 0;
     }
-    fonte = al_load_font("app/Resources/Fontes/arial.ttf", 48, 0);
+    fonte = al_load_font("./app/Resources/Fontes/arial.ttf", 48, 0);
     if(!al_install_keyboard()){
         printf("Falha ao instalar o teclado.");
         return 0;
@@ -287,14 +300,14 @@ int iniciar(){
         return 0;
     }
   
-    musica_fundo = al_load_audio_stream("/app/Resources/Musics/Musica_fundo.ogg",4,1024);
+    musica_fundo = al_load_audio_stream("./app/Resources/Musics/Musica_fundo.ogg",4,1024);
     if(!musica_fundo){
         error_msg("Musica nao foi carregada.");
         return 0;
     }
     al_attach_audio_stream_to_mixer(musica_fundo, al_get_default_mixer());
     al_set_audio_stream_playmode(musica_fundo,ALLEGRO_PLAYMODE_LOOP);
-    janela = al_create_display(1280,720);
+    janela = al_create_display(640,480);
     if(!janela){
         error_msg("Falha ao iniciar a janela");
         al_destroy_audio_stream(musica_fundo);
@@ -308,10 +321,10 @@ int iniciar(){
         return 0;
     }
     al_clear_to_color(al_map_rgb(255,255,255));
-    personagem = al_load_bitmap("/app/Resources/Characters/Personagem(1).png");
-    personagemm = al_load_bitmap("/app/Resources/Characters/Personagem_C3R.png");
-    logo = al_load_bitmap("/app/Resources/Characters/index.png");
-    mapa = al_load_bitmap("/app/Resources/Characters/mapa.jpeg");
+    personagem = al_load_bitmap("./app/Resources/Characters/Personagem(1).png");
+    personagemm = al_load_bitmap("./app/Resources/Characters/Personagem_C3R.png");
+    logo = al_load_bitmap("./app/Resources/Characters/index.png");
+    mapa = al_load_bitmap("./app/Resources/Characters/mapa.jpeg");
 
     if(!personagem){
         printf("Nao foi possivel carregar o personagem.");
@@ -325,7 +338,6 @@ int iniciar(){
 void comeca(){
     al_draw_bitmap(logo,0,0,0);
     al_flip_display();
-    al_rest(10.0);
     al_destroy_bitmap(logo);
     al_clear_to_color(al_map_rgb(0,0,0));
     al_draw_bitmap(mapa,0,0,0);
@@ -333,13 +345,16 @@ void comeca(){
     al_register_event_source(fila_eventos, al_get_keyboard_event_source());
 }
 
-int lobby(ALLEGRO_FONT *fonte){
+int lobby(){
     int state = 0;
     DADOS_LOBBY msg[1];
     PROTOCOLO_INICIAL msg_inicial;
 
-    defineNick(fonte);
-    selectHelmet(fonte);
+    puts("lobby");
+    defineNick();
+    puts("lobby2");
+    selectHelmet();
+    puts("lobby3");
     int msgOK = recvMsgFromServer((PROTOCOLO_INICIAL *)&msg_inicial, WAIT_FOR_IT);
     if(msgOK == SERVER_DISCONNECTED){
         al_draw_text(fonte, al_map_rgb(0, 255, 0), LARGURA_TELA / 2, 90, ALLEGRO_ALIGN_CENTRE, "Servidor Desconectado!");
@@ -361,9 +376,10 @@ int main(){
         puts("flkaslfkahld");
         return 0;
     }
-    state = lobby(fonte);
+    state = lobby();
     
     if(state == COMECOU){
+        puts("comecou");
         comeca();
         al_flip_display();
         int sair = 0, msgOK = 0;
@@ -506,7 +522,7 @@ int main(){
         }
     }
     else if(state == ENDGAME){
-        al_draw_text(fonte, al_map_rgb(0, 255, 0), LARGURA_TELA / 2, 90, ALLEGRO_ALIGN_CENTRE, jogada_server.);
+        al_draw_text(fonte, al_map_rgb(0, 255, 0), LARGURA_TELA / 2, 90, ALLEGRO_ALIGN_CENTRE, jogada_server.mensagem);
     }
     al_destroy_display(janela);
     al_destroy_audio_stream(musica_fundo);
