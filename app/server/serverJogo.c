@@ -1,7 +1,6 @@
 #include "server.h"
 #include <stdio.h>
 #include <string.h>
-#include <strings.h>
 #include <math.h>
 #include "ACore.h"
 
@@ -46,8 +45,6 @@
 #define Y_ENTRADA_3_RED 710
 
 
-
-
 int main() {
     char client_names[MAX_CLIENTS][LOGIN_MAX_SIZE];
     char str_buffer[BUFFER_SIZE], aux_buffer[BUFFER_SIZE];
@@ -65,7 +62,8 @@ int main() {
     int scoreBlue = 0, scoreRed = 0;
     int i, j;
 
-    PROTOCOLO_JOGO jogada, jogada_server, tempo;                  // Protocolo de envio a ser enviado para o cliente com as infos do jogo;
+    PROTOCOLO_JOGO jogada, jogada_server, tempo;           // Protocolo de envio a ser enviado para o cliente com as infos do jogo;
+    PROTOCOLO_INICIAL msg_inicial;                  
 
     struct msg_ret_t input;
 
@@ -84,7 +82,7 @@ int main() {
             recvMsgFromClient((DADOS_LOBBY *) &msg, id, WAIT_FOR_IT);
             if(msg.tipo == NICK){
                 strcpy(players[jogadores].name, msg.mensagem); // Salvou o nick
-                players[jogadores].id = id;              // Salvou o id
+                strcpy(players[jogadores].id, id);              // Salvou o id
             }
             strcpy(msg_server.mensagem, msg.mensagem);
             strcat(msg_server.mensagem, " connected");
@@ -116,7 +114,11 @@ int main() {
                 players[jogadores].congelado = 0;
                 time_2++;
             }
-
+            
+            msg_inicial.tipo = GAME;
+            msg_inicial.jogador = players[jogadores];
+            sendMsgToClient((PROTOCOLO_INICIAL *) &msg_inicial, sizeof(PROTOCOLO_INICIAL), id);
+            
             jogadores++;
         }
 
@@ -160,7 +162,7 @@ int main() {
     tempoInicio = al_get_time();
     while( (al_get_time() - tempoInicio < TEMPO_LIMITE) && !fim){
         input = recvMsg((PROTOCOLO_JOGO *) &jogada);
-        for(i = 0; i < jogadores; i++){ 
+        for(i = 0; i < players; i++){ 
             if((players[i].id == input.client_id) && (jogada.tipo == GAME)){
                 if(!players[i].congelado){
                     if(jogada.teclado == CIMA){
@@ -296,9 +298,9 @@ int main() {
                         }
                     }
                     else if(jogada.teclado == TRAP){ 
-                        if(players[i].armadilhas > 0){
-                            jogada_server.tipo = BOTARTRAPS; // Modo botar armadilha = 5
-                            if(players[i].team == 1){
+                        if(players[i].armadilhas > 0){                                                          // Verifica se tem armadilhas para botar
+                            jogada_server.tipo = BOTARTRAPS;                                                    // Modo botar armadilha = 5
+                            if(players[i].team == 1){                                                           // Se for do time azul
                                 if(mapa[players[i].position.x][players[i].position.y] != TRAP_TEAM_BLUE){
                                     mapa[players[i].position.x][players[i].position.y] = PLAYER_COM_TRAP;
                                     players[i].armadilhas--;
@@ -308,7 +310,7 @@ int main() {
                                     sendMsgToClient((char *) msg, sizeof(msg) + 1, players[i].id);
                                 }
                             }    
-                            else{
+                            else{                                                                               // Se for do time vermelho
                                 if(mapa[players[i].position.x][players[i].position.y] != TRAP_TEAM_RED){
                                     mapa[players[i].position.x][players[i].position.y] = PLAYER_COM_TRAP;
                                     players[i].armadilhas--;
@@ -354,8 +356,11 @@ int main() {
                         //}
                     }
                     
-                    jogada_server.jogadorAtual = players[i];
-                    broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));
+                    if(fim != 1){
+                        jogada_server.jogadorAtual = players[i];
+                        jogada_server.tipo = GAME;
+                        broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));
+                    }
                 }
             }
         }

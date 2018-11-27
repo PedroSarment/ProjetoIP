@@ -114,7 +114,7 @@ void lerIP(char * ipAdress){
     ch = getch();
     while(ch != '\n'){
         type_pointer++;
-        ipAdress = (char *) realloc(ipAdress, type_pointer*(sizeof(char)));
+        ipAdress = (char ) realloc(ipAdress, type_pointer(sizeof(char)));
         if(ipAdress != NULL){
             if(ch == '\n') {
                 ipAdress[type_pointer++] = '\0';
@@ -171,7 +171,6 @@ void defineNick(ALLEGRO_FONT *fonte){
         al_draw_text(fonte, al_map_rgb(255, 0, 0), 10, 10, 7, type_buffer);
     }
 
-    strcpy(jogador.name,msg.mensagem);
     lerIP(ipAdress);
     serverConnection = connectToServer(ipAdress);
     if(serverConnection == SERVER_UP){
@@ -247,7 +246,6 @@ void selectHelmet(ALLEGRO_FONT *fonte){
             }
         }
         msg.msg = tecla;  
-        jogador.helmet = msg.msg;  
         int ret = sendMsgToServer((DADOS_LOBBY *)&msg, sizeof(DADOS_LOBBY));
         if (ret == SERVER_DISCONNECTED) {
             return;
@@ -338,10 +336,17 @@ void comeca(){
 int lobby(ALLEGRO_FONT *fonte){
     int state = 0;
     DADOS_LOBBY msg[1];
+    PROTOCOLO_INICIAL msg_inicial;
 
     defineNick(fonte);
     selectHelmet(fonte);
-    
+    int msgOK = recvMsgFromServer((PROTOCOLO_INICIAL *)&msg_inicial, WAIT_FOR_IT);
+    if(msgOK == SERVER_DISCONNECTED){
+        al_draw_text(fonte, al_map_rgb(0, 255, 0), LARGURA_TELA / 2, 90, ALLEGRO_ALIGN_CENTRE, "Servidor Desconectado!");
+    }
+    else if(msg_inicial.tipo == GAME){
+        jogador = msg_inicial.jogador;
+    }
     runChat(&state);
 
     return state;
@@ -389,9 +394,10 @@ int main(){
                             if(msgOK == SERVER_DISCONNECTED)
                                 al_draw_text(fonte, al_map_rgb(0, 255, 0), LARGURA_TELA / 2, 90, ALLEGRO_ALIGN_CENTRE, "Servidor Desconectado!");
                             else if(jogada_server.tipo == ANDAR){
+                                jogador = jogada_server.jogadorAtual;
                                 al_draw_bitmap(mapa,0,0,0);
                                 //current_y-=4;
-                                al_draw_bitmap(personagem,jogada_server.jogadorAtual.position.x,jogada_server.jogadorAtual.position.y,0);
+                                al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,0);
                             }
                             break;
                         //Baixo
@@ -409,9 +415,10 @@ int main(){
                             if(msgOK == SERVER_DISCONNECTED)
                                 al_draw_text(fonte, al_map_rgb(0, 255, 0), LARGURA_TELA / 2, 90, ALLEGRO_ALIGN_CENTRE, "Servidor Desconectado!");
                             else if(jogada_server.tipo == ANDAR){
+                                jogador = jogada_server.jogadorAtual;
                                 al_draw_bitmap(mapa,0,0,0);
                                 //current_y-=4;
-                                al_draw_bitmap(personagem,jogada_server.jogadorAtual.position.x,jogada_server.jogadorAtual.position.y,0);
+                                al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,0);
                             }
                             break;
                         //Esquerda
@@ -429,9 +436,10 @@ int main(){
                             if(msgOK == SERVER_DISCONNECTED)
                                 al_draw_text(fonte, al_map_rgb(0, 255, 0), LARGURA_TELA / 2, 90, ALLEGRO_ALIGN_CENTRE, "Servidor Desconectado!");
                             else if(jogada_server.tipo == ANDAR){
+                                jogador = jogada_server.jogadorAtual;
                                 al_draw_bitmap(mapa,0,0,0);
                                 //current_y-=4;
-                                al_draw_bitmap(personagem,jogada_server.jogadorAtual.position.x,jogada_server.jogadorAtual.position.y,0);
+                                al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,0);
                             }
                             break;
                         //Direita.
@@ -449,16 +457,19 @@ int main(){
                             if(msgOK == SERVER_DISCONNECTED)
                                 al_draw_text(fonte, al_map_rgb(0, 255, 0), LARGURA_TELA / 2, 90, ALLEGRO_ALIGN_CENTRE, "Servidor Desconectado!");
                             else if(jogada_server.tipo == ANDAR){
+                                jogador = jogada_server.jogadorAtual;
                                 al_draw_bitmap(mapa,0,0,0);
                                 //current_y-=4;
-                                al_draw_bitmap(personagem,jogada_server.jogadorAtual.position.x,jogada_server.jogadorAtual.position.y,0);
+                                al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,0);
                             }
                             break;
                         // J = botar armadilha
                         case ALLEGRO_KEY_J:
                             jogada.teclado = 'J';
                             jogada.tipo = BOTARTRAPS;
-                            jogada.xAnterior = 
+                            jogada.xAnterior = jogador.position.x;
+                            jogada.yAnterior = jogador.position.y;
+                            jogada.jogadorAtual = jogador;
                             while(msgOK != TAM_PROTOCOLO){
                                 msgOK =  sendMsgToServer((PROTOCOLO_JOGO *) &jogada, TAM_PROTOCOLO);
                                 if(msgOK == SERVER_DISCONNECTED){
@@ -472,48 +483,30 @@ int main(){
                             else if(jogada_server.tipo == ANDAR){
                                 al_draw_bitmap(mapa,0,0,0);
                                 //current_y-=4;
-                                al_draw_bitmap(personagem,jogada_server.jogadorAtual.position.x,jogada_server.jogadorAtual.position.y,0);
+                                //al_draw_bitmap(trap,jogador.position.x,jogador.position.y,0);
+                                al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,0);
                             }
                             break;
                         //esc. sair=1 faz com que o programa saia do loop principal
                         case ALLEGRO_KEY_ESCAPE:
                             sair = 1;
                     }
-                    
-                }
-                if(tecla){
-                    switch(tecla){
-                        case 1:
-                            al_draw_bitmap(mapa,0,0,0);
-                            current_y-=4;
-                            al_draw_bitmap(personagem,current_x,current_y,0);
-                            break;
-                        case 2:
-                            al_draw_bitmap(mapa,0,0,0);
-                            current_y+=4;
-                            al_draw_bitmap(personagem,current_x,current_y,0);
-                            break;
-                        case 3:
-                            al_draw_bitmap(mapa,0,0,0);
-                            current_x-=4;
-                            al_draw_bitmap(personagem,current_x,current_y,0);
-                            break;
-                        case 4:
-                            al_draw_bitmap(mapa,0,0,0);
-                            current_x+=4;
-                            al_draw_bitmap(personagem,current_x,current_y,0);
-                            break;
-                    }
-                    tecla = 0;
-                    al_flip_display();
-                }
-                
-            }
+                    msgOK = recvMsgFromServer((PROTOCOLO_JOGO *) &jogada_server, WAIT_FOR_IT);
+                            if(msgOK == SERVER_DISCONNECTED)
+                                al_draw_text(fonte, al_map_rgb(0, 255, 0), LARGURA_TELA / 2, 90, ALLEGRO_ALIGN_CENTRE, "Servidor Desconectado!");
+                            else{
+                                if(jogada_server.tipo == ANDAR || jogada_server.tipo == GAME)
+                                    jogador = jogada_server.jogadorAtual; 
+                                state = jogada_server.tipo;
+                            }
+                            
+                }  
 
+            }
         }
     }
     else if(state == ENDGAME){
-
+        al_draw_text(fonte, al_map_rgb(0, 255, 0), LARGURA_TELA / 2, 90, ALLEGRO_ALIGN_CENTRE, jogada_server.);
     }
     al_destroy_display(janela);
     al_destroy_audio_stream(musica_fundo);

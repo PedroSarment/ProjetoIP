@@ -84,6 +84,11 @@ typedef struct{
     Player jogadorAtual;
 }PROTOCOLO_JOGO;
 
+typedef struct{
+    int tipo;
+    Player jogador;
+}PROTOCOLO_INICIAL;
+
 
 //MAIN ALLEGRO FUNCTIONS
 bool coreInit();
