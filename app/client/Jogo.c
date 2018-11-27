@@ -54,70 +54,93 @@ void runChat(int *state) {
     int type_pointer = 0;
     DADOS_LOBBY msg;
     DADOS_LOBBY msg_server;
-       
+    al_clear_to_color(al_map_rgb(255,255,255));
+    
+    al_flip_display();   
     while (1) {
         // Lê uma tecla digitada
         char ch = getch();
         if (ch == '\n') {
-        type_buffer[type_pointer++] = '\0';
-        strcpy(msg.mensagem, type_buffer);
-        int ret = sendMsgToServer((DADOS_LOBBY *)&msg, sizeof(DADOS_LOBBY));
-        if (ret == SERVER_DISCONNECTED) {
-            return;
-        }
-        type_pointer = 0;
-        type_buffer[type_pointer] = '\0';
-        } else if (ch == 127 || ch == 8) {
-        if (type_pointer > 0) {
-            --type_pointer;
+            puts("if1");
+            type_buffer[++type_pointer] = '\0';
+            strcpy(msg.mensagem, type_buffer);
+            int ret = sendMsgToServer((DADOS_LOBBY *)&msg, sizeof(DADOS_LOBBY));
+            if (ret == SERVER_DISCONNECTED) {
+                puts("saiuu");
+                return;
+            }
+            type_pointer = 0;
             type_buffer[type_pointer] = '\0';
         }
-        } else if (ch != NO_KEY_PRESSED && type_pointer + 1 < MSG_MAX_SIZE) {
-        type_buffer[type_pointer++] = ch;
-        type_buffer[type_pointer] = '\0';
         
+        else if (ch == 127 || ch == 8) {
+            puts("if2");
+            if (type_pointer > 0) {
+                --type_pointer;
+                type_buffer[type_pointer] = '\0';
+            }
+        } 
+        
+        else if (ch != NO_KEY_PRESSED && type_pointer + 1 < MSG_MAX_SIZE) {
+            puts("if3");
+            type_buffer[type_pointer] = ch;
+            type_buffer[++type_pointer] = '\0';
         }
 
         // Lê uma mensagem do servidor
         int ret = recvMsgFromServer(&msg_server, DONT_WAIT);
         if (ret == SERVER_DISCONNECTED) {
-        return;
+            puts("saiuuu");
+            return;
         } 
         else if (ret != NO_MESSAGE && msg_server.tipo == CHAT && msg_server.funcao==CLIENT_TO_CLIENT) {
-        int i;
-        for (i = 0; i < HIST_MAX_SIZE - 1; ++i) {
-            strcpy(msg_history[i], msg_history[i + 1]);
-        }
-        strcpy(msg_history[HIST_MAX_SIZE - 1], msg_server.mensagem);
+            puts("nomsg");
+            int i;
+            for (i = 0; i < HIST_MAX_SIZE - 1; ++i) {
+                strcpy(msg_history[i], msg_history[i + 1]);
+            }
+            strcpy(msg_history[HIST_MAX_SIZE - 1], msg_server.mensagem);
         }
         else if(ret != NO_MESSAGE && msg_server.funcao == COMECOU){
             *state = COMECOU;
+            puts("joguinho");
             break; 
         }
 
         // Printa novo estado no chat
-        system("clear");
+        //system("clear");
         int i;
+        al_clear_to_color(al_map_rgb(255,255,255));
+        
+        al_flip_display();
         for (i = 0; i < HIST_MAX_SIZE; ++i) {
-        printf("%s\n", msg_history[i]);
+            //puts("");
+            al_draw_textf(fonte, al_map_rgb(0, 0, 0), 10 , 10 + (i+1)*50, ALLEGRO_ALIGN_LEFT, "%s", msg_server.mensagem);
+        //printf("%s\n", msg_history[i]);
         }
-        printf("\nYour message: %s\n", msg.mensagem);
+        al_draw_textf(fonte, al_map_rgb(0, 0, 0), 10, ALTURA_TELA + 10, ALLEGRO_ALIGN_LEFT, "Your message: %s\n", msg_history[i]);
+        al_flip_display();
+        //printf("\nYour message: %s\n", msg.mensagem);
     }
+    puts("fora");
 }
 
 void lerIP(char * ipAdress){
     char ch;
     int type_pointer = 0;
 
-    al_draw_text(fonte, al_map_rgb(255, 0, 0), 10, 10, ALLEGRO_ALIGN_LEFT, "IP Adress: ");
+    al_clear_to_color(al_map_rgb(255,255,255));
+    al_draw_text(fonte, al_map_rgb(0, 0, 0), 10, 10, ALLEGRO_ALIGN_LEFT, "IP Adress: ");
+    al_flip_display();
 
-    ch = getch();
-    while(ch != '\n'){
-        type_pointer++;
-        ipAdress = (char *) realloc(ipAdress, (type_pointer)*(sizeof(char)));
+    while(1){
+        ch = getch();
+        //type_pointer++;
+        ipAdress = (char *) realloc(ipAdress, (type_pointer + 1)*(sizeof(char)));
         if(ipAdress != NULL){
             if(ch == '\n') {
-                ipAdress[type_pointer++] = '\0';
+                ipAdress[++type_pointer] = '\0';
+                break;
             } 
             else if (ch == 127 || ch == 8) {
                 if (type_pointer > 0) {
@@ -128,9 +151,13 @@ void lerIP(char * ipAdress){
             else if (ch != NO_KEY_PRESSED && type_pointer + 1 < MSG_MAX_SIZE) {
                 ipAdress[type_pointer] = ch;
                 ipAdress[++type_pointer] = '\0';
+                al_clear_to_color(al_map_rgb(255,255,255));
+                al_draw_text(fonte, al_map_rgb(0, 0, 0), 10, 10, ALLEGRO_ALIGN_LEFT, "IP Adress: ");
+                al_draw_textf(fonte, al_map_rgb(100, 60, 90), 10, 60, ALLEGRO_ALIGN_LEFT, "%s", ipAdress);
+                al_flip_display();
                 
             }
-            ch = getch();
+            //ch = getch();
         }
       
     }
@@ -148,14 +175,13 @@ void defineNick(){
     msg.funcao = CLIENT_TO_SERVER;
 
    // janela = al_create_display(1280,720);
-    fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
+   // fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
     //al_clear_to_color(al_map_rgb(255,255,255));
     al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA / 2, ALTURA_TELA / 2, ALLEGRO_ALIGN_CENTRE, "Nick:");
     al_flip_display();
     //al_rest(10.0);
     while (1) {
         // LER UMA TECLA DIGITADA
-        puts("oi?");
         char ch = getch();
         if (ch == '\n') {
             puts("IF1");
@@ -178,17 +204,30 @@ void defineNick(){
             puts("IF3");
             type_buffer[type_pointer] = ch;
             type_buffer[++type_pointer] = '\0';
+            puts(type_buffer);
             
-        }
-        al_draw_text(fonte, al_map_rgb(255, 0, 0), LARGURA_TELA / 2 + 10, ALTURA_TELA / 2, ALLEGRO_ALIGN_CENTRE, type_buffer);
-        al_flip_display();
+            al_clear_to_color(al_map_rgb(255,255,255));
+            //fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
+            al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA / 2, ALTURA_TELA / 2, ALLEGRO_ALIGN_CENTRE, "Nick:");
+            //fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 30, 0);
+            al_draw_textf(fonte, al_map_rgb(100, 60, 90), (LARGURA_TELA / 2) + 80, ALTURA_TELA / 2 + 30, ALLEGRO_ALIGN_CENTRE, "%s", type_buffer);
+            al_flip_display();
+                       
+        }   
     }
+    puts("saiu");
 
     lerIP(ipAdress);
+
+    al_clear_to_color(al_map_rgb(255,255,255));
+    al_flip_display();
+
     serverConnection = connectToServer(ipAdress);
+
     if(serverConnection == SERVER_UP){
         int ret = sendMsgToServer((DADOS_LOBBY *) &msg, sizeof(DADOS_LOBBY));
-            if (ret == SERVER_DISCONNECTED) {
+        al_draw_text(fonte, al_map_rgb(0, 100 , 200), 10, 10, ALLEGRO_ALIGN_LEFT, "Servidor conectado!");
+        if (ret == SERVER_DISCONNECTED) {
             return;
         }
     }
@@ -203,11 +242,15 @@ void defineNick(){
     }
     else if(serverConnection == SERVER_TIMEOUT){
         al_draw_text(fonte, al_map_rgb(255, 0, 0), 10, 10, ALLEGRO_ALIGN_LEFT, "o servidor demorou para dar uma resposta sobre o status da conexão");
-    }   
+    }  
+    al_flip_display(); 
 }
 
 void selectHelmet(){
+    int foi=1;
+    puts("select");
     capacetes = al_load_bitmap("./app/Resources/capacetes/chapeusfinalizados.png");
+    puts("deu bom?");
 
     int capacete;
 
@@ -215,56 +258,77 @@ void selectHelmet(){
     msg.tipo = CAPACETE;
     msg.funcao = CLIENT_TO_SERVER;
 
-
+    al_clear_to_color(al_map_rgb(255,255,255));
+    al_flip_display();
     al_draw_text(fonte, al_map_rgb(0, 255, 0), LARGURA_TELA / 2, 90, ALLEGRO_ALIGN_CENTRE, "Selecione o Capacete");
     al_draw_bitmap(capacetes, 0,0,0);
+    al_flip_display();
+    puts("deu bom");
+    if(!al_event_queue_is_empty(fila_eventos)){
+        puts("entrou");
+        while(foi){
+            printf("%d", foi);
+            al_draw_text(fonte, al_map_rgb(0, 255, 0), LARGURA_TELA / 2, 90, ALLEGRO_ALIGN_CENTRE, "Selecione o Capacete");
+            al_draw_bitmap(capacetes, 0,0,0);
+            al_flip_display();
+            ALLEGRO_EVENT evento;
+            int tecla;
 
-    while(!al_event_queue_is_empty(fila_eventos)){
-        ALLEGRO_EVENT evento;
-        int tecla;
-
-        al_wait_for_event(fila_eventos,&evento);
-        if (evento.type == ALLEGRO_EVENT_KEY_CHAR){
-            //verifica qual tecla foi pressionada
-            switch(evento.keyboard.keycode){
-                //seta para cima
-                case ALLEGRO_KEY_1:
-                    tecla = 1;
-                    break;
-                //Baixo
-                case ALLEGRO_KEY_2:
-                    tecla = 2;
-                    break;
-                //Esquerda
-                case ALLEGRO_KEY_3:
-                    tecla = 3;
-                    break;
-                //Direita.
-                case ALLEGRO_KEY_4:
-                    tecla = 4;
-                    break;
-                //esc. sair=1 faz com que o programa saia do loop principal
-                case ALLEGRO_KEY_PAD_1:
-                    tecla=1;
-                    break;
-                case ALLEGRO_KEY_PAD_2:
-                    tecla=2;
-                    break;
-                case ALLEGRO_KEY_PAD_3:
-                    tecla=3;
-                    break;
-                case ALLEGRO_KEY_PAD_4:
-                    tecla=4;
-                    break;
+            al_wait_for_event(fila_eventos,&evento);
+            if (evento.type == ALLEGRO_EVENT_KEY_DOWN){
+                //verifica qual tecla foi pressionada
+                switch(evento.keyboard.keycode){
+                    //seta para cima
+                    case ALLEGRO_KEY_1:
+                        tecla = 1;
+                        foi=0;
+                        break;
+                    //Baixo
+                    case ALLEGRO_KEY_2:
+                        tecla = 2;
+                        foi=0;
+                        break;
+                    //Esquerda
+                    case ALLEGRO_KEY_3:
+                        tecla = 3;
+                        foi=0;
+                        break;
+                    //Direita.
+                    case ALLEGRO_KEY_4:
+                        tecla = 4;
+                        foi=0;
+                        break;
+                    //esc. sair=1 faz com que o programa saia do loop principal
+                    case ALLEGRO_KEY_PAD_1:
+                        tecla=1;
+                        foi=0;
+                        break;
+                    case ALLEGRO_KEY_PAD_2:
+                        tecla=2;
+                        foi=0;
+                        break;
+                    case ALLEGRO_KEY_PAD_3:
+                        tecla=3;
+                        foi=0;
+                        break;
+                    case ALLEGRO_KEY_PAD_4:
+                        tecla=4;
+                        foi=0;
+                        break;
+                }
             }
+            msg.msg = tecla;  
+            printf("%d", foi);
+            
         }
-        msg.msg = tecla;  
+
         int ret = sendMsgToServer((DADOS_LOBBY *)&msg, sizeof(DADOS_LOBBY));
+        puts("enviou");
         if (ret == SERVER_DISCONNECTED) {
             return;
         }
     }
-    al_destroy_font(fonte);
+    //al_destroy_font(fonte);
     al_destroy_bitmap(capacetes);
 }
 
@@ -286,7 +350,7 @@ int iniciar(){
         printf("Falha ao iniciar Codec de Audio.");
         return 0;
     }
-    fonte = al_load_font("./app/Resources/Fontes/arial.ttf", 48, 0);
+    fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
     if(!al_install_keyboard()){
         printf("Falha ao instalar o teclado.");
         return 0;
@@ -320,6 +384,8 @@ int iniciar(){
         al_destroy_display(janela);
         return 0;
     }
+    al_register_event_source(fila_eventos, al_get_keyboard_event_source());
+    al_register_event_source(fila_eventos, al_get_display_event_source(janela));
     al_clear_to_color(al_map_rgb(255,255,255));
     personagem = al_load_bitmap("./app/Resources/Characters/Personagem(1).png");
     personagemm = al_load_bitmap("./app/Resources/Characters/Personagem_C3R.png");
@@ -331,6 +397,7 @@ int iniciar(){
         al_destroy_audio_stream(musica_fundo);
         return 0;
     }
+    
     //puts("dmankdjhak");
     return 1;
 }
@@ -362,7 +429,9 @@ int lobby(){
     else if(msg_inicial.tipo == GAME){
         jogador = msg_inicial.jogador;
     }
-    runChat(&state);
+    int msg = recvMsgFromServer(&state)
+    //while(1);
+    //runChat(&state);
 
     return state;
 }

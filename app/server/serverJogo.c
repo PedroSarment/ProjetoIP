@@ -139,9 +139,7 @@ int main() {
                 broadcast((DADOS_LOBBY *) &msg_server, (int)sizeof(DADOS_LOBBY));
             }          
         } else if (msg_ret.status == DISCONNECT_MSG) {
-            sprintf(msg_server.mensagem, "%s disconnected", players[msg_ret.client_id].name);
-            printf("%s disconnected, id = %d is free\n",
-                    players[msg_ret.client_id].name, msg_ret.client_id);
+            printf("%d is free\n", msg_ret.client_id);
             msg_server.tipo = CHAT;
             broadcast((DADOS_LOBBY *) &msg_server, (int)sizeof(DADOS_LOBBY));
         }
