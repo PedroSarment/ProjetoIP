@@ -1,6 +1,7 @@
 #include "server.h"
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include <math.h>
 #include "ACore.h"
 
@@ -45,6 +46,8 @@
 #define Y_ENTRADA_3_RED 710
 
 
+
+
 int main() {
     char client_names[MAX_CLIENTS][LOGIN_MAX_SIZE];
     char str_buffer[BUFFER_SIZE], aux_buffer[BUFFER_SIZE];
@@ -53,7 +56,7 @@ int main() {
 
     char helmetChoice[] = ""; 
     int jogadores = 0, capacete, ready = 0;
-    double tempoInicio;
+    double tempoInicio, tempoAtual;
     int fim = 0,comecou = 1;
     int time_1 = 0,time_2 = 0;              // Quantidade de indivíduos nas equipes
     int armadilhas_1,armadilhas_2;          // Quantidade de armadilha por pessoa
@@ -62,7 +65,7 @@ int main() {
     int scoreBlue = 0, scoreRed = 0;
     int i, j;
 
-    PROTOCOLO_JOGO jogada, jogada_server;                  // Protocolo de envio a ser enviado para o cliente com as infos do jogo;
+    PROTOCOLO_JOGO jogada, jogada_server, tempo;                  // Protocolo de envio a ser enviado para o cliente com as infos do jogo;
 
     struct msg_ret_t input;
 
@@ -81,7 +84,7 @@ int main() {
             recvMsgFromClient((DADOS_LOBBY *) &msg, id, WAIT_FOR_IT);
             if(msg.tipo == NICK){
                 strcpy(players[jogadores].name, msg.mensagem); // Salvou o nick
-                strcpy(players[jogadores].id, id);              // Salvou o id
+                players[jogadores].id = id;              // Salvou o id
             }
             strcpy(msg_server.mensagem, msg.mensagem);
             strcat(msg_server.mensagem, " connected");
@@ -157,7 +160,7 @@ int main() {
     tempoInicio = al_get_time();
     while( (al_get_time() - tempoInicio < TEMPO_LIMITE) && !fim){
         input = recvMsg((PROTOCOLO_JOGO *) &jogada);
-        for(i = 0; i < players; i++){ 
+        for(i = 0; i < jogadores; i++){ 
             if((players[i].id == input.client_id) && (jogada.tipo == GAME)){
                 if(!players[i].congelado){
                     if(jogada.teclado == CIMA){
@@ -356,6 +359,10 @@ int main() {
                 }
             }
         }
+        tempoAtual = al_get_time() - tempoInicio;
+        tempo.tipo=TEMPO;
+        sprintf(tempo.msg, "%lf", &tempoAtual);
+        broadcast((PROTOCOLO_JOGO *) &tempo, sizeof(PROTOCOLO_JOGO)); 
     }
 
     return 0;

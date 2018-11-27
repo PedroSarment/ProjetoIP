@@ -29,6 +29,7 @@
 #define BOTARTRAPS 5
 #define GAME 6
 #define ENDGAME 7
+#define TEMPO 8
 
 
 double startingTime;
@@ -79,6 +80,7 @@ typedef struct{
     int xAnterior, yAnterior;
     char itemAnterior;
     char teclado;
+    char msg[101];
     Player jogadorAtual;
 }PROTOCOLO_JOGO;
 
