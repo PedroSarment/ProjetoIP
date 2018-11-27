@@ -51,13 +51,13 @@ ALLEGRO_BITMAP *menuScreen;
 typedef struct DADOS
 {
     int tipo;
-    char mensagem[100];
+    char mensagem[101];
     int valor, tecla;
 }DADOS;
 
 typedef struct{
     int tipo, msg;
-    char mensagem[100];
+    char mensagem[101];
     int funcao;
 }DADOS_LOBBY;
 
@@ -80,7 +80,7 @@ typedef struct{
     int xAnterior, yAnterior;
     char itemAnterior;
     char teclado;
-    char msg[101];
+    char mensagem[101];
     Player jogadorAtual;
 }PROTOCOLO_JOGO;
 
