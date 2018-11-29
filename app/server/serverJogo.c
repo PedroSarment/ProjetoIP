@@ -86,9 +86,9 @@ int main() {
             // Recebe o nick, capacete e id das novas conexões
             if(msg_client.tipo == INICIAL ){
                 if(jogadores < MAX_CLIENTS){
-                    strcpy(players[id].name, msg_client.jogador.name);    // Salva o nick
+                    strcpy(players[id].name, msg_client.jogador.name);     // Salva o nick
                     players[id].helmet = msg_client.jogador.helmet;        // Salva o capacete
-                    players[id].id = id;                                  // Salva o id         
+                    players[id].id = id;                                   // Salva o id         
                 
                     printf("%s connected id = %d\n", players[id].name, id);
                 
@@ -105,9 +105,12 @@ int main() {
                         players[id].position.y = Y_MAX;
                         time_2++;
                     }
-                    players[id].estacongelado = 0;
+                    
                     players[id].comBandeira = 0;
-                    players[id].congelamentos = 2;
+                    players[id].ready = 0;
+                    players[id].estacongelado = 0;
+                    players[id].congelou = 0;
+                    players[id].congelamentos = 4;
                     players[id].armadilhas = 3;
 
                     // Atualizando o player do client após as inicializações dos atributos
@@ -141,48 +144,13 @@ int main() {
                 }
 
                 for(int i = 0; i < jogadores; i++){
-                    jogada_server.jogadorAtual[i] = players[i];
+                    jogada_server.todosJogadores[i] = players[i];
                 }
                 broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));    
             }
         }
     }
 
-        /*armadilhas_1 = ceil((float)N_ARMADILHAS/(float)time_1);
-        armadilhas_2 = ceil((float)N_ARMADILHAS/(float)time_2);
-        for(i = 0; i < jogadores; i++){
-            if(players[i].team == 1){
-                players[i].armadilhas = armadilhas_1;
-                players[i].congelamentos = 2;
-            }
-            else{
-                players[i].armadilhas = armadilhas_2;
-                players[i].congelamentos = 2;
-            }
-        } 
-
-        // Chat
-        struct msg_ret_t msg_ret = recvMsg((char *)msg.mensagem);
-        if (msg_ret.status == MESSAGE_OK) {
-            if((strcmp(msg.mensagem, "start 1") == 0) && (msg_ret.client_id == 0)){  // Só o jogador inicial pode começar o jogo e ele começa qnd ele digitar "start 1"
-               ready = 1; 
-               if(jogadores < 4){
-                   msg_server.tipo = CHAT;
-                   strcpy(msg_server.mensagem,"Aguardando o numero min de jogadores para comecar!");
-                   broadcast((DADOS_LOBBY *) &msg_server, (int)sizeof(DADOS_LOBBY));
-               }           
-            }
-            else{
-                sprintf(msg_server.mensagem, "%s(%d): %s", players[msg_ret.client_id].name,msg_ret.client_id, msg.mensagem);
-                msg_server.tipo = CHAT;
-                broadcast((DADOS_LOBBY *) &msg_server, (int)sizeof(DADOS_LOBBY));
-            }          
-        } else if (msg_ret.status == DISCONNECT_MSG) {
-            printf("%d is free\n", msg_ret.client_id);
-            msg_server.tipo = CHAT;
-            broadcast((DADOS_LOBBY *) &msg_server, (int)sizeof(DADOS_LOBBY));
-        }*/
-    
 
     //JOGO
     tempoInicio = al_get_time();
@@ -191,7 +159,7 @@ int main() {
         for(i = 0; i < jogadores; i++){ 
             if((players[i].id == input.client_id)){ 
                 // Atualiza o player do server com o player enviado pelo client
-                players[i] = jogada.jogadorAtual[0];
+                players[i] = jogada.todosJogadores[0];
                 // Verifica se o jogador não está congelado
                 if(!players[i].estacongelado){
                     // Verifica se o jogador andou para cima
@@ -358,7 +326,7 @@ int main() {
 
                                 if(players[i].team == 1){
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_RED){
-                                        players[i].congelado = 1;
+                                        players[i].estacongelado = 1;
                                         mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));
                                     }
                                     else if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_BLUE){
@@ -367,7 +335,7 @@ int main() {
                                 }
                                 else{
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_BLUE){
-                                        players[i].congelado = 1;
+                                        players[i].estacongelado = 1;
                                         mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));
                                     }
                                     else if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_RED){
@@ -435,7 +403,7 @@ int main() {
                             if(players[posi - 97].team != players[i].team){
                                 players[posi - 97].estacongelado = 1;
                                 
-                                //jogada_server.jogadorAtual = players[posi - 97]; 
+                                //jogada_server.todosJogadores = players[posi - 97]; 
                                 jogada_server.tipo = CONGELA;
                                 //broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));
                                 
@@ -462,7 +430,7 @@ int main() {
                                 // Se o player encontrado foi do mesmo time, ele é descongelado
                                 if((players[posi - 97].team == players[i].team) && (posi != (i + 97))){
                                     players[posi - 97].estacongelado = 0;
-                                    //jogada_server.jogadorAtual = players[posi - 97]; 
+                                    //jogada_server.todosJogadores = players[posi - 97]; 
                                     jogada_server.tipo = DESCONGELA;
                                     //broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));      
                                 }
@@ -500,7 +468,7 @@ int main() {
                     
                     if(fim != 1){
                         for(int i = 0; i < jogadores; i++){
-                            jogada_server.jogadorAtual[i] = players[i];
+                            jogada_server.todosJogadores[i] = players[i];
                         }
                         
                         jogada_server.tipo = GAME;
