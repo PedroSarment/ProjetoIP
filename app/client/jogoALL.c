@@ -46,15 +46,59 @@ ALLEGRO_BITMAP *setinha_esq = NULL;
 ALLEGRO_BITMAP *capacetesAzul = NULL;
 ALLEGRO_BITMAP *capacetesVerm = NULL;
 ALLEGRO_BITMAP *capacetes = NULL;
+ALLEGRO_BITMAP *trap = NULL;
+ALLEGRO_BITMAP *shuriken = NULL;
+ALLEGRO_BITMAP *congelado = NULL;
 
 PROTOCOLO_INICIAL sendPlayer, rcvPlayer;
 Player jogador;
+Player jogadores[10];
 char loginP[14], ip[30];
 int sair = 0;
 bool login = true;
 bool ipAd = true;
 int current_x = 0, current_y = 0;
 int checkType = 1;
+
+void error_msg(char *text);
+int menu();
+void carrega_arquivos();
+int iniciar();
+void startScreen();
+void runGame();
+void endGame();
+void readInputIP(ALLEGRO_EVENT event, char str[], int limit);
+void readInput2(ALLEGRO_EVENT event, char str[], int limit);
+void readLogin();
+void readHelmet();
+int readIP();
+void tutorial();
+void creditos();
+
+
+int main(){
+    int ret;
+
+    iniciar();
+    startScreen();
+    ret = menu();
+    if(ret ==1){
+        while(sair){
+            runGame();
+        }
+        endGame();
+    }
+    else if(ret == 2){
+        tutorial();
+    }
+    else if(ret == 3){
+        creditos();
+    }
+    al_flip_display();
+
+    return 0;
+}
+
 
 void error_msg(char *text){
 	ALLEGRO_DISPLAY *error = NULL;
@@ -89,7 +133,7 @@ int menu(){
     
     al_register_event_source(fila_eventos, al_get_keyboard_event_source());
     
-    int sair = 0,opcao = 1, server;
+    int sair = 0,opcao = 1, server=0;
 
 
     while(!sair){
@@ -181,6 +225,7 @@ int menu(){
                         al_draw_text(fonte,al_map_rgb(5,5,5),645,370,ALLEGRO_ALIGN_CENTER,"Tutorial");
                         al_draw_text(fonte,al_map_rgb(5,5,5),645,450,ALLEGRO_ALIGN_CENTER,"Creditos");
                         al_play_sample(escolha,1.0, 0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+                        break;
                 }
                 al_flip_display();
             }
@@ -202,6 +247,9 @@ void carrega_arquivos(){
     personagem = al_load_bitmap("./app/Resources/Characters/Personagem(1).png");
     personagemm = al_load_bitmap("./app/Resources/Characters/Personagem_C3R.png");
     fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 24, 0);
+    trap = al_load_bitmap("./app/Resources/Icons/ice_trap.png");
+    shuriken = al_load_bitmap("./app/Resources/Icons/shuriken.png");
+    congelado = al_load_bitmap("./app/Resources/Icons/congelado.png");
     if(!botao1 || !botao1_pressionado || !botao2 || !botao2_pressionado || !logo || !mapa){
         //checar se foram abertos, adicionar o nome do arquivo depois de um ou (||!).
         printf("Nao foi possivel carregar um dos botoes.");
@@ -342,48 +390,124 @@ void startScreen(){
 // }
 
 void runGame(){
-    int tecla;
+    int tecla, ret, i;
+    PROTOCOLO_JOGO msg;
+    PROTOCOLO_JOGO estado_jogo;
+
     al_draw_bitmap(mapa,0,0,0);
     al_draw_bitmap(personagem,current_x,current_y,0);
     al_flip_display();
+
+    recvMsgFromServer((PROTOCOLO_JOGO *) &estado_jogo, WAIT_FOR_IT);
+    jogador = estado_jogo.jogadorAtual[jogador.id];
+    
     
     while(!al_event_queue_is_empty(fila_eventos)){
         ALLEGRO_EVENT evento;
+        ALLEGRO_EVENT evento2;
         al_wait_for_event(fila_eventos,&evento);
         if (evento.type == ALLEGRO_EVENT_KEY_CHAR){
-            //verifica qual tecla foi pressionada
-            switch(evento.keyboard.keycode){
-                //seta para cima
-                case ALLEGRO_KEY_UP:
-                    al_draw_bitmap(mapa,0,0,0);
-                    current_y-=4;
-                    al_draw_bitmap(personagem,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
-                    break;
-                //Baixo
-                case ALLEGRO_KEY_DOWN:
-                    al_draw_bitmap(mapa,0,0,0);
-                    current_y+=4;
-                    al_draw_bitmap(personagem,current_x,current_y,0);
-                    break;
-                //Esquerda
-                case ALLEGRO_KEY_LEFT:
-                    al_draw_bitmap(mapa,0,0,0);
-                    current_x-=4;
-                    al_draw_bitmap(personagem,current_x,current_y,0);
-                    break;
-                //Direita.
-                case ALLEGRO_KEY_RIGHT:
-                    al_draw_bitmap(mapa,0,0,0);
-                    current_x+=4;
-                    al_draw_bitmap(personagem,current_x,current_y,0);
-                //esc. sair=1 faz com que o programa saia do loop principal
-                case ALLEGRO_KEY_J:
-                    tecla = 5;
-                    break;
-                case ALLEGRO_KEY_ESCAPE:
-                    sair = 0;
+            if(!jogador.estacongelado){
+
+                //verifica qual tecla foi pressionada
+                switch(evento.keyboard.keycode){
+                    
+                    //seta para cima
+                    case ALLEGRO_KEY_W:
+                        msg.tipo= ANDAR_CIMA;
+                        msg.jogadorAtual[0] = jogador;
+                    // al_wait_for_event(fila_eventos,&evento2);
+                        ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
+                        if(ret != SERVER_DISCONNECTED){
+                            al_draw_bitmap(mapa,0,0,0);
+                            current_y-=4;
+                            al_draw_bitmap(personagem,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
+                        }
+                        break;
+                    //Baixo
+                    case ALLEGRO_KEY_S:
+                        msg.tipo= ANDAR_BAIXO;
+                        msg.jogadorAtual[0] = jogador;
+                        //al_wait_for_event(fila_eventos,&evento2);
+                        ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
+                        if(ret != SERVER_DISCONNECTED){
+                            al_draw_bitmap(mapa,0,0,0);
+                            current_y+=4;
+                            al_draw_bitmap(personagem,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
+                        }
+                        break;
+                    //Esquerda
+                    case ALLEGRO_KEY_A:
+                        msg.tipo= ANDAR_ESQUERDA;
+                        msg.jogadorAtual[0] = jogador;
+                        //al_wait_for_event(fila_eventos,&evento2);
+                        ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
+                        if(ret != SERVER_DISCONNECTED){
+                            al_draw_bitmap(mapa,0,0,0);
+                            current_x-=4;
+                            al_draw_bitmap(personagem,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
+                        }
+                        break;
+                    //Direita.
+                    case ALLEGRO_KEY_D:
+                        msg.tipo= ANDAR_DIREITA;
+                        msg.jogadorAtual[0] = jogador;
+                        //al_wait_for_event(fila_eventos,&evento2);
+                        ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
+                        if(ret != SERVER_DISCONNECTED){
+                            al_draw_bitmap(mapa,0,0,0);
+                            current_x+=4;
+                            al_draw_bitmap(personagem,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
+                        }
+                        break;
+                    //bota trap    
+                    case ALLEGRO_KEY_SPACE:
+                        msg.tipo= BOTARTRAPS;
+                        msg.jogadorAtual[0] = jogador;
+                        //al_wait_for_event(fila_eventos,&evento2);
+                        ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
+
+                        if(ret != SERVER_DISCONNECTED && jogador.armadilhas > 0){
+                            al_draw_bitmap(mapa,0,0,0);
+                            al_draw_bitmap(trap,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
+                            al_draw_bitmap(personagem,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
+                        }
+                        
+                        break;
+
+                    case ALLEGRO_KEY_LSHIFT:
+                        msg.tipo = CONGELA;
+                        msg.jogadorAtual[0] = jogador;
+                        ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
+
+                        if(ret != SERVER_DISCONNECTED && jogador.congelamentos > 0){
+                            al_draw_bitmap(mapa,0,0,0);
+                            al_draw_bitmap(shuriken,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
+                            al_draw_bitmap(personagem,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
+                        }
+
+                        break;
+                    //esc. sair=1 faz com que o programa saia do loop principal
+                    case ALLEGRO_KEY_ESCAPE:
+                        sair = 0;
+
+
+                }
+                
+            }
+            else{
+                al_draw_bitmap(mapa,0,0,0);
+                al_draw_bitmap(congelado,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
+                
+                for(i=0;estado_jogo.qntJogadores;i++){
+                    if(estado_jogo.jogadorAtual[i].congelou && estado_jogo.jogadorAtual[i].team==jogador.team){
+                        al_draw_bitmap(mapa,0,0,0);
+                        al_draw_bitmap(congelado,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
+                    }
+                }
             }
             al_flip_display();
+
         }
     }
 }
@@ -634,10 +758,12 @@ void readHelmet(){
                             break;
                     
                         case ALLEGRO_KEY_PAD_1:                           
-                            foi=0;
+                            foi=1;
+                            capaCheck=0;
                             break;
                         case ALLEGRO_KEY_PAD_2:
-                            foi=0;
+                            foi=1;
+                            capaCheck=0;
                             break;
                     
                     }
@@ -694,9 +820,9 @@ int readIP(){
             sendPlayer.tipo = INICIAL;
             int ret = sendMsgToServer((PROTOCOLO_INICIAL *) &sendPlayer, sizeof(PROTOCOLO_INICIAL));
             al_clear_to_color(al_map_rgb(255,255,255));
-            al_draw_text(fonte, al_map_rgb(0, 100 , 200), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_LEFT, "Servidor conectado!");
+            al_draw_text(fonte, al_map_rgb(0, 100 , 200), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Servidor conectado!");
             al_flip_display();
-            al_rest(2.0);
+            // al_rest(1.0);
             while(checkType){
                 recvMsgFromServer((PROTOCOLO_INICIAL *) &rcvPlayer, WAIT_FOR_IT);
                 if(rcvPlayer.tipo==INICIAL){
@@ -705,13 +831,13 @@ int readIP(){
                 } 
             }
             if (ret == SERVER_DISCONNECTED){
-                return;
+                exit(1);
             }
             return 1;
         }
         else if(serverConnection == SERVER_DOWN){
             al_clear_to_color(al_map_rgb(255,255,255));
-            al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_LEFT, "Servidor fora do ar, tente novamente");
+            al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Servidor fora do ar, tente novamente");
             al_flip_display();
             al_rest(2.0);
             ipAd=true;
@@ -719,7 +845,7 @@ int readIP(){
         }
         else if(serverConnection == SERVER_FULL){
             al_clear_to_color(al_map_rgb(255,255,255));
-            al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_LEFT, "Servidor cheio!");
+            al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Servidor cheio!");
             al_flip_display();
             al_rest(2.0); 
             ipAd=true;
@@ -727,7 +853,7 @@ int readIP(){
         }
         else if(serverConnection == SERVER_CLOSED){
             al_clear_to_color(al_map_rgb(255,255,255));
-            al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_LEFT, "Servidor fechado!");
+            al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Servidor fechado!");
             al_flip_display();
             al_rest(2.0);
             ipAd=true;
@@ -756,25 +882,3 @@ void creditos(){
 
 }
 
-int main(){
-    int ret;
-
-    iniciar();
-    startScreen();
-    ret = menu();
-    if(ret ==1){
-        while(sair){
-            runGame();
-        }
-        endGame();
-    }
-    else if(ret == 2){
-        tutorial();
-    }
-    else if(ret == 3){
-        creditos();
-    }
-    al_flip_display();
-
-    return 0;
-}
