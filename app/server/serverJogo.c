@@ -65,43 +65,30 @@ int main() {
     int i, j;
 
     PROTOCOLO_JOGO jogada, jogada_server, tempo;           // Protocolo de envio a ser enviado para o cliente com as infos do jogo;
-    PROTOCOLO_INICIAL msg_inicial;                  
-
+    PROTOCOLO_INICIAL msg_inicial_client, msg_inicial_server;
     struct msg_ret_t input;
 
-    //CRIANDO MAPA
+    //CRIANDO MAPA 
 
     //
-    DADOS_LOBBY msg, msg_server;
     
+    //INICIALIZAÇÃO DOS JOGADORES
     serverInit(MAX_CLIENTS);
     puts("Server is running!!");
     while (jogadores < MAX_CLIENTS || (jogadores < 4 && !ready)) {
         
         int id = acceptConnection();
         if (id != NO_CONNECTION) {
-            // Recebe o nick e o id das novas conexões
-            //recvMsgFromClient((DADOS_LOBBY *) &msg, id, WAIT_FOR_IT);
-            if(msg.tipo == NICK){
-                strcpy(players[jogadores].name, msg.mensagem); // Salvou o nick
-                players[jogadores].id = id;                    // Salvou o id
+            // Recebe o nick, capacete e id das novas conexões
+            recvMsgFromClient((PROTOCOLO_INICIAL *) &msg_inicial_client, id, WAIT_FOR_IT);
+            if(msg.tipo == INICIAL){
+                strcpy(players[jogadores].name, msg_inicial_client.jogador.name); // Salva o nick
+                player[jogadores].helmet = msg_inicial_client.jogador.helmet.     // Salva o capacete
+                players[jogadores].id = id;                                       // Salva o id         
             }
-            strcpy(msg_server.mensagem, msg.mensagem);
-            strcat(msg_server.mensagem, " connected");
-            msg_server.tipo = CHAT;
-            broadcast((DADOS_LOBBY *) &msg_server, (int)sizeof(DADOS_LOBBY));
             printf("%s connected id = %d\n", players[jogadores].name, id);
-
-            // Escolha do capacete
-            recvMsgFromClient((DADOS_LOBBY *)&msg, id, WAIT_FOR_IT);
-            if(msg.tipo == CAPACETE){
-                players[jogadores].helmet = msg.msg;
-                sprintf(msg_server.mensagem, "Seu capacete: %d", msg.msg);
-                msg_server.tipo = CHAT; // O modo chat seria o modo onde o server só manda uma msg pro client?
-                sendMsgToClient((DADOS_LOBBY *) &msg_server, sizeof(DADOS_LOBBY), id);
-            }
-            
-            // Inicializando jogadores
+        
+            // Inicializando os demais atributos do player atual
             if(jogadores%2 == 0){
                 players[jogadores].team = 1;
                 players[jogadores].position.x = 0;
@@ -116,10 +103,11 @@ int main() {
                 players[jogadores].congelado = 0;
                 time_2++;
             }
-            
-            msg_inicial.tipo = GAME;
-            msg_inicial.jogador = players[jogadores];
-            sendMsgToClient((PROTOCOLO_INICIAL *) &msg_inicial, sizeof(PROTOCOLO_INICIAL), id);
+
+            // Atualizando o player do client após as inicializações dos atributos
+            msg_inicial_server.tipo = INICIAL;
+            msg_inicial_server.jogador = players[jogadores];
+            sendMsgToClient((PROTOCOLO_INICIAL *) &msg_inicial_server, sizeof(PROTOCOLO_INICIAL), id);
             
             jogadores++;
         }
@@ -144,10 +132,10 @@ int main() {
             printf("%d is free\n", msg_ret.client_id);
             msg_server.tipo = CHAT;
             broadcast((DADOS_LOBBY *) &msg_server, (int)sizeof(DADOS_LOBBY));
-        }
-    }*/
+        }*/
+    }
 
-    //jogo
+    //JOGO
     armadilhas_1 = ceil((float)N_ARMADILHAS/(float)time_1);
     armadilhas_2 = ceil((float)N_ARMADILHAS/(float)time_2);
     for(i = 0; i < jogadores; i++){
