@@ -360,7 +360,8 @@ int main() {
                     else if(jogada.teclado == TRAP){ 
                         if(players[i].armadilhas > 0){                                                          // Verifica se tem armadilhas para botar
                             jogada_server.tipo = BOTARTRAPS;                                                    // Modo botar armadilha = 5
-                            if(players[i].team == 1){                                                           // Se for do time azul
+                            // Se for do time azul
+                            if(players[i].team == 1){                                                           
                                 if(mapa[players[i].position.x][players[i].position.y] != TRAP_TEAM_BLUE){
                                     mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97) + 10); // mapa = indicador do id do player + indicador da trap
                                     players[i].armadilhas--;
@@ -370,8 +371,9 @@ int main() {
                                     mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));    // mapa = indicador do id do player
                                     sendMsgToClient((char *) msg, sizeof(msg) + 1, players[i].id);
                                 }
-                            }    
-                            else{                                                                               // Se for do time vermelho
+                            } 
+                            // Se for do time vermelho   
+                            else{                                                                               
                                 if(mapa[players[i].position.x][players[i].position.y] != TRAP_TEAM_RED){
                                     mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97) + 10); // mapa = indicador do id do player + indicador da trap
                                     players[i].armadilhas--;
@@ -418,7 +420,7 @@ int main() {
                                                 
                         if(flag){
                             posi = i + 97;
-                            
+
                             // Verifica se tem algum player congelado ao redor do player atual e salva a posição dele caso tenha algo
                             if(mapa[players[i].position.x+1][players[i].position.y] >= 107 
                             && mapa[players[i].position.x+1][players[i].position.y] <= 116)
@@ -453,25 +455,19 @@ int main() {
                     }
                     // Se ele chegou na base vermelha, ele é do time vermelho e está com a bandeira azul = ele ganhou uma partida!
                     else if(((players[i].position.x == X_ENTRADA_1_RED && players[i].position.y == Y_ENTRADA_1_RED) || (players[i].position.x == X_ENTRADA_2_RED && players[i].position.y == Y_ENTRADA_2_RED) || (players[i].position.x == X_ENTRADA_3_RED && players[i].position.y == Y_ENTRADA_3_RED)) && (players[i].team == 2) && (players[i].comBandeira == 1)){
-                        //scoreRed++;
-                        //if(scoreRed >= 2){
-                            PROTOCOLO_JOGO msg_final;
-                            strcpy(msg_final.mensagem, "Time Vermelho Ganhou!");
-                            msg_final.tipo = ENDGAME;
-                            broadcast((PROTOCOLO_JOGO *) &msg_final, sizeof(PROTOCOLO_JOGO));
-                            fim = 1;
-                       // } 
+                        PROTOCOLO_JOGO msg_final;
+                        strcpy(msg_final.mensagem, "Time Vermelho Ganhou!");
+                        msg_final.tipo = ENDGAME;
+                        broadcast((PROTOCOLO_JOGO *) &msg_final, sizeof(PROTOCOLO_JOGO));
+                        fim = 1;
                     }
                     // Se ele chegou na base azul com a bandeira vermelha e ele é do time azul = ele ganhou uma partida!
                     else if(((players[i].position.x == X_ENTRADA_1_BLUE && players[i].position.y == Y_ENTRADA_1_BLUE) || (players[i].position.x == X_ENTRADA_2_BLUE && players[i].position.y == Y_ENTRADA_2_BLUE) || (players[i].position.x == X_ENTRADA_3_BLUE && players[i].position.y == Y_ENTRADA_3_BLUE)) && (players[i].team == 1) && (players[i].comBandeira == 1)){
-                        //scoreBlue++;
-                        //if(scoreBlue >= 2){
-                            PROTOCOLO_JOGO msg_final;
-                            strcpy(msg_final.mensagem, "Time Azul Ganhou!");
-                            msg_final.tipo = ENDGAME;
-                            broadcast((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
-                            fim = 1;
-                        //}
+                        PROTOCOLO_JOGO msg_final;
+                        strcpy(msg_final.mensagem, "Time Azul Ganhou!");
+                        msg_final.tipo = ENDGAME;
+                        broadcast((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
+                        fim = 1;
                     }
                     
                     if(fim != 1){
