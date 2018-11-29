@@ -75,7 +75,8 @@ typedef struct{
     char itemAnterior;
     char teclado;
     char mensagem[101];
-    Player jogadorAtual;
+    Player jogadorAtual[10];
+    int qntJogadores;
 }PROTOCOLO_JOGO;
 
 // Estrutura para o protocolo da mensagem  inicial do server para o client
