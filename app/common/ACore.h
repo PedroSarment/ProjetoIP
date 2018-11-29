@@ -23,15 +23,17 @@
 
 #define INICIAL 0           // Envio do nick e do capacete
 #define COMECOU 1           // Inicio do jogo
-#define ANDAR_CIMA 2
-#define ANDAR_BAIXO 3
-#define ANDAR_DIREITA 4
-#define ANDAR_ESQUERDA 5
-#define BOTARTRAPS 6
-#define ENDGAME 7
-#define TEMPO 8
-#define CONGELA 9
-#define DESCONGELA 10
+#define WAITING 2
+#define ANDAR_CIMA 3
+#define ANDAR_BAIXO 4
+#define ANDAR_DIREITA 5
+#define ANDAR_ESQUERDA 6
+#define BOTARTRAPS 7
+#define GAME 8
+#define ENDGAME 9
+#define TEMPO 10
+#define CONGELA 11
+#define DESCONGELA 12
 
 
 double startingTime;
@@ -66,9 +68,10 @@ typedef struct{
     int congelamentos;               // Quantidade de congelamentos que o player pode realizar
     int id;                          // A id do player ao se conectar ao server
     int comBandeira;                 // Se o player está ou não com a bandeira do time adversário
-    int congelado;                   // Se o player foi ou não congelado por um player adversário
+    int estacongelado;               // Se o player foi ou não congelado por um player adversário
+    int congelou;                    // Se o player congelou alguém ou não           
     Position position;               // A posição x e y do player no mapa
-    int ready;
+    int ready;                       // Verifica se o jogador apertou pra começar ou não
 }Player;
 
 // Estrutura para o protocolo de mensagem enviadas entre server/client durante o jogo
@@ -77,7 +80,7 @@ typedef struct{
     int xAnterior, yAnterior;
     char itemAnterior;
     char mensagem[101];
-    Player jogadorAtual[10];
+    Player jogadorAtual[6];
     int qntJogadores;
 }PROTOCOLO_JOGO;
 
