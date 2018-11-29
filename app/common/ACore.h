@@ -68,6 +68,7 @@ typedef struct{
     int comBandeira;                 // Se o player está ou não com a bandeira do time adversário
     int congelado;                   // Se o player foi ou não congelado por um player adversário
     Position position;               // A posição x e y do player no mapa
+    int ready;
 }Player;
 
 // Estrutura para o protocolo de mensagem enviadas entre server/client durante o jogo
@@ -75,7 +76,6 @@ typedef struct{
     int tipo; 
     int xAnterior, yAnterior;
     char itemAnterior;
-    char teclado;
     char mensagem[101];
     Player jogadorAtual[10];
     int qntJogadores;

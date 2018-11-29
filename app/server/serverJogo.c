@@ -65,6 +65,7 @@ int main() {
     int i, j;
     int qntJogadoresProntos = 0;
 
+
     PROTOCOLO_JOGO jogada, jogada_server, tempo;                 // Protocolo de envio a ser enviado para o cliente com as infos do jogo;
     PROTOCOLO_INICIAL msg_client, msg_inicial_server;
     struct msg_ret_t input;
@@ -111,10 +112,10 @@ int main() {
 
                     // Atualizando o player do client após as inicializações dos atributos
                     msg_inicial_server.tipo = INICIAL;
-                    msg_inicial_server.jogador = players[id];
+                    msg_inicial_server.jogador = players[id];                
                     sendMsgToClient((PROTOCOLO_INICIAL *) &msg_inicial_server, sizeof(PROTOCOLO_INICIAL), id);
-                    
-                    jogadores++;
+
+                    jogadores++;                                       
                 }
                 else{
                     printf("Numero max de clientes conectados ja foi atingido!\n");
@@ -127,8 +128,15 @@ int main() {
                 qntJogadoresProntos++;
                 players[msg_client.jogador.id] = msg_client.jogador;
                 if(msg_client.jogador.id == 0){
-                    if(qntJogadoresProntos >= 4)
+                    if(qntJogadoresProntos >= 4){
+                        jogada_server.qntJogadores = jogadores;
+                        jogada_server.tipo = COMECOU;
+                        for(int i = 0; i < jogadores; i++){
+                            jogada_server.jogadorAtual[i] = players[i];
+                        }
+                        broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));
                         notReady = 0;
+                    }    
                 }    
             }
         }
@@ -176,12 +184,14 @@ int main() {
         input = recvMsg((PROTOCOLO_JOGO *) &jogada);
         for(i = 0; i < jogadores; i++){ 
             if((players[i].id == input.client_id)){ 
+                // Atualiza o player do server com o player enviado pelo client
                 players[i] = jogada.jogadorAtual[0];
+                // Verifica se o jogador não está congelado
                 if(!players[i].congelado){
-                    
-                    if(jogada.teclado == CIMA){
-                        jogada_server.tipo = ANDAR; // Modo andar = 4
-                        if(players[i].position.y != 0){ // se não é o fim do mapa
+                    // Verifica se o jogador andou para cima
+                    if(jogada.tipo == ANDAR_CIMA){
+                        jogada_server.tipo = ANDAR_CIMA; 
+                        if(players[i].position.y != 0){          // Verifica se não é o fim do mapa
                             if(mapa[players[i].position.x][players[i].position.y-1] == VAZIO || mapa[players[i].position.x][players[i].position.y-1] == TRAP_TEAM_BLUE 
                             || mapa[players[i].position.x][players[i].position.y-1] == TRAP_TEAM_RED ||  mapa[players[i].position.x][players[i].position.y-1] == BANDEIRA_BLUE 
                             || mapa[players[i].position.x][players[i].position.y-1] == BANDEIRA_RED ){
@@ -225,9 +235,10 @@ int main() {
                             }
                         } 
                     }
-                    else if(jogada.teclado == BAIXO){
+                    // Verifica se o jogador andou para baixo
+                    else if(jogada.tipo == ANDAR_BAIXO){
                         if(players[i].position.y != Y_MAX){
-                            jogada_server.tipo = ANDAR; // Modo andar = 4
+                            jogada_server.tipo = ANDAR_BAIXO;
                             if(mapa[players[i].position.x][players[i].position.y+1] == VAZIO || mapa[players[i].position.x][players[i].position.y+1] == TRAP_TEAM_BLUE
                             || mapa[players[i].position.x][players[i].position.y+1] == TRAP_TEAM_RED || mapa[players[i].position.x][players[i].position.y+1] == BANDEIRA_BLUE
                             || mapa[players[i].position.x][players[i].position.y+1] == BANDEIRA_RED){
@@ -270,7 +281,8 @@ int main() {
                             }  
                         }
                     }
-                    else if(jogada.teclado == DIREITA){
+                    // Verifica se o jogador andou para direita
+                    else if(jogada.tipo == ANDAR_DIREITA){
                         if(players[i].position.x != X_MAX){
                             if(mapa[players[i].position.x+1][players[i].position.y] == VAZIO || mapa[players[i].position.x+1][players[i].position.y] == TRAP_TEAM_BLUE 
                             || mapa[players[i].position.x+1][players[i].position.y] == TRAP_TEAM_RED || mapa[players[i].position.x+1][players[i].position.y] == BANDEIRA_BLUE 
@@ -314,7 +326,8 @@ int main() {
                             }  
                         }
                     }
-                    else if(jogada.teclado == ESQUERDA){
+                    // Verifica se o jogador andou para a esuqerda
+                    else if(jogada.tipo == ANDAR_ESQUERDA){
                         if(players[i].position.x != 0){
                             if(mapa[players[i].position.x-1][players[i].position.y] == VAZIO || mapa[players[i].position.x-1][players[i].position.y] == TRAP_TEAM_BLUE 
                             || mapa[players[i].position.x-1][players[i].position.y] == TRAP_TEAM_RED || mapa[players[i].position.x-1][players[i].position.y] == BANDEIRA_BLUE 
@@ -358,9 +371,11 @@ int main() {
                             }  
                         }
                     }
-                    else if(jogada.teclado == TRAP){ 
-                        if(players[i].armadilhas > 0){                                                          // Verifica se tem armadilhas para botar
-                            jogada_server.tipo = BOTARTRAPS;                                                    // Modo botar armadilha = 5
+                    // Verifica se o jogador botou alguma armadilha
+                    else if(jogada.tipo == BOTARTRAPS){ 
+                        // Verifica se tem armadilhas para botar
+                        if(players[i].armadilhas > 0){                                                          
+                            jogada_server.tipo = BOTARTRAPS;                                                    
                             // Se for do time azul
                             if(players[i].team == 1){                                                           
                                 if(mapa[players[i].position.x][players[i].position.y] != TRAP_TEAM_BLUE){
@@ -390,7 +405,8 @@ int main() {
                             jogada_server.yAnterior = players[i].position.y;
                         }
                     }
-                    else if(jogada.teclado == CONGELAR){
+                    // Verifica se o jogador congelou/descongelou alguem 
+                    else if(jogada.tipo == CONGELAR){
                         int posi = i + 97;
                         int flag = 1;
                         
@@ -411,9 +427,9 @@ int main() {
                         // Se o player encontrado foi do time adversário, ele é congelado
                         if(players[posi - 97].team != players[i].team){
                             players[posi - 97].congelado = 1;
-                            jogada_server.jogadorAtual = players[posi - 97]; 
+                            //jogada_server.jogadorAtual = players[posi - 97]; 
                             jogada_server.tipo = CONGELA;
-                            broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));
+                            //broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));
                             players[i].congelamentos--;   
                             flag = 0;
                         }
@@ -439,9 +455,9 @@ int main() {
                             // Se o player encontrado foi do mesmo time, ele é descongelado
                             if((players[posi - 97].team == players[i].team) && (posi != (i + 97))){
                                 players[posi - 97].congelado = 0;
-                                jogada_server.jogadorAtual = players[posi - 97]; 
+                                //jogada_server.jogadorAtual = players[posi - 97]; 
                                 jogada_server.tipo = DESCONGELA;
-                                broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));      
+                                //broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));      
                             }
                         }                        
                     }
@@ -472,6 +488,7 @@ int main() {
                     }
                     
                     if(fim != 1){
+                        for(int i = 0; i < jogada.qntJogadores; )
                         jogada_server.jogadorAtual = players[i];
                         jogada_server.tipo = GAME;
                         broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));
