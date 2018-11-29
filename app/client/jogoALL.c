@@ -41,7 +41,9 @@ ALLEGRO_EVENT_QUEUE *eventsQueue2;
 
 
 player jogador;
-int sair = 0, login = 1;
+char loginP[14];
+int sair = 0;
+bool login = true;
 int current_x = 0, current_y = 0;
 
 void error_msg(char *text){
@@ -81,18 +83,6 @@ int iniciar(){
         printf("Nao foi possivel reservar os audios.");
         return 0;
     }
-    if (!al_install_mouse())
-    {
-        printf("Falha ao inicializar o mouse.\n");
-        al_destroy_display(janela);
-        return 0;
-    }
-    if (!al_set_system_mouse_cursor(janela, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT))
-    {
-        printf("Falha ao atribuir ponteiro do mouse.\n");
-        al_destroy_display(janela);
-        return 0;
-    }
     musica_fundo = al_load_audio_stream("/home/CIN/ersa/Desktop/projetoip/app/Resources/Musics/Musica_fundo.ogg",4,1024);
     if(!musica_fundo){
         error_msg("Musica nao foi carregada.");
@@ -115,18 +105,23 @@ int iniciar(){
         al_destroy_display(janela);
         return 0;
     }
-    // if (!al_install_mouse())
-    // {
-    //     printf("Falha ao inicializar o mouse.\n");
-    //     al_destroy_display(janela);
-    //     return 0;
-    // }
-    // if (!al_set_system_mouse_cursor(janela, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT))
-    // {
-    //     printf("Falha ao atribuir ponteiro do mouse.\n");
-    //     al_destroy_display(janela);
-    //     return 0;
-    // }
+    if(!eventsQueue2){
+        error_msg("Erro ao criar fila de eventos.");
+        al_destroy_display(janela);
+        return 0;
+    }
+    if (!al_install_mouse())
+    {
+        printf("Falha ao inicializar o mouse.\n");
+        al_destroy_display(janela);
+        return 0;
+    }
+    if (!al_set_system_mouse_cursor(janela, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT))
+    {
+        printf("Falha ao atribuir ponteiro do mouse.\n");
+        al_destroy_display(janela);
+        return 0;
+    }
     al_clear_to_color(al_map_rgb(255,255,255));
     personagem = al_load_bitmap("/home/CIN/ersa/Desktop/projetoip/app/Resources/Characters/Personagem(1).png");
     personagemm = al_load_bitmap("/home/CIN/ersa/Desktop/projetoip/app/Resources/Characters/Personagem_C3R.png");
@@ -140,11 +135,8 @@ int iniciar(){
         return 0;
     }
     al_register_event_source(fila_eventos, al_get_keyboard_event_source());
-    puts("entrou");
     al_register_event_source(fila_eventos, al_get_mouse_event_source());
-    puts("entrou");
     al_register_event_source(fila_eventos, al_get_keyboard_event_source());
-    puts("entrou");
     return 1;
 }
 
@@ -230,7 +222,6 @@ void endGame(){
 }
 
 void readInput2(ALLEGRO_EVENT event, char str[], int limit){
-    puts("chegou aq");
     if (event.type == ALLEGRO_EVENT_KEY_CHAR)
     {
         if (strlen(str) <= limit)
@@ -261,45 +252,63 @@ void readInput2(ALLEGRO_EVENT event, char str[], int limit){
         {
             str[strlen(str) - 1] = '\0';
         }
+         al_clear_to_color(al_map_rgb(255,255,255));
+        //al_draw_bitmap(logo,0,0,0);
+        fonte = al_load_font("/home/CIN/ersa/Desktop/projetoip/app/Resources/Fontes/OldLondon.ttf", 48, 0);
+        al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Login: ");
+        al_draw_textf(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "%s", loginP);
+        al_flip_display();
     }
 }
 
 void readLogin(){
-        //startTimer();
-    puts("entrou");
     al_clear_to_color(al_map_rgb(255,255,255));
     //al_draw_bitmap(logo,0,0,0);
     fonte = al_load_font("/home/CIN/ersa/Desktop/projetoip/app/Resources/Fontes/OldLondon.ttf", 48, 0);
     al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Login: ");
     al_flip_display();
-    while(login){
-        puts("entrou1");
-        while(!al_is_event_queue_empty(eventsQueue2))
-        {
-            puts("aqeui");
-            ALLEGRO_EVENT loginEvent;
-            al_wait_for_event(eventsQueue2, &loginEvent);
+    ALLEGRO_EVENT_QUEUE *eventsQueue3;
+    eventsQueue3 = al_create_event_queue();
+    if(!eventsQueue3){
+        puts("Erro ao criar fila de eventos.");
+        al_destroy_display(janela);
+    }
 
-            readInput2(loginEvent, jogador.nick, LOGIN_MAX_SIZE);
+    while(login){
+        while(!al_is_event_queue_empty(fila_eventos))
+        {
+            ALLEGRO_EVENT loginEvent;
+            al_wait_for_event(fila_eventos, &loginEvent);
+            readInput2(loginEvent, loginP, LOGIN_MAX_SIZE);
+            
+            
 
             if (loginEvent.type == ALLEGRO_EVENT_KEY_DOWN)
             {
                 switch(loginEvent.keyboard.keycode)
                 {
                     case ALLEGRO_KEY_ENTER:
-                        login = 0;
+                        if(strlen(loginP) > 1){
+                            strcpy(jogador.nick, loginP);
+                            puts(jogador.nick);
+                            login = false;
+                        }else{
+                            al_clear_to_color(al_map_rgb(255,255,255));
+                            al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Login: ");
+                            al_draw_textf(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "%s", loginP);
+                            al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/4, ALLEGRO_ALIGN_CENTRE, "Digite um nick de no minimo 2 caracteres!");
+                            al_flip_display();
+                            al_rest(2.0);
+                        }
                         break;
                 }
             }
 
             if(loginEvent.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
-                login = 0;
+                login = false;
             }
         }
 
-        //printLoginScreen(loginMsg);
-        // al_flip_display();
-        // al_clear_to_color(al_map_rgb(255, 255, 255));
     }
     
 }
