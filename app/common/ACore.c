@@ -117,6 +117,7 @@ bool inputInit()
 //FOR READING KEYBOARD INPUT WITH MAX SIZE = LIMIT AND SAVING AT STR[]
 void readInput(ALLEGRO_EVENT event, char str[], int limit)
 {
+    puts("chegou aq");
     if (event.type == ALLEGRO_EVENT_KEY_CHAR)
     {
         if (strlen(str) <= limit)
