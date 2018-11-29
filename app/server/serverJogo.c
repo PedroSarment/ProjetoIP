@@ -5,7 +5,7 @@
 #include "ACore.h"
 
 
-// Definição de constantes (NOMES MAIÚSCULOS)
+//DEFINIÇÕES DAS CONSTANTES
 #define MSG_MAX_SIZE 350
 #define BUFFER_SIZE (MSG_MAX_SIZE + 100)
 #define LOGIN_MAX_SIZE 13
@@ -54,7 +54,7 @@ int main() {
     Player players[10];
 
     char helmetChoice[] = ""; 
-    int jogadores = 0, capacete, ready = 0;
+    int jogadores = 0, capacete, notReady = 1;
     double tempoInicio, tempoAtual;
     int fim = 0,comecou = 1;
     int time_1 = 0,time_2 = 0;              // Quantidade de indivíduos nas equipes
@@ -63,57 +63,92 @@ int main() {
     int xAnterior,yAnterior;
     int scoreBlue = 0, scoreRed = 0;
     int i, j;
+    int qntJogadoresProntos = 0;
 
-    PROTOCOLO_JOGO jogada, jogada_server, tempo;           // Protocolo de envio a ser enviado para o cliente com as infos do jogo;
-    PROTOCOLO_INICIAL msg_inicial_client, msg_inicial_server;
+    PROTOCOLO_JOGO jogada, jogada_server, tempo;                 // Protocolo de envio a ser enviado para o cliente com as infos do jogo;
+    PROTOCOLO_INICIAL msg_client, msg_inicial_server;
     struct msg_ret_t input;
 
     //CRIANDO MAPA 
 
     //
     
-    //INICIALIZAÇÃO DOS JOGADORES
+    //INICIALIZAÇÃO DO SERVER
     serverInit(MAX_CLIENTS);
     puts("Server is running!!");
-    while (jogadores < MAX_CLIENTS || (jogadores < 4 && !ready)) {
-        
+    
+    //INICIALIZAÇÃO DOS JOGADORES
+    while (notReady) {
         int id = acceptConnection();
+        recvMsg((PROTOCOLO_INICIAL *) &msg_client, id, WAIT_FOR_IT);
         if (id != NO_CONNECTION) {
             // Recebe o nick, capacete e id das novas conexões
-            recvMsgFromClient((PROTOCOLO_INICIAL *) &msg_inicial_client, id, WAIT_FOR_IT);
-            if(msg.tipo == INICIAL){
-                strcpy(players[jogadores].name, msg_inicial_client.jogador.name); // Salva o nick
-                player[jogadores].helmet = msg_inicial_client.jogador.helmet.     // Salva o capacete
-                players[jogadores].id = id;                                       // Salva o id         
+            if(msg_client.tipo == INICIAL ){
+                if(jogagores < MAX_CLIENTS){
+                    strcpy(players[id].name, msg_client.jogador.name);    // Salva o nick
+                    players[id].helmet = msg_client.jogador.helmet.        // Salva o capacete
+                    players[id].id = id;                                  // Salva o id         
+                
+                    printf("%s connected id = %d\n", players[id].name, id);
+                
+                    // Inicializando os demais atributos do player atual
+                    if(jogadores%2 == 0){
+                        players[id].team = 1;
+                        players[id].position.x = 0;
+                        players[id].position.y = 0;
+                        time_1++;
+                    }
+                    else{
+                        players[id].team = 2;
+                        players[id].position.x = X_MAX;
+                        players[id].position.y = Y_MAX;
+                        time_2++;
+                    }
+                    players[id].congelado = 0;
+                    players[id].comBandeira = 0;
+                    players[id].congelamentos = 2;
+                    players[id].armadilhas = 3;
+
+                    // Atualizando o player do client após as inicializações dos atributos
+                    msg_inicial_server.tipo = INICIAL;
+                    msg_inicial_server.jogador = players[id];
+                    sendMsgToClient((PROTOCOLO_INICIAL *) &msg_inicial_server, sizeof(PROTOCOLO_INICIAL), id);
+                    
+                    jogadores++;
+                }
+                else{
+                    printf("Numero max de clientes conectados ja foi atingido!\n");
+                    disconnectClient(id);
+                } 
             }
-            printf("%s connected id = %d\n", players[jogadores].name, id);
-        
-            // Inicializando os demais atributos do player atual
-            if(jogadores%2 == 0){
-                players[jogadores].team = 1;
-                players[jogadores].position.x = 0;
-                players[jogadores].position.y = 0;
-                players[jogadores].congelado = 0;
-                time_1++;
+        }
+        else{
+            if(msg_client.tipo == COMECOU){
+                qntJogadoresProntos++;
+                players[msg_client.jogador.id]
+                if(msg_client.jogador.id == 0){
+                    if(qntJogadoresProntos >= 4)
+                        notReady = 0;
+                }    
+            }
+        }
+    }
+
+        /*armadilhas_1 = ceil((float)N_ARMADILHAS/(float)time_1);
+        armadilhas_2 = ceil((float)N_ARMADILHAS/(float)time_2);
+        for(i = 0; i < jogadores; i++){
+            if(players[i].team == 1){
+                players[i].armadilhas = armadilhas_1;
+                players[i].congelamentos = 2;
             }
             else{
-                players[jogadores].team = 2;
-                players[jogadores].position.x = X_MAX;
-                players[jogadores].position.y = Y_MAX;
-                players[jogadores].congelado = 0;
-                time_2++;
+                players[i].armadilhas = armadilhas_2;
+                players[i].congelamentos = 2;
             }
-
-            // Atualizando o player do client após as inicializações dos atributos
-            msg_inicial_server.tipo = INICIAL;
-            msg_inicial_server.jogador = players[jogadores];
-            sendMsgToClient((PROTOCOLO_INICIAL *) &msg_inicial_server, sizeof(PROTOCOLO_INICIAL), id);
-            
-            jogadores++;
-        }
+        } 
 
         // Chat
-       /* struct msg_ret_t msg_ret = recvMsg((char *)msg.mensagem);
+        struct msg_ret_t msg_ret = recvMsg((char *)msg.mensagem);
         if (msg_ret.status == MESSAGE_OK) {
             if((strcmp(msg.mensagem, "start 1") == 0) && (msg_ret.client_id == 0)){  // Só o jogador inicial pode começar o jogo e ele começa qnd ele digitar "start 1"
                ready = 1; 
@@ -133,28 +168,14 @@ int main() {
             msg_server.tipo = CHAT;
             broadcast((DADOS_LOBBY *) &msg_server, (int)sizeof(DADOS_LOBBY));
         }*/
-    }
+    
 
     //JOGO
-    armadilhas_1 = ceil((float)N_ARMADILHAS/(float)time_1);
-    armadilhas_2 = ceil((float)N_ARMADILHAS/(float)time_2);
-    for(i = 0; i < jogadores; i++){
-        if(players[i].team == 1){
-            players[i].armadilhas = armadilhas_1;
-            players[i].congelamentos = 2;
-        }
-        else{
-            players[i].armadilhas = armadilhas_2;
-            players[i].congelamentos = 2;
-        }
-    }
-
-
     tempoInicio = al_get_time();
     while( (al_get_time() - tempoInicio < TEMPO_LIMITE) && !fim){
         input = recvMsg((PROTOCOLO_JOGO *) &jogada);
         for(i = 0; i < jogadores; i++){ 
-            if((players[i].id == input.client_id) && (jogada.tipo == GAME)){
+            if((players[i].id == input.client_id) && (jogada.tipo == GAME)){ 
                 if(!players[i].congelado){
                     
                     if(jogada.teclado == CIMA){
@@ -368,7 +389,8 @@ int main() {
                     }
                     else if(jogada.teclado == CONGELAR){
                         int posi = i + 97;
-
+                        int flag = 1;
+                        
                         // Verifica se tem algum player ao redor do player atual e salva a posição dele caso tenha algo
                         if(mapa[players[i].position.x+1][players[i].position.y] >= 97 
                         && mapa[players[i].position.x+1][players[i].position.y] <= 106)
@@ -382,34 +404,43 @@ int main() {
                         else if(mapa[players[i].position.x][players[i].position.y-1] >= 97 
                         && mapa[players[i].position.x][players[i].position.y-1] <= 106)
                             posi = (int) mapa[players[i].position.x1][players[i].position.y-1];
-                  
+                
                         // Se o player encontrado foi do time adversário, ele é congelado
                         if(player[posi - 97].team != players[i].team){
-                            player[posi - 97].congelado = 1;
-                            jogada_server.jogadorAtual = player[posi - 97];       
+                            players[posi - 97].congelado = 1;
+                            jogada_server.jogadorAtual = player[posi - 97]; 
+                            jogada_server.tipo = CONGELA;
+                            broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));
+                            players[i].congelamentos--;   
+                            flag = 0;
                         }
 
-                        posi = i + 97;
+                                                
+                        if(flag){
+                            posi = i + 97;
+                            
+                            // Verifica se tem algum player congelado ao redor do player atual e salva a posição dele caso tenha algo
+                            if(mapa[players[i].position.x+1][players[i].position.y] >= 107 
+                            && mapa[players[i].position.x+1][players[i].position.y] <= 116)
+                                posi = (int) mapa[players[i].position.x+1][players[i].position.y];   
+                            else if(mapa[players[i].position.x-1][players[i].position.y] >= 107 
+                            && mapa[players[i].position.x-1][players[i].position.y] <= 116)
+                                posi = (int) mapa[players[i].position.x-1][players[i].position.y];
+                            else if(mapa[players[i].position.x][players[i].position.y+1] >= 107 
+                            && mapa[players[i].position.x][players[i].position.y+1] <= 116)
+                                posi = (int) mapa[players[i].position.x1][players[i].position.y+1];
+                            else if(mapa[players[i].position.x][players[i].position.y-1] >= 107 
+                            && mapa[players[i].position.x][players[i].position.y-1] <= 116)
+                                posi = (int) mapa[players[i].position.x1][players[i].position.y-1];
 
-                        // Verifica se tem algum player congelado ao redor do player atual e salva a posição dele caso tenha algo
-                        if(mapa[players[i].position.x+1][players[i].position.y] >= 107 
-                        && mapa[players[i].position.x+1][players[i].position.y] <= 116)
-                            posi = (int) mapa[players[i].position.x+1][players[i].position.y];   
-                        else if(mapa[players[i].position.x-1][players[i].position.y] >= 107 
-                        && mapa[players[i].position.x-1][players[i].position.y] <= 116)
-                            posi = (int) mapa[players[i].position.x-1][players[i].position.y];
-                        else if(mapa[players[i].position.x][players[i].position.y+1] >= 107 
-                        && mapa[players[i].position.x][players[i].position.y+1] <= 116)
-                            posi = (int) mapa[players[i].position.x1][players[i].position.y+1];
-                        else if(mapa[players[i].position.x][players[i].position.y-1] >= 107 
-                        && mapa[players[i].position.x][players[i].position.y-1] <= 116)
-                            posi = (int) mapa[players[i].position.x1][players[i].position.y-1];
-
-                        // Se o player encontrado foi do mesmo time, ele é descongelado
-                        if((player[posi - 97].team == players[i].team) && (posi != (i + 97))){
-                            player[posi - 97].congelado = 0;
-                            jogada_server.jogadorAtual = player[posi - 97];       
-                        }
+                            // Se o player encontrado foi do mesmo time, ele é descongelado
+                            if((player[posi - 97].team == players[i].team) && (posi != (i + 97))){
+                                player[posi - 97].congelado = 0;
+                                jogada_server.jogadorAtual = player[posi - 97]; 
+                                jogada_server.tipo = DESCONGELA;
+                                broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));      
+                            }
+                        }                        
                     }
 
                     // Se ele chegou na bandeira vermelha e ele é do time azul ou Se ele chegou na bandeira azul e ele é do time vermelho = ele tá quase ganhando!
