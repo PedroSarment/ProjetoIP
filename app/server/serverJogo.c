@@ -434,6 +434,7 @@ int main() {
                             // Se o player encontrado foi do time adversário, ele é congelado
                             if(players[posi - 97].team != players[i].team){
                                 players[posi - 97].estacongelado = 1;
+                                
                                 //jogada_server.jogadorAtual = players[posi - 97]; 
                                 jogada_server.tipo = CONGELA;
                                 //broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));
@@ -466,7 +467,7 @@ int main() {
                                     //broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));      
                                 }
                             }
-
+                            players[i].congelou = 1;
                             players[i].congelamentos--;   
                         }
                                               

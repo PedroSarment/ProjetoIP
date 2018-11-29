@@ -80,7 +80,7 @@ typedef struct{
     int xAnterior, yAnterior;
     char itemAnterior;
     char mensagem[101];
-    Player jogadorAtual[6];
+    Player todosJogadores[6];
     int qntJogadores;
 }PROTOCOLO_JOGO;
 
