@@ -21,10 +21,11 @@
 #define CIMA 0x57               //W
 #define BAIXO 0x53              //S
 #define VAZIO 0x30              //0
+#define INVALIDO 0x49           //I
 #define BANDEIRA_BLUE 0x42      //B 
 #define BANDEIRA_RED 0x50       //P
 #define CONGELAR 0x20           //SPACE
-#define TRAP_TEAM_BLUE 0x41     //A
+#define TRAP_TEAM_BLUE 0x54     //T
 #define TRAP_TEAM_RED 0x56      //V
 #define PLAYER_COM_TRAP 0x51    //Q
 #define TRAP 0x4A               //J
@@ -80,7 +81,7 @@ int main() {
         int id = acceptConnection();
         if (id != NO_CONNECTION) {
             // Recebe o nick e o id das novas conexões
-            recvMsgFromClient((DADOS_LOBBY *) &msg, id, WAIT_FOR_IT);
+            //recvMsgFromClient((DADOS_LOBBY *) &msg, id, WAIT_FOR_IT);
             if(msg.tipo == NICK){
                 strcpy(players[jogadores].name, msg.mensagem); // Salvou o nick
                 players[jogadores].id = id;                    // Salvou o id
@@ -377,6 +378,28 @@ int main() {
                             jogada_server.yAnterior = players[i].position.y;
                         }
                     }
+                    else if(jogada.teclado == CONGELAR){
+                        int posi;
+                        if(mapa[players[i].position.x+1][players[i].position.y] >= 97 && mapa[players[i].position.x+1][players[i].position.y] <= 106){
+                            posi = (int) mapa[players[i].position.x+1][players[i].position.y];
+                            if(player[posi - 97].team != players[i].team){
+                                player[posi - 97].congelado = 1;
+                                mapa[player[posi - 97].position.x][player[posi - 97].position.y] = 
+                            }
+                        } 
+                        else if(mapa[players[i].position.x-1][players[i].position.y] >= 97 && mapa[players[i].position.x-1][players[i].position.y] <= 106){
+
+                        }
+                        else if(mapa[players[i].position.x][players[i].position.y+1] >= 97 && mapa[players[i].position.x][players[i].position.y+1] <= 106){
+
+                        }
+                        else if(mapa[players[i].position.x][players[i].position.y-1] >= 97 && mapa[players[i].position.x][players[i].position.y-1] <= 106){
+
+                        }
+                        
+
+                    }
+
                     // Se ele chegou na bandeira vermelha e ele é do time azul ou Se ele chegou na bandeira azul e ele é do time vermelho = ele tá quase ganhando!
                     if((players[i].position.x == X_FLAG_RED && players[i].position.y == Y_FLAG_RED && players[i].team == 1) || (players[i].position.x == X_FLAG_BLUE && players[i].position.y == Y_FLAG_BLUE && players[i].team == 2)){
                         if(mapa[players[i].position.x][players[i].position.y] == BANDEIRA){

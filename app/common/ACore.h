@@ -21,10 +21,8 @@
 #define CLIENT_TO_SERVER 0
 #define CLIENT_TO_CLIENT 1
 
-#define NICK 0
-#define CAPACETE 1
-#define CHAT 2
-#define COMECOU 3
+#define INICIAL 0   // Envio do nick e do capacete
+#define COMECOU 3   // Inicio do jogo
 #define ANDAR 4
 #define BOTARTRAPS 5
 #define GAME 6
