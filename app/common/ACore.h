@@ -47,34 +47,28 @@ ALLEGRO_BITMAP *menuScreen;
 //========================
 //========================
 
-//EXAMPLE STRUCT
-typedef struct DADOS
-{
-    int tipo;
-    char mensagem[101];
-    int valor, tecla;
-}DADOS;
 
-typedef struct{
-    int tipo, msg;
-    char mensagem[101];
-    int funcao;
-}DADOS_LOBBY;
-
-
+//===============================
+//ESTRUTURAS DO JOGO
+// Estrutura para a posição do jogador no mapa
 typedef struct{
     int x, y;
 }Position;
 
+// Estrutura do jogador
 typedef struct{
     char name[LOGIN_MAX_SIZE];
-    int helmet, team, armadilhas;
-    int id;
-    int comBandeira;
-    int congelado;
-    Position position;
+    int helmet;                      // Indica qual o tipo do capacete que o player selecionou
+    int team;                        // Indica o time do player
+    int armadilhas;                  // Quantidade de armadilhas que o player possui
+    int congelamentos;               // Quantidade de congelamentos que o player pode realizar
+    int id;                          // A id do player ao se conectar ao server
+    int comBandeira;                 // Se o player está ou não com a bandeira do time adversário
+    int congelado;                   // Se o player foi ou não congelado por um player adversário
+    Position position;               // A posição x e y do player no mapa
 }Player;
 
+// Estrutura para o protocolo de mensagem enviadas entre server/client durante o jogo
 typedef struct{
     int tipo; 
     int xAnterior, yAnterior;
@@ -84,11 +78,14 @@ typedef struct{
     Player jogadorAtual;
 }PROTOCOLO_JOGO;
 
+// Estrutura para o protocolo da mensagem  inicial do server para o client
+//para poder atualizar o player do client após a inicialização dele no server
 typedef struct{
     int tipo;
     Player jogador;
-}PROTOCOLO_INICIAL;
-
+}PROTOCOLO_INICIAL;     
+//===============================
+//===============================
 
 //MAIN ALLEGRO FUNCTIONS
 bool coreInit();

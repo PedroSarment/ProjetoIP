@@ -123,7 +123,7 @@ int main() {
         }
 
         // Chat
-        struct msg_ret_t msg_ret = recvMsg((char *)msg.mensagem);
+       /* struct msg_ret_t msg_ret = recvMsg((char *)msg.mensagem);
         if (msg_ret.status == MESSAGE_OK) {
             if((strcmp(msg.mensagem, "start 1") == 0) && (msg_ret.client_id == 0)){  // Só o jogador inicial pode começar o jogo e ele começa qnd ele digitar "start 1"
                ready = 1; 
@@ -143,7 +143,7 @@ int main() {
             msg_server.tipo = CHAT;
             broadcast((DADOS_LOBBY *) &msg_server, (int)sizeof(DADOS_LOBBY));
         }
-    }
+    }*/
 
     //jogo
     armadilhas_1 = ceil((float)N_ARMADILHAS/(float)time_1);
@@ -162,18 +162,20 @@ int main() {
         for(i = 0; i < jogadores; i++){ 
             if((players[i].id == input.client_id) && (jogada.tipo == GAME)){
                 if(!players[i].congelado){
+                    
                     if(jogada.teclado == CIMA){
                         jogada_server.tipo = ANDAR; // Modo andar = 4
                         if(players[i].position.y != 0){ // espaco livre
-                            if(mapa[players[i].position.x][players[i].position.y-1] == VAZIO){ //considerando 0 um espaco livre
+                            if(mapa[players[i].position.x][players[i].position.y-1] == VAZIO || mapa[players[i].position.x][players[i].position.y-1] == TRAP_TEAM_BLUE || mapa[players[i].position.x][players[i].position.y-1] == TRAP_TEAM_RED ){
+                                 //considerando 0 um espaco livre
                                 if(mapa[players[i].position.x][players[i].position.y] == PLAYER_COM_TRAP){
                                     if(players[i].team == 1)
-                                        mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_BLUE;
+                                        mapa[players[i].position.x][players[i].position.y] = TRAP_TEAM_BLUE;
                                     else
-                                        mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_RED;
+                                        mapa[players[i].position.x][players[i].position.y] = TRAP_TEAM_RED;
                                 }
                                 else{
-                                    mapa[players[i].position.x][players[i].position.y] == VAZIO;
+                                    mapa[players[i].position.x][players[i].position.y] = VAZIO;
                                 }
                                 
                                 jogada_server.xAnterior = players[i].position.x;
@@ -185,13 +187,14 @@ int main() {
                                 if(players[i].team == 1){
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_RED)
                                         players[i].congelado = 1;
-                                    mapa[players[i].position.x][players[i].position.y] = PLAYER; //jogador time1
+                                     //jogador time1
                                 }
                                 else{
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_BLUE)
                                         players[i].congelado = 1;
-                                    mapa[players[i].position.x][players[i].position.y] = PLAYER; //jogador time 2
+                                    
                                 }   
+                                mapa[players[i].position.x][players[i].position.y] = (char)(players[i].id + 97);
                             }
                         } 
                     }
@@ -334,10 +337,10 @@ int main() {
                     else if(((players[i].position.x == X_ENTRADA_1_RED && players[i].position.y == Y_ENTRADA_1_RED) || (players[i].position.x == X_ENTRADA_2_RED && players[i].position.y == Y_ENTRADA_2_RED) || (players[i].position.x == X_ENTRADA_3_RED && players[i].position.y == Y_ENTRADA_3_RED)) && (players[i].team == 2) && (players[i].comBandeira == 1)){
                         //scoreRed++;
                         //if(scoreRed >= 2){
-                            DADOS msg_final;
-                            strcpy(msg.mensagem, "Time Vermelho Ganhou!");
+                            PROTOCOLO_JOGO msg_final;
+                            strcpy(msg_final.mensagem, "Time Vermelho Ganhou!");
                             msg_final.tipo = ENDGAME;
-                            broadcast((DADOS *) &msg_final, sizeof(DADOS));
+                            broadcast((PROTOCOLO_JOGO *) &msg_final, sizeof(PROTOCOLO_JOGO));
                             fim = 1;
                        // } 
                     }
@@ -345,10 +348,10 @@ int main() {
                     else if(((players[i].position.x == X_ENTRADA_1_BLUE && players[i].position.y == Y_ENTRADA_1_BLUE) || (players[i].position.x == X_ENTRADA_2_BLUE && players[i].position.y == Y_ENTRADA_2_BLUE) || (players[i].position.x == X_ENTRADA_3_BLUE && players[i].position.y == Y_ENTRADA_3_BLUE)) && (players[i].team == 1) && (players[i].comBandeira == 1)){
                         //scoreBlue++;
                         //if(scoreBlue >= 2){
-                            DADOS msg_final;
-                            strcpy(msg.mensagem, "Time Azul Ganhou!");
+                            PROTOCOLO_JOGO msg_final;
+                            strcpy(msg_final.mensagem, "Time Azul Ganhou!");
                             msg_final.tipo = ENDGAME;
-                            broadcast((DADOS *) &msg, sizeof(DADOS));
+                            broadcast((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                             fim = 1;
                         //}
                     }
