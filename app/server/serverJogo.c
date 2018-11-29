@@ -379,25 +379,49 @@ int main() {
                         }
                     }
                     else if(jogada.teclado == CONGELAR){
-                        int posi;
-                        if(mapa[players[i].position.x+1][players[i].position.y] >= 97 && mapa[players[i].position.x+1][players[i].position.y] <= 106){
-                            posi = (int) mapa[players[i].position.x+1][players[i].position.y];
-                            if(player[posi - 97].team != players[i].team){
-                                player[posi - 97].congelado = 1;
-                                mapa[player[posi - 97].position.x][player[posi - 97].position.y] = 
-                            }
-                        } 
-                        else if(mapa[players[i].position.x-1][players[i].position.y] >= 97 && mapa[players[i].position.x-1][players[i].position.y] <= 106){
+                        int posi = i + 97;
 
+                        // Verifica se tem algum player ao redor do player atual e salva a posição dele caso tenha algo
+                        if(mapa[players[i].position.x+1][players[i].position.y] >= 97 
+                        && mapa[players[i].position.x+1][players[i].position.y] <= 106)
+                            posi = (int) mapa[players[i].position.x+1][players[i].position.y];   
+                        else if(mapa[players[i].position.x-1][players[i].position.y] >= 97 
+                        && mapa[players[i].position.x-1][players[i].position.y] <= 106)
+                            posi = (int) mapa[players[i].position.x-1][players[i].position.y];
+                        else if(mapa[players[i].position.x][players[i].position.y+1] >= 97 
+                        && mapa[players[i].position.x][players[i].position.y+1] <= 106)
+                            posi = (int) mapa[players[i].position.x1][players[i].position.y+1];
+                        else if(mapa[players[i].position.x][players[i].position.y-1] >= 97 
+                        && mapa[players[i].position.x][players[i].position.y-1] <= 106)
+                            posi = (int) mapa[players[i].position.x1][players[i].position.y-1];
+                  
+                        // Se o player encontrado foi do time adversário, ele é congelado
+                        if(player[posi - 97].team != players[i].team){
+                            player[posi - 97].congelado = 1;
+                            jogada_server.jogadorAtual = player[posi - 97];       
                         }
-                        else if(mapa[players[i].position.x][players[i].position.y+1] >= 97 && mapa[players[i].position.x][players[i].position.y+1] <= 106){
 
+                        posi = i + 97;
+
+                        // Verifica se tem algum player congelado ao redor do player atual e salva a posição dele caso tenha algo
+                        if(mapa[players[i].position.x+1][players[i].position.y] >= 107 
+                        && mapa[players[i].position.x+1][players[i].position.y] <= 116)
+                            posi = (int) mapa[players[i].position.x+1][players[i].position.y];   
+                        else if(mapa[players[i].position.x-1][players[i].position.y] >= 107 
+                        && mapa[players[i].position.x-1][players[i].position.y] <= 116)
+                            posi = (int) mapa[players[i].position.x-1][players[i].position.y];
+                        else if(mapa[players[i].position.x][players[i].position.y+1] >= 107 
+                        && mapa[players[i].position.x][players[i].position.y+1] <= 116)
+                            posi = (int) mapa[players[i].position.x1][players[i].position.y+1];
+                        else if(mapa[players[i].position.x][players[i].position.y-1] >= 107 
+                        && mapa[players[i].position.x][players[i].position.y-1] <= 116)
+                            posi = (int) mapa[players[i].position.x1][players[i].position.y-1];
+
+                        // Se o player encontrado foi do mesmo time, ele é descongelado
+                        if((player[posi - 97].team == players[i].team) && (posi != (i + 97))){
+                            player[posi - 97].congelado = 0;
+                            jogada_server.jogadorAtual = player[posi - 97];       
                         }
-                        else if(mapa[players[i].position.x][players[i].position.y-1] >= 97 && mapa[players[i].position.x][players[i].position.y-1] <= 106){
-
-                        }
-                        
-
                     }
 
                     // Se ele chegou na bandeira vermelha e ele é do time azul ou Se ele chegou na bandeira azul e ele é do time vermelho = ele tá quase ganhando!
