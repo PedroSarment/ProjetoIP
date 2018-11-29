@@ -33,7 +33,19 @@ ALLEGRO_BITMAP *mapa = NULL;
 ALLEGRO_EVENT_QUEUE *fila_eventos = NULL;
 ALLEGRO_BITMAP *logo = NULL;
 ALLEGRO_KEYBOARD *teclado = NULL;
-ALLEGRO_EVENT_QUEUE *eventsQueue2;
+ALLEGRO_EVENT_QUEUE *eventsQueue2=NULL;
+ALLEGRO_EVENT_QUEUE *evento_ip=NULL;
+ALLEGRO_SAMPLE *escolha = NULL;
+ALLEGRO_SAMPLE *som_escolha = NULL;
+ALLEGRO_BITMAP *botao1 = NULL;
+ALLEGRO_BITMAP *botao1_pressionado = NULL;
+ALLEGRO_BITMAP *botao2 = NULL;
+ALLEGRO_BITMAP *botao2_pressionado = NULL;
+ALLEGRO_BITMAP *setinha_dir = NULL;
+ALLEGRO_BITMAP *setinha_esq = NULL;
+ALLEGRO_BITMAP *capacetesAzul = NULL;
+ALLEGRO_BITMAP *capacetesVerm = NULL;
+ALLEGRO_BITMAP *capacetes = NULL;
 
 PROTOCOLO_INICIAL sendPlayer, rcvPlayer;
 Player jogador;
@@ -48,6 +60,163 @@ void error_msg(char *text){
 	ALLEGRO_DISPLAY *error = NULL;
     error = al_create_display(400, 300);
     al_set_window_position(error,860,600);
+}
+
+int menu(){
+    int ret;
+
+    //aqui puxa a tela inicial.
+    al_clear_to_color(al_map_rgb(255,255,255));
+    // al_draw_bitmap(logo,0,0,0);
+    al_flip_display();
+    // al_rest(5.0);
+    al_clear_to_color(al_map_rgb(0,0,0));
+    al_draw_bitmap(mapa,0,0,0);
+    al_flip_display();
+    al_draw_bitmap(logo,0,0,0);
+    al_flip_display();
+    al_draw_bitmap(botao1,545,240+40,0);
+    al_draw_bitmap(botao1,545,240+120,0);
+    al_draw_bitmap(botao1,545,320+120,0);
+    al_draw_bitmap(setinha_dir,510,285,0);
+    al_draw_bitmap(setinha_esq,730,285,0);
+    fonte = al_load_font("./app/Resources/Fontes/kenvector_future.ttf", 20, 0);
+    al_draw_text(fonte,al_map_rgb(5,5,5),645,290,ALLEGRO_ALIGN_CENTER,"Iniciar o jogo");
+    al_draw_text(fonte,al_map_rgb(5,5,5),645,370,ALLEGRO_ALIGN_CENTER,"Tutorial");
+    al_draw_text(fonte,al_map_rgb(5,5,5),645,450,ALLEGRO_ALIGN_CENTER,"Creditos");
+
+    al_flip_display();
+    
+    al_register_event_source(fila_eventos, al_get_keyboard_event_source());
+    
+    int sair = 0,opcao = 1, server;
+
+
+    while(!sair){
+        //enquanto esc nao for pressionado
+        while(!al_event_queue_is_empty(fila_eventos)){
+            ALLEGRO_EVENT evento;
+            al_wait_for_event(fila_eventos,&evento);
+            if (evento.type == ALLEGRO_EVENT_KEY_DOWN){
+                //verifica qual tecla foi pressionada
+                switch(evento.keyboard.keycode){
+                    //seta para cima
+                    case ALLEGRO_KEY_UP:
+                        if(opcao > 1){
+                            opcao -= 1;
+                        }
+                        break;
+                    //Baixo
+                    case ALLEGRO_KEY_DOWN:
+                        if(opcao < 3 ){
+                            opcao += 1;
+                            }
+                        break;
+                    case ALLEGRO_KEY_ESCAPE:
+                    //esc = sair do loop.
+                        sair = 1;
+                        break;
+
+                    case ALLEGRO_KEY_ENTER:
+                    //enter pra selecionar a opcao
+                        if(opcao == 1){
+                            readLogin();
+                            readHelmet();
+                            server = readIP();
+                
+                            ret=1;
+                            sair=1;
+                        }
+                        else if(opcao == 2){
+                            ret=2;
+                            sair=1;
+                        }
+                        else if(opcao == 3){
+                            ret=3;
+                            sair=1;
+                        }
+
+                    default:
+                        break;
+                }
+            }
+            if(opcao && !server){
+                fonte = al_load_font("./app/Resources/Fontes/kenvector_future.ttf", 20, 0);
+                switch(opcao){
+                    //caso a opcao seja 1, printar a seta em cima do "iniciar o jogo"
+                    case 1:
+                        al_draw_bitmap(mapa,0,0,0);
+                        al_draw_bitmap(botao1_pressionado,545,280,0);
+                        al_draw_bitmap(botao1,545,360,0);
+                        al_draw_bitmap(botao1,545,440,0);
+                        al_draw_bitmap(setinha_esq,730,285,0);
+                        al_draw_bitmap(setinha_dir,510,285,0);
+                        al_draw_text(fonte,al_map_rgb(5,5,5),645,290,ALLEGRO_ALIGN_CENTER,"Iniciar o jogo");
+                        al_draw_text(fonte,al_map_rgb(5,5,5),645,370,ALLEGRO_ALIGN_CENTER,"Tutorial");
+                        al_draw_text(fonte,al_map_rgb(5,5,5),645,450,ALLEGRO_ALIGN_CENTER,"Creditos");
+                        al_play_sample(escolha,1.0, 0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+                        break;
+                    case 2:
+                    //caso a opcao seja 2, printar a seta em cima de tutorial
+                        al_draw_bitmap(mapa,0,0,0);
+                        al_draw_bitmap(botao1,545,240+40,0);
+                        al_draw_bitmap(botao1_pressionado,545,240+120,0);
+                        al_draw_bitmap(botao1,545,320+120,0);
+                        al_draw_bitmap(setinha_esq,730,368,0);
+                        al_draw_bitmap(setinha_dir,510,368,0);
+                        al_draw_text(fonte,al_map_rgb(5,5,5),645,290,ALLEGRO_ALIGN_CENTER,"Iniciar o jogo");
+                        al_draw_text(fonte,al_map_rgb(5,5,5),645,370,ALLEGRO_ALIGN_CENTER,"Tutorial");
+                        al_draw_text(fonte,al_map_rgb(5,5,5),645,450,ALLEGRO_ALIGN_CENTER,"Creditos");
+                        al_play_sample(escolha,1.0, 0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+                        break;
+                    case 3:
+                    //caso a opcao seja 3, printar a seta em cima de creditos
+                        al_draw_bitmap(mapa,0,0,0);
+                        al_draw_bitmap(botao1,545,280,0);
+                        al_draw_bitmap(botao1,545,360,0);
+                        al_draw_bitmap(botao1_pressionado,545,320+120,0);
+                        al_draw_bitmap(setinha_esq,730,450,0);
+                        al_draw_bitmap(setinha_dir,510,450,0);
+                        al_draw_text(fonte,al_map_rgb(5,5,5),645,290,ALLEGRO_ALIGN_CENTER,"Iniciar o jogo");
+                        al_draw_text(fonte,al_map_rgb(5,5,5),645,370,ALLEGRO_ALIGN_CENTER,"Tutorial");
+                        al_draw_text(fonte,al_map_rgb(5,5,5),645,450,ALLEGRO_ALIGN_CENTER,"Creditos");
+                        al_play_sample(escolha,1.0, 0.0,1.0,ALLEGRO_PLAYMODE_ONCE,NULL);
+                }
+                al_flip_display();
+            }
+        }
+    }
+    return ret;
+}
+
+void carrega_arquivos(){
+    //aqui serao colocados todos os arquivos a serem carregados no jogo
+    botao1 = al_load_bitmap("./app/Resources/Icons/grey_button00.png");
+    botao1_pressionado = al_load_bitmap("./app/Resources/Icons/grey_button01.png");
+    botao2 = al_load_bitmap("./app/Resources/Icons/grey_button03.png");
+    botao2_pressionado = al_load_bitmap("./app/Resources/Icons/grey_button04.png");
+    logo = al_load_bitmap("./app/Resources/Icons/index.png");
+    mapa = al_load_bitmap("./app/Resources/Characters/mapa.jpeg");
+    setinha_dir = al_load_bitmap("./app/Resources/Icons/yellow_sliderRight.png");
+    setinha_esq = al_load_bitmap("./app/Resources/Icons/yellow_sliderLeft.png");
+    personagem = al_load_bitmap("./app/Resources/Characters/Personagem(1).png");
+    personagemm = al_load_bitmap("./app/Resources/Characters/Personagem_C3R.png");
+    fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 24, 0);
+    if(!botao1 || !botao1_pressionado || !botao2 || !botao2_pressionado || !logo || !mapa){
+        //checar se foram abertos, adicionar o nome do arquivo depois de um ou (||!).
+        printf("Nao foi possivel carregar um dos botoes.");
+        al_destroy_audio_stream(musica_fundo);
+    }
+
+    musica_fundo = al_load_audio_stream("./app/Resources/Musics/Musica_fundo.ogg",4,1024);
+    escolha = al_load_sample("./app/Resources/Musics/switch3.ogg");
+
+    if(!musica_fundo || !escolha){
+        //aqui sao apenas os arquivos sonoros.
+        puts("Musica nao foi carregada.");
+    }
+    al_attach_audio_stream_to_mixer(musica_fundo, al_get_default_mixer());
+    al_set_audio_stream_playmode(musica_fundo,ALLEGRO_PLAYMODE_LOOP);
 }
 
 int iniciar(){
@@ -81,7 +250,7 @@ int iniciar(){
         printf("Nao foi possivel reservar os audios.");
         return 0;
     }
-    musica_fundo = al_load_audio_stream("/home/CIN/ersa/Desktop/projetoip/app/Resources/Musics/Musica_fundo.ogg",4,1024);
+    musica_fundo = al_load_audio_stream("./app/Resources/Musics/Musica_fundo.ogg",4,1024);
     if(!musica_fundo){
         error_msg("Musica nao foi carregada.");
         return 0;
@@ -97,6 +266,13 @@ int iniciar(){
     al_set_window_title(janela,"Barra Bandeira");
     fila_eventos = al_create_event_queue();
     eventsQueue2 = al_create_event_queue();
+    evento_ip = al_create_event_queue();
+
+     if(!evento_ip){
+        error_msg("Erro ao criar fila de eventos.");
+        al_destroy_display(janela);
+        return 0;
+    }
 
     if(!fila_eventos){
         error_msg("Erro ao criar fila de eventos.");
@@ -121,11 +297,9 @@ int iniciar(){
         return 0;
     }
     al_clear_to_color(al_map_rgb(255,255,255));
-    personagem = al_load_bitmap("/home/CIN/ersa/Desktop/projetoip/app/Resources/Characters/Personagem(1).png");
-    personagemm = al_load_bitmap("/home/CIN/ersa/Desktop/projetoip/app/Resources/Characters/Personagem_C3R.png");
-    logo = al_load_bitmap("/home/CIN/ersa/Desktop/projetoip/app/Resources/Characters/index.png");
-    mapa = al_load_bitmap("/home/CIN/ersa/Desktop/projetoip/app/Resources/Characters/mapa.jpeg");
-    fonte = al_load_font("/home/CIN/ersa/Desktop/projetoip/app/Resources/Fontes/OldLondon.ttf", 24, 0);
+   
+    carrega_arquivos();
+    
 
     if(!personagem){
         printf("Nao foi possivel carregar o personagem.");
@@ -134,14 +308,15 @@ int iniciar(){
     }
     al_register_event_source(fila_eventos, al_get_keyboard_event_source());
     al_register_event_source(fila_eventos, al_get_mouse_event_source());
-    al_register_event_source(fila_eventos, al_get_keyboard_event_source());
+    al_register_event_source(evento_ip, al_get_keyboard_event_source());
+    al_register_event_source(evento_ip, al_get_mouse_event_source());
     return 1;
 }
 
 
 void startScreen(){
     al_draw_bitmap(logo,0,0,0);
-    fonte = al_load_font("/home/CIN/ersa/Desktop/projetoip/app/Resources/Fontes/Minecraft.ttf", 48, 0);
+    fonte = al_load_font("./app/Resources/Fontes/Minecraft.ttf", 48, 0);
     al_draw_text(fonte, al_map_rgb(0, 0, 0), 640, 600, ALLEGRO_ALIGN_CENTRE, "PRESS START!");
     al_flip_display();
     while(!sair){
@@ -175,7 +350,7 @@ void runGame(){
     while(!al_event_queue_is_empty(fila_eventos)){
         ALLEGRO_EVENT evento;
         al_wait_for_event(fila_eventos,&evento);
-        if (evento.type == ALLEGRO_EVENT_KEY_DOWN){
+        if (evento.type == ALLEGRO_EVENT_KEY_CHAR){
             //verifica qual tecla foi pressionada
             switch(evento.keyboard.keycode){
                 //seta para cima
@@ -220,6 +395,7 @@ void endGame(){
 }
 
 void readInputIP(ALLEGRO_EVENT event, char str[], int limit){
+    // puts("entrou");
     if (event.type == ALLEGRO_EVENT_KEY_CHAR)
     {
         if (strlen(str) <= limit)
@@ -366,7 +542,7 @@ void readLogin(){
 }
 
 void readHelmet(){
-    int capacetesAzul, capacetesVerm, capacetes, capaCheck=1;
+    int capaCheck=1;
     int foi=1, capaEscolhido;
     
     capacetesAzul = al_load_bitmap("./app/Resources/capacetes/chapeusfinalizados.png");
@@ -384,6 +560,7 @@ void readHelmet(){
 
     while(capaCheck){
         while(!al_is_event_queue_empty(fila_eventos)){
+            al_clear_to_color(al_map_rgb(255,255,255));
             al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/6, ALLEGRO_ALIGN_CENTRE, "Escolha seu capacete");           
             al_draw_bitmap(capacetes, 0,0,0);
             al_flip_display();
@@ -434,6 +611,7 @@ void readHelmet(){
                 }
             }
             if(!foi){
+                al_clear_to_color(al_map_rgb(255, 255, 255));
                 al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/6, ALLEGRO_ALIGN_CENTRE, "Tem certeza?");            
                 al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/5, ALLEGRO_ALIGN_CENTRE, "1-Sim     2-Nao");            
                 al_draw_bitmap(capacetes, 0,0,0);
@@ -471,7 +649,7 @@ void readHelmet(){
     jogador.helmet=capaEscolhido;
 }
 
-void readIP(){
+int readIP(){
     enum conn_ret_t serverConnection;
     al_clear_to_color(al_map_rgb(255,255,255));
     //al_draw_bitmap(logo,0,0,0);
@@ -480,8 +658,10 @@ void readIP(){
     al_flip_display();
 
     while(ipAd){
-        while(!al_is_event_queue_empty(fila_eventos))
+        
+        while(!al_is_event_queue_empty(evento_ip) && ipAd)
         {
+            // puts("entrou");
             ALLEGRO_EVENT ipEvent;
             al_wait_for_event(fila_eventos, &ipEvent);
             readInputIP(ipEvent, ip, LOGIN_MAX_SIZE);
@@ -495,6 +675,7 @@ void readIP(){
                     case ALLEGRO_KEY_ENTER:
                         puts(ip);
                         ipAd = false;
+                        // puts(ipAd);
                         break;
                     case ALLEGRO_KEY_PAD_ENTER:
                         puts(ip);
@@ -515,6 +696,7 @@ void readIP(){
             al_clear_to_color(al_map_rgb(255,255,255));
             al_draw_text(fonte, al_map_rgb(0, 100 , 200), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_LEFT, "Servidor conectado!");
             al_flip_display();
+            al_rest(2.0);
             while(checkType){
                 recvMsgFromServer((PROTOCOLO_INICIAL *) &rcvPlayer, WAIT_FOR_IT);
                 if(rcvPlayer.tipo==INICIAL){
@@ -525,12 +707,13 @@ void readIP(){
             if (ret == SERVER_DISCONNECTED){
                 return;
             }
+            return 1;
         }
         else if(serverConnection == SERVER_DOWN){
             al_clear_to_color(al_map_rgb(255,255,255));
             al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_LEFT, "Servidor fora do ar, tente novamente");
             al_flip_display();
-            rest(2.0);
+            al_rest(2.0);
             ipAd=true;
             strcpy(ip, "");
         }
@@ -538,44 +721,60 @@ void readIP(){
             al_clear_to_color(al_map_rgb(255,255,255));
             al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_LEFT, "Servidor cheio!");
             al_flip_display();
-            rest(2.0);        
+            al_rest(2.0); 
+            ipAd=true;
+            strcpy(ip, "");       
         }
         else if(serverConnection == SERVER_CLOSED){
             al_clear_to_color(al_map_rgb(255,255,255));
             al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_LEFT, "Servidor fechado!");
             al_flip_display();
-            rest(2.0);
+            al_rest(2.0);
+            ipAd=true;
+            strcpy(ip, "");
         }
         else if(serverConnection == SERVER_TIMEOUT){
             al_clear_to_color(al_map_rgb(255,255,255));
             al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_LEFT, "Tempo excedido! Tente novamente");
             al_flip_display();
-            rest(2.0);
+            al_rest(2.0);
             ipAd=true;
             strcpy(ip, "");
         }  
         al_flip_display(); 
     }
     
+    return 0;
 }
 
-void lobby(){
-    int telaMenu;
 
-    telaMenu = al_load_bitmap("./app/Resources/Etc/index.png");
+void tutorial(){
+
+}
+
+void creditos(){
+
 }
 
 int main(){
+    int ret;
+
     iniciar();
     startScreen();
-    readLogin();
-    readHelmet();
-    readIP();
-    lobby();
-    al_flip_display();
-    while(sair){
-        runGame();
+    ret = menu();
+    if(ret ==1){
+        while(sair){
+            runGame();
+        }
+        endGame();
     }
-    endGame();
+    else if(ret == 2){
+        tutorial();
+    }
+    else if(ret == 3){
+        creditos();
+    }
+    al_flip_display();
+
     return 0;
 }
