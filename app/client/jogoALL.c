@@ -9,24 +9,20 @@
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
 #include <allegro5/allegro_native_dialog.h>
-//#include "server.h"
-#include "/home/CIN/ersa/Desktop/projetoip/lib/client.h"
-#include "/home/CIN/ersa/Desktop/projetoip/app/common/ACore.h"
+#include "client.h"
+#include "ACore.h"
 
 #define LARGURA_TELA 1280
 #define ALTURA_TELA 720
 
+#define MSG_MAX_SIZE 350
+#define BUFFER_SIZE (MSG_MAX_SIZE + 100)
+#define LOGIN_MAX_SIZE 13
+#define HIST_MAX_SIZE 200
+
+#define MAX_LOG_SIZE 17
+
 //gcc Jogo.c -lm -lallegro -lallegro_image -lallegro_primitives -lallegro_font -lallegro_ttf -lallegro_audio -lallegro_acodec
-typedef struct{
-    int helmet;
-    int team;
-    int traps;
-    int freezes;
-    char nick[13];
-    int x,y;
-}player;
-
-
 
 ALLEGRO_FONT *fonte = NULL;
 ALLEGRO_DISPLAY *janela = NULL;
@@ -39,12 +35,14 @@ ALLEGRO_BITMAP *logo = NULL;
 ALLEGRO_KEYBOARD *teclado = NULL;
 ALLEGRO_EVENT_QUEUE *eventsQueue2;
 
-
-player jogador;
-char loginP[14];
+PROTOCOLO_INICIAL sendPlayer, rcvPlayer;
+Player jogador;
+char loginP[14], ip[30];
 int sair = 0;
 bool login = true;
+bool ipAd = true;
 int current_x = 0, current_y = 0;
+int checkType = 1;
 
 void error_msg(char *text){
 	ALLEGRO_DISPLAY *error = NULL;
@@ -221,6 +219,46 @@ void endGame(){
     al_destroy_event_queue(fila_eventos);
 }
 
+void readInputIP(ALLEGRO_EVENT event, char str[], int limit){
+    if (event.type == ALLEGRO_EVENT_KEY_CHAR)
+    {
+        if (strlen(str) <= limit)
+        {
+            char temp[] = {event.keyboard.unichar, '\0'};
+            if (event.keyboard.unichar == ' ')
+            {
+                strcat(str, temp);
+            }
+            else if (event.keyboard.unichar >= '!' &&
+                     event.keyboard.unichar <= '?')
+            {
+                strcat(str, temp);
+            }
+            else if (event.keyboard.unichar >= 'A' &&
+                     event.keyboard.unichar <= 'Z')
+            {
+                strcat(str, temp);
+            }
+            else if (event.keyboard.unichar >= 'a' &&
+                     event.keyboard.unichar <= 'z')
+            {
+                strcat(str, temp);
+            }
+        }
+
+        if (event.keyboard.keycode == ALLEGRO_KEY_BACKSPACE && strlen(str) != 0)
+        {
+            str[strlen(str) - 1] = '\0';
+        }
+         al_clear_to_color(al_map_rgb(255,255,255));
+        //al_draw_bitmap(logo,0,0,0);
+        fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
+        al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "IP adress: ");
+        al_draw_textf(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "%s", ip);
+        al_flip_display();
+    }
+}
+
 void readInput2(ALLEGRO_EVENT event, char str[], int limit){
     if (event.type == ALLEGRO_EVENT_KEY_CHAR)
     {
@@ -254,7 +292,7 @@ void readInput2(ALLEGRO_EVENT event, char str[], int limit){
         }
          al_clear_to_color(al_map_rgb(255,255,255));
         //al_draw_bitmap(logo,0,0,0);
-        fonte = al_load_font("/home/CIN/ersa/Desktop/projetoip/app/Resources/Fontes/OldLondon.ttf", 48, 0);
+        fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
         al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Login: ");
         al_draw_textf(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "%s", loginP);
         al_flip_display();
@@ -264,7 +302,7 @@ void readInput2(ALLEGRO_EVENT event, char str[], int limit){
 void readLogin(){
     al_clear_to_color(al_map_rgb(255,255,255));
     //al_draw_bitmap(logo,0,0,0);
-    fonte = al_load_font("/home/CIN/ersa/Desktop/projetoip/app/Resources/Fontes/OldLondon.ttf", 48, 0);
+    fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
     al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Login: ");
     al_flip_display();
     ALLEGRO_EVENT_QUEUE *eventsQueue3;
@@ -289,8 +327,22 @@ void readLogin(){
                 {
                     case ALLEGRO_KEY_ENTER:
                         if(strlen(loginP) > 1){
-                            strcpy(jogador.nick, loginP);
-                            puts(jogador.nick);
+                            strcpy(jogador.name, loginP);
+                            puts(jogador.name);
+                            login = false;
+                        }else{
+                            al_clear_to_color(al_map_rgb(255,255,255));
+                            al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Login: ");
+                            al_draw_textf(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "%s", loginP);
+                            al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/4, ALLEGRO_ALIGN_CENTRE, "Digite um nick de no minimo 2 caracteres!");
+                            al_flip_display();
+                            al_rest(2.0);
+                        }
+                        break;
+                    case ALLEGRO_KEY_PAD_ENTER:
+                        if(strlen(loginP) > 1){
+                            strcpy(jogador.name, loginP);
+                            puts(jogador.name);
                             login = false;
                         }else{
                             al_clear_to_color(al_map_rgb(255,255,255));
@@ -313,10 +365,213 @@ void readLogin(){
     
 }
 
+void readHelmet(){
+    int capacetesAzul, capacetesVerm, capacetes, capaCheck=1;
+    int foi=1, capaEscolhido;
+    
+    capacetesAzul = al_load_bitmap("./app/Resources/capacetes/chapeusfinalizados.png");
+    capacetesVerm = al_load_bitmap("./app/Resources/capacetes/chapeusfinalizados.png");
+
+    if(jogador.team==1) capacetes = capacetesAzul;
+    else capacetes = capacetesVerm;
+
+    al_clear_to_color(al_map_rgb(255,255,255));
+    //al_draw_bitmap(logo,0,0,0);
+    fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 32, 0);
+    al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/6, ALLEGRO_ALIGN_CENTRE, "Escolha seu capacete");
+    al_draw_bitmap(capacetes, 0,0,0);
+    al_flip_display();
+
+    while(capaCheck){
+        while(!al_is_event_queue_empty(fila_eventos)){
+            al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/6, ALLEGRO_ALIGN_CENTRE, "Escolha seu capacete");           
+            al_draw_bitmap(capacetes, 0,0,0);
+            al_flip_display();
+            ALLEGRO_EVENT evento;
+            int tecla;
+
+            al_wait_for_event(fila_eventos,&evento);
+            if (evento.type == ALLEGRO_EVENT_KEY_DOWN){
+                //verifica qual tecla foi pressionada
+                switch(evento.keyboard.keycode){
+                    
+                    case ALLEGRO_KEY_1:
+                        tecla = 1;
+                        foi=0;
+                        break;
+                    
+                    case ALLEGRO_KEY_2:
+                        tecla = 2;
+                        foi=0;
+                        break;
+                    
+                    case ALLEGRO_KEY_3:
+                        tecla = 3;
+                        foi=0;
+                        break;
+                    
+                    case ALLEGRO_KEY_4:
+                        tecla = 4;
+                        foi=0;
+                        break;
+                    //esc. sair=1 faz com que o programa saia do loop principal
+                    case ALLEGRO_KEY_PAD_1:
+                        tecla=1;
+                        foi=0;
+                        break;
+                    case ALLEGRO_KEY_PAD_2:
+                        tecla=2;
+                        foi=0;
+                        break;
+                    case ALLEGRO_KEY_PAD_3:
+                        tecla=3;
+                        foi=0;
+                        break;
+                    case ALLEGRO_KEY_PAD_4:
+                        tecla=4;
+                        foi=0;
+                        break;
+                }
+            }
+            if(!foi){
+                al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/6, ALLEGRO_ALIGN_CENTRE, "Tem certeza?");            
+                al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/5, ALLEGRO_ALIGN_CENTRE, "1-Sim     2-Nao");            
+                al_draw_bitmap(capacetes, 0,0,0);
+                al_flip_display();
+                ALLEGRO_EVENT evento1;
+                
+
+                al_wait_for_event(fila_eventos,&evento1);
+                if (evento1.type == ALLEGRO_EVENT_KEY_DOWN){
+                    //verifica qual tecla foi pressionada
+                    switch(evento1.keyboard.keycode){
+                        
+                        case ALLEGRO_KEY_1:                      
+                            foi=1;
+                            capaCheck=0;
+                            break;
+                        
+                        case ALLEGRO_KEY_2:                           
+                            foi=1;
+                            break;
+                    
+                        case ALLEGRO_KEY_PAD_1:                           
+                            foi=0;
+                            break;
+                        case ALLEGRO_KEY_PAD_2:
+                            foi=0;
+                            break;
+                    
+                    }
+                }
+            }        
+            capaEscolhido=tecla;    
+        }
+    }
+    jogador.helmet=capaEscolhido;
+}
+
+void readIP(){
+    enum conn_ret_t serverConnection;
+    al_clear_to_color(al_map_rgb(255,255,255));
+    //al_draw_bitmap(logo,0,0,0);
+    fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
+    al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "IP adress: ");
+    al_flip_display();
+
+    while(ipAd){
+        while(!al_is_event_queue_empty(fila_eventos))
+        {
+            ALLEGRO_EVENT ipEvent;
+            al_wait_for_event(fila_eventos, &ipEvent);
+            readInputIP(ipEvent, ip, LOGIN_MAX_SIZE);
+            
+            
+
+            if (ipEvent.type == ALLEGRO_EVENT_KEY_DOWN)
+            {
+                switch(ipEvent.keyboard.keycode)
+                {
+                    case ALLEGRO_KEY_ENTER:
+                        puts(ip);
+                        ipAd = false;
+                        break;
+                    case ALLEGRO_KEY_PAD_ENTER:
+                        puts(ip);
+                        ipAd = false;
+                        break;
+                }
+            }
+
+            if(ipEvent.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
+                ipAd = false;
+            }
+        }
+        serverConnection = connectToServer(ip);
+        if(serverConnection == SERVER_UP){
+            sendPlayer.jogador = jogador;
+            sendPlayer.tipo = INICIAL;
+            int ret = sendMsgToServer((PROTOCOLO_INICIAL *) &sendPlayer, sizeof(PROTOCOLO_INICIAL));
+            al_clear_to_color(al_map_rgb(255,255,255));
+            al_draw_text(fonte, al_map_rgb(0, 100 , 200), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_LEFT, "Servidor conectado!");
+            al_flip_display();
+            while(checkType){
+                recvMsgFromServer((PROTOCOLO_INICIAL *) &rcvPlayer, WAIT_FOR_IT);
+                if(rcvPlayer.tipo==INICIAL){
+                    checkType=0;
+                    jogador = rcvPlayer.jogador;
+                } 
+            }
+            if (ret == SERVER_DISCONNECTED){
+                return;
+            }
+        }
+        else if(serverConnection == SERVER_DOWN){
+            al_clear_to_color(al_map_rgb(255,255,255));
+            al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_LEFT, "Servidor fora do ar, tente novamente");
+            al_flip_display();
+            rest(2.0);
+            ipAd=true;
+            strcpy(ip, "");
+        }
+        else if(serverConnection == SERVER_FULL){
+            al_clear_to_color(al_map_rgb(255,255,255));
+            al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_LEFT, "Servidor cheio!");
+            al_flip_display();
+            rest(2.0);        
+        }
+        else if(serverConnection == SERVER_CLOSED){
+            al_clear_to_color(al_map_rgb(255,255,255));
+            al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_LEFT, "Servidor fechado!");
+            al_flip_display();
+            rest(2.0);
+        }
+        else if(serverConnection == SERVER_TIMEOUT){
+            al_clear_to_color(al_map_rgb(255,255,255));
+            al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_LEFT, "Tempo excedido! Tente novamente");
+            al_flip_display();
+            rest(2.0);
+            ipAd=true;
+            strcpy(ip, "");
+        }  
+        al_flip_display(); 
+    }
+    
+}
+
+void lobby(){
+    int telaMenu;
+
+    telaMenu = al_load_bitmap("./app/Resources/Etc/index.png");
+}
+
 int main(){
     iniciar();
     startScreen();
     readLogin();
+    readHelmet();
+    readIP();
+    lobby();
     al_flip_display();
     while(sair){
         runGame();
