@@ -21,15 +21,17 @@
 #define CLIENT_TO_SERVER 0
 #define CLIENT_TO_CLIENT 1
 
-#define INICIAL 0   // Envio do nick e do capacete
-#define COMECOU 1   // Inicio do jogo
-#define ANDAR 2
-#define BOTARTRAPS 3
-#define GAME 4
-#define ENDGAME 5
-#define TEMPO 6
-#define CONGELA 7
-#define DESCONGELA 8
+#define INICIAL 0           // Envio do nick e do capacete
+#define COMECOU 1           // Inicio do jogo
+#define ANDAR_CIMA 2
+#define ANDAR_BAIXO 3
+#define ANDAR_DIREITA 4
+#define ANDAR_ESQUERDA 5
+#define BOTARTRAPS 6
+#define ENDGAME 7
+#define TEMPO 8
+#define CONGELA 9
+#define DESCONGELA 10
 
 
 double startingTime;

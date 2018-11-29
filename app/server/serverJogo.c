@@ -175,7 +175,8 @@ int main() {
     while( (al_get_time() - tempoInicio < TEMPO_LIMITE) && !fim){
         input = recvMsg((PROTOCOLO_JOGO *) &jogada);
         for(i = 0; i < jogadores; i++){ 
-            if((players[i].id == input.client_id) && (jogada.tipo == GAME)){ 
+            if((players[i].id == input.client_id)){ 
+                players[i] = jogada.jogadorAtual[0];
                 if(!players[i].congelado){
                     
                     if(jogada.teclado == CIMA){
