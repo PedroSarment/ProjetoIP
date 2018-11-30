@@ -6,15 +6,13 @@
 
 
 //DEFINIÇÕES DAS CONSTANTES
-#define MSG_MAX_SIZE 350
-#define BUFFER_SIZE (MSG_MAX_SIZE + 100)
+// #define MSG_MAX_SIZE 350
+// #define BUFFER_SIZE (MSG_MAX_SIZE + 100)
 #define LOGIN_MAX_SIZE 13
 #define MAX_CLIENTS 6
 #define QTD_TIMES 2
-#define MAX_CLIENTS_TIMES 5
 #define X_MAX 1280
 #define Y_MAX 720
-#define N_ARMADILHAS 20
 #define TEMPO_LIMITE 120
 #define DIREITA 0x44            //D
 #define ESQUERDA 0x41           //A
@@ -46,44 +44,50 @@
 #define X_ENTRADA_3_RED 8
 #define Y_ENTRADA_3_RED 710
 
+//INICIALIZAÇÃO DAS VARIÁVEIS GLOBAIS
+char mapa [X_MAX][Y_MAX];
+Player players[6];
+int qntJogadores = 0;
+PROTOCOLO_JOGO jogada_client, jogada_server, tempo;                 // Protocolo de envio a ser enviado para o cliente com as infos do jogo;
+
+
+//INICIALIZAÇÃO DAS FUNÇÕES
+void inicializaMapa();
+void inicializaJogadores();
+void runGame();
+
 
 int main() {
-    char client_names[MAX_CLIENTS][LOGIN_MAX_SIZE];
-    char str_buffer[BUFFER_SIZE], aux_buffer[BUFFER_SIZE];
-
-    Player players[10];
-
-    char helmetChoice[] = ""; 
-    int jogadores = 0, capacete, notReady = 1;
-    double tempoInicio, tempoAtual;
-    int fim = 0,comecou = 1;
-    int time_1 = 0,time_2 = 0;              // Quantidade de indivíduos nas equipes
-    int armadilhas_1,armadilhas_2;          // Quantidade de armadilha por pessoa
-    char mapa [X_MAX][Y_MAX];
-    int xAnterior,yAnterior;
-    int scoreBlue = 0, scoreRed = 0;
-    int i, j;
-    int qntJogadoresProntos = 0;
-
-
-    PROTOCOLO_JOGO jogada, jogada_server, tempo;                 // Protocolo de envio a ser enviado para o cliente com as infos do jogo;
-    
-    struct msg_ret_t input;
-
     //CRIANDO MAPA 
+    inicializaMapa();
+        
+    //INICIALIZAÇÃO DO SERVER
+    serverInit(MAX_CLIENTS);
+    puts("Server is running!!");
+    
+    //INICIALIZAÇÃO DOS JOGADORES
+    inicializaJogadores();
+
+    //JOGO
+    runGame();
+   
+    return 0;
+}
+
+void inicializaMapa(){
+    int i, j;
     for(i = 0; i < X_MAX; i++){
         for(j = 0; j < Y_MAX; j++){
             mapa[i][j] = VAZIO;
         }
     }
-    //
-    
-    //INICIALIZAÇÃO DO SERVER
-    serverInit(MAX_CLIENTS);
-    puts("Server is running!!");
-    
-    
-    //INICIALIZAÇÃO DOS JOGADORES
+}
+
+void inicializaJogadores(){
+    int notReady = 1;
+    int qntJogadoresProntos = 0;
+    struct msg_ret_t input;
+
     while (notReady) {
         PROTOCOLO_INICIAL msg_client, msg_inicial_server;
         int id = acceptConnection();
@@ -91,7 +95,7 @@ int main() {
         if (id != NO_CONNECTION) {
             // Recebe o nick, capacete e id das novas conexões
             if(msg_client.tipo == INICIAL ){
-                if(jogadores < MAX_CLIENTS){
+                if(qntJogadores < MAX_CLIENTS){
                     strcpy(players[id].name, msg_client.jogador.name);     // Salva o nick
                     players[id].helmet = msg_client.jogador.helmet;        // Salva o capacete
                     players[id].id = id;                                   // Salva o id         
@@ -99,19 +103,16 @@ int main() {
                     printf("%s connected id = %d\n", players[id].name, id);
                 
                     // Inicializando os demais atributos do player atual
-                    if(jogadores%2 == 0){
+                    if(qntJogadores%2 == 0){
                         players[id].team = 1;
                         players[id].position.x = 0;
                         players[id].position.y = 0;
-                        time_1++;
-                    }
+                       }
                     else{
                         players[id].team = 2;
                         players[id].position.x = X_MAX;
                         players[id].position.y = Y_MAX;
-                        time_2++;
-                    }
-                    
+                    }                    
                     players[id].comBandeira = 0;
                     players[id].ready = 0;
                     players[id].estacongelado = 0;
@@ -124,17 +125,18 @@ int main() {
                     msg_inicial_server.jogador = players[id];                
                     sendMsgToClient((PROTOCOLO_INICIAL *) &msg_inicial_server, sizeof(PROTOCOLO_INICIAL), id);
 
-                    jogadores++;                                       
+                    qntJogadores++;                                       
                 }
                 else{
                     printf("Numero max de clientes conectados ja foi atingido!\n");
                     printf("%s disconnected id = %d\n", players[id].name, id);
                     disconnectClient(id);
+                    msg_client.tipo = -1;
                 } 
             }
         }
         else{
-            if(msg_client.tipo==ENDGAME){
+            if(msg_client.tipo == ENDGAME){
                 printf("%s disconnected id = %d\n", players[msg_client.jogador.id].name, msg_client.jogador.id);
                 disconnectClient(msg_client.jogador.id);
                 msg_client.tipo = -1;
@@ -145,7 +147,7 @@ int main() {
 
                 if(msg_client.jogador.id == 0){
                     // if(qntJogadoresProntos >= 4){
-                        jogada_server.qntJogadores = jogadores;
+                        jogada_server.qntJogadores = qntJogadores;
                         jogada_server.tipo = COMECOU;
                         notReady = 0;
                     // }    
@@ -155,29 +157,33 @@ int main() {
                     jogada_server.qntJogadores = qntJogadoresProntos;
                 }
 
-                for(int i = 0; i < jogadores; i++){
+                for(int i = 0; i < qntJogadores; i++){
                     jogada_server.todosJogadores[i] = players[i];
                 }
                 broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));    
             }
         }
     }
+}
 
+void runGame(){
+    double tempoInicio, tempoAtual;
+    struct msg_ret_t input;
+    int i, j, fim = 0; 
 
-    //JOGO
     tempoInicio = al_get_time();
     while( (al_get_time() - tempoInicio < TEMPO_LIMITE) && !fim){
-        input = recvMsg((PROTOCOLO_JOGO *) &jogada);
-        for(i = 0; i < jogadores; i++){ 
+        input = recvMsg((PROTOCOLO_JOGO *) &jogada_client);
+        for(i = 0; i < qntJogadores; i++){ 
             if((players[i].id == input.client_id)){ 
                 // Atualiza o player do server com o player enviado pelo client
-                players[i] = jogada.todosJogadores[0];
+                players[i] = jogada_client.todosJogadores[0];
                 // Verifica se o jogador não está congelado
-                if(!players[i].estacongelado){
+                if(!players[i].estaCongelado){
                     // Verifica se o jogador andou para cima
-                    if(jogada.tipo == ANDAR_CIMA){
+                    if(jogada_client.tipo == ANDAR_CIMA){
                         jogada_server.tipo = ANDAR_CIMA; 
-                        if(players[i].position.y != 0){          // Verifica se não é o fim do mapa
+                        if(players[i].position.y - 4 >= 0){         
                             if(mapa[players[i].position.x][players[i].position.y-4] == VAZIO || mapa[players[i].position.x][players[i].position.y-4] == TRAP_TEAM_BLUE 
                             || mapa[players[i].position.x][players[i].position.y-4] == TRAP_TEAM_RED ||  mapa[players[i].position.x][players[i].position.y-4] == BANDEIRA_BLUE 
                             || mapa[players[i].position.x][players[i].position.y-4] == BANDEIRA_RED ){
@@ -201,7 +207,7 @@ int main() {
 
                                 if(players[i].team == 1){
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_RED){
-                                        players[i].estacongelado = 1;
+                                        players[i].estaCongelado = 1;
                                         mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));
                                     }
                                     else if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_BLUE){
@@ -210,7 +216,7 @@ int main() {
                                 }
                                 else{
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_BLUE){
-                                        players[i].estacongelado = 1;
+                                        players[i].estaCongelado = 1;
                                         mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));
                                     }
                                     else if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_RED){
@@ -222,8 +228,8 @@ int main() {
                         } 
                     }
                     // Verifica se o jogador andou para baixo
-                    else if(jogada.tipo == ANDAR_BAIXO){
-                        if(players[i].position.y != Y_MAX){
+                    else if(jogada_client.tipo == ANDAR_BAIXO){
+                        if(players[i].position.y + 4 <= Y_MAX){
                             jogada_server.tipo = ANDAR_BAIXO;
                             if(mapa[players[i].position.x][players[i].position.y+4] == VAZIO || mapa[players[i].position.x][players[i].position.y+4] == TRAP_TEAM_BLUE
                             || mapa[players[i].position.x][players[i].position.y+4] == TRAP_TEAM_RED || mapa[players[i].position.x][players[i].position.y+4] == BANDEIRA_BLUE
@@ -248,7 +254,7 @@ int main() {
 
                                 if(players[i].team == 1){
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_RED){
-                                        players[i].estacongelado = 1;
+                                        players[i].estaCongelado = 1;
                                         mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));
                                     }
                                     else if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_BLUE){
@@ -257,7 +263,7 @@ int main() {
                                 }
                                 else{
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_BLUE){
-                                        players[i].estacongelado = 1;
+                                        players[i].estaCongelado = 1;
                                         mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));
                                     }
                                     else if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_RED){
@@ -268,8 +274,8 @@ int main() {
                         }
                     }
                     // Verifica se o jogador andou para direita
-                    else if(jogada.tipo == ANDAR_DIREITA){
-                        if(players[i].position.x != X_MAX){
+                    else if(jogada_client.tipo == ANDAR_DIREITA){
+                        if(players[i].position.x + 4 <= X_MAX){
                             if(mapa[players[i].position.x+4][players[i].position.y] == VAZIO || mapa[players[i].position.x+4][players[i].position.y] == TRAP_TEAM_BLUE 
                             || mapa[players[i].position.x+4][players[i].position.y] == TRAP_TEAM_RED || mapa[players[i].position.x+4][players[i].position.y] == BANDEIRA_BLUE 
                             || mapa[players[i].position.x+4][players[i].position.y] == BANDEIRA_RED){
@@ -293,7 +299,7 @@ int main() {
 
                                 if(players[i].team == 1){
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_RED){
-                                        players[i].estacongelado = 1;
+                                        players[i].estaCongelado = 1;
                                         mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));
                                     }
                                     else if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_BLUE){
@@ -302,7 +308,7 @@ int main() {
                                 }
                                 else{
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_BLUE){
-                                        players[i].estacongelado = 1;
+                                        players[i].estaCongelado = 1;
                                         mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));
                                     }
                                     else if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_RED){
@@ -313,8 +319,8 @@ int main() {
                         }
                     }
                     // Verifica se o jogador andou para a esuqerda
-                    else if(jogada.tipo == ANDAR_ESQUERDA){
-                        if(players[i].position.x != 0){
+                    else if(jogada_client.tipo == ANDAR_ESQUERDA){
+                        if(players[i].position.x - 4 >= 0){
                             if(mapa[players[i].position.x-4][players[i].position.y] == VAZIO || mapa[players[i].position.x-4][players[i].position.y] == TRAP_TEAM_BLUE 
                             || mapa[players[i].position.x-4][players[i].position.y] == TRAP_TEAM_RED || mapa[players[i].position.x-4][players[i].position.y] == BANDEIRA_BLUE 
                             || mapa[players[i].position.x-4][players[i].position.y] == BANDEIRA_RED){
@@ -338,7 +344,7 @@ int main() {
 
                                 if(players[i].team == 1){
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_RED){
-                                        players[i].estacongelado = 1;
+                                        players[i].estaCongelado = 1;
                                         mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));
                                     }
                                     else if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_BLUE){
@@ -347,7 +353,7 @@ int main() {
                                 }
                                 else{
                                     if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_BLUE){
-                                        players[i].estacongelado = 1;
+                                        players[i].estaCongelado = 1;
                                         mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));
                                     }
                                     else if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_RED){
@@ -358,7 +364,7 @@ int main() {
                         }
                     }
                     // Verifica se o jogador botou alguma armadilha
-                    else if(jogada.tipo == BOTARTRAPS){ 
+                    else if(jogada_client.tipo == BOTARTRAPS){ 
                         // Verifica se tem armadilhas para botar
                         if(players[i].armadilhas > 0){                                                          
                             jogada_server.tipo = BOTARTRAPS;                                                    
@@ -392,7 +398,7 @@ int main() {
                         }
                     }
                     // Verifica se o jogador congelou/descongelou alguem 
-                    else if(jogada.tipo == CONGELAR){
+                    else if(jogada_client.tipo == CONGELAR){
                         int posi = i + 97;
                         int flag = 1;
                         
@@ -413,7 +419,7 @@ int main() {
                     
                             // Se o player encontrado foi do time adversário, ele é congelado
                             if(players[posi - 97].team != players[i].team){
-                                players[posi - 97].estacongelado = 1;
+                                players[posi - 97].estaCongelado = 1;
                                 
                                 //jogada_server.todosJogadores = players[posi - 97]; 
                                 jogada_server.tipo = CONGELA;
@@ -441,7 +447,7 @@ int main() {
 
                                 // Se o player encontrado foi do mesmo time, ele é descongelado
                                 if((players[posi - 97].team == players[i].team) && (posi != (i + 97))){
-                                    players[posi - 97].estacongelado = 0;
+                                    players[posi - 97].estaCongelado = 0;
                                     //jogada_server.todosJogadores = players[posi - 97]; 
                                     jogada_server.tipo = DESCONGELA;
                                     //broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));      
@@ -479,7 +485,7 @@ int main() {
                     }
                     
                     if(fim != 1){
-                        for(int i = 0; i < jogadores; i++){
+                        for(int i = 0; i < qntJogadores; i++){
                             jogada_server.todosJogadores[i] = players[i];
                         }
                         
@@ -494,6 +500,4 @@ int main() {
         sprintf(tempo.mensagem, "%lf", tempoAtual);
         broadcast((PROTOCOLO_JOGO *) &tempo, sizeof(PROTOCOLO_JOGO)); 
     }
-
-    return 0;
 }
