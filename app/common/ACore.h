@@ -79,8 +79,9 @@ typedef struct{
     int tipo; 
     int xAnterior, yAnterior;
     char itemAnterior;
-    char mensagem[101];
+    char winner;
     Player todosJogadores[6];
+    //Player jogadorSofreuAcao;
     int qntJogadores;
 }PROTOCOLO_JOGO;
 

@@ -237,7 +237,6 @@ void runGame(){
                                 
                             }
                         } 
-                        broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));
                     }
                     // Verifica se o jogador andou para baixo
                     else if(jogada_client.tipo == ANDAR_BAIXO){
@@ -493,7 +492,7 @@ void runGame(){
                     // Se ele chegou na base vermelha, ele é do time vermelho e está com a bandeira azul = ele ganhou uma partida!
                     else if(((players[input.client_id].position.x == X_ENTRADA_1_RED && players[input.client_id].position.y == Y_ENTRADA_1_RED) || (players[input.client_id].position.x == X_ENTRADA_2_RED && players[input.client_id].position.y == Y_ENTRADA_2_RED) || (players[input.client_id].position.x == X_ENTRADA_3_RED && players[input.client_id].position.y == Y_ENTRADA_3_RED)) && (players[input.client_id].team == 2) && (players[input.client_id].comBandeira == 1)){
                         PROTOCOLO_JOGO msg_final;
-                        strcpy(msg_final.mensagem, "Time Vermelho Ganhou!");
+                        msg_final.winner = 'v';
                         msg_final.tipo = ENDGAME;
                         broadcast((PROTOCOLO_JOGO *) &msg_final, sizeof(PROTOCOLO_JOGO));
                         fim = 1;
@@ -501,30 +500,48 @@ void runGame(){
                     // Se ele chegou na base azul com a bandeira vermelha e ele é do time azul = ele ganhou uma partida!
                     else if(((players[input.client_id].position.x == X_ENTRADA_1_BLUE && players[input.client_id].position.y == Y_ENTRADA_1_BLUE) || (players[input.client_id].position.x == X_ENTRADA_2_BLUE && players[input.client_id].position.y == Y_ENTRADA_2_BLUE) || (players[input.client_id].position.x == X_ENTRADA_3_BLUE && players[input.client_id].position.y == Y_ENTRADA_3_BLUE)) && (players[input.client_id].team == 1) && (players[input.client_id].comBandeira == 1)){
                         PROTOCOLO_JOGO msg_final;
-                        strcpy(msg_final.mensagem, "Time Azul Ganhou!");
+                        msg_final.winner = 'b';
                         msg_final.tipo = ENDGAME;
                         broadcast((PROTOCOLO_JOGO *) &msg_final, sizeof(PROTOCOLO_JOGO));
                         fim = 1;
                     }
                     
                     if(fim != 1){
+                        jogada_server.tipo = GAME;
                         for(int i = 0; i < qntJogadores; i++){
                             jogada_server.todosJogadores[i] = players[i];
+                            // printf("%d", i);
                         }
-                        // printf("2 - %d %d \n", players[input.client_id].position.x, players[input.client_id].position.y);
-                        printf("posi x = %d, posi y = %d\n", jogada_server.todosJogadores[input.client_id].position.x, jogada_server.todosJogadores[input.client_id].position.y);
-                        jogada_server.tipo = 2;
-                        printf("tipo = %d", jogada_server.tipo);
+
+                        //printf("1");
+                        //printf("tipo - %d\n", jogada_server.tipo);
+                        //printf("2 - %d %d \n", players[input.client_id].position.x, players[input.client_id].position.y);
+                        //printf("pos x = %d, pos y = %d\n", jogada_server.todosJogadores[input.client_id].position.x, jogada_server.todosJogadores[input.client_id].position.y);
+                        
                         broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));
                     }
                 }
             // }
         // }
         }
-        
-        // tempoAtual = al_get_time() - tempoInicio;
-        // tempo.tipo = TEMPO;
-        // sprintf(tempo.mensagem, "%lf", tempoAtual);
-        // broadcast((PROTOCOLO_JOGO *) &tempo, sizeof(PROTOCOLO_JOGO)); 
+       
+        tempoAtual = al_get_time() - tempoInicio;
+        tempo.tipo = TEMPO;
+       // sprintf(tempo.mensagem, "%lf", tempoAtual);
+        jogada_server.tipo = GAME;
+        for(int i = 0; i < qntJogadores; i++){
+            jogada_server.todosJogadores[i] = players[i];
+            //printf("posi x = %d, posi y = %d\n", players[i].position.x, players[i].position.y);
+            //printf("%d", i);
+        }
+
+        //printf("2");
+        //printf("tipo - %d\n", jogada_server.tipo);
+        // printf("2 - %d %d \n", players[input.client_id].position.x, players[input.client_id].position.y);
+        //printf("posi x = %d, posi y = %d\n", jogada_server.todosJogadores[nput.client_id].position.x, jogada_server.todosJogadores[input.client_id].position.y);
+       
+       
+        broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));
+        //broadcast((PROTOCOLO_JOGO *) &tempo, sizeof(PROTOCOLO_JOGO)); 
     }
 }
