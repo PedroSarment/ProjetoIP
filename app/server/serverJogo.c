@@ -67,7 +67,7 @@ int main() {
 
 
     PROTOCOLO_JOGO jogada, jogada_server, tempo;                 // Protocolo de envio a ser enviado para o cliente com as infos do jogo;
-    PROTOCOLO_INICIAL msg_client, msg_inicial_server;
+    
     struct msg_ret_t input;
 
     //CRIANDO MAPA 
@@ -80,8 +80,9 @@ int main() {
     
     //INICIALIZAÇÃO DOS JOGADORES
     while (notReady) {
+        PROTOCOLO_INICIAL msg_client, msg_inicial_server;
         int id = acceptConnection();
-        recvMsg((PROTOCOLO_INICIAL *) &msg_client);
+        input = recvMsg((PROTOCOLO_INICIAL *) &msg_client);
         if (id != NO_CONNECTION) {
             // Recebe o nick, capacete e id das novas conexões
             if(msg_client.tipo == INICIAL ){
@@ -122,21 +123,27 @@ int main() {
                 }
                 else{
                     printf("Numero max de clientes conectados ja foi atingido!\n");
+                    printf("%s disconnected id = %d\n", players[id].name, id);
                     disconnectClient(id);
                 } 
             }
         }
         else{
+            if(msg_client.tipo==ENDGAME){
+                printf("%s disconnected id = %d\n", players[msg_client.jogador.id].name, msg_client.jogador.id);
+                disconnectClient(msg_client.jogador.id);
+                msg_client.tipo = -1;
+            }
             if(msg_client.tipo == COMECOU){
                 qntJogadoresProntos++;
                 players[msg_client.jogador.id] = msg_client.jogador;
 
                 if(msg_client.jogador.id == 0){
-                    //if(qntJogadoresProntos >= 4){
+                    // if(qntJogadoresProntos >= 4){
                         jogada_server.qntJogadores = jogadores;
                         jogada_server.tipo = COMECOU;
                         notReady = 0;
-                    //}    
+                    // }    
                 }
                 else{
                     jogada_server.tipo = WAITING;

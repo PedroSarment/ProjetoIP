@@ -74,6 +74,7 @@ void readHelmet();
 int readIP();
 void tutorial();
 void creditos();
+void lobby();
 
 
 int main(){
@@ -83,6 +84,7 @@ int main(){
     startScreen();
     ret = menu();
     if(ret ==1){
+        lobby();
         while(sair){
             runGame();
         }
@@ -133,10 +135,10 @@ int menu(){
     
     al_register_event_source(fila_eventos, al_get_keyboard_event_source());
     
-    int sair = 0,opcao = 1, server=0;
+    int sairMenu = 0,opcao = 1, server=0;
 
 
-    while(!sair){
+    while(!sairMenu){
         //enquanto esc nao for pressionado
         while(!al_event_queue_is_empty(fila_eventos)){
             ALLEGRO_EVENT evento;
@@ -158,7 +160,7 @@ int menu(){
                         break;
                     case ALLEGRO_KEY_ESCAPE:
                     //esc = sair do loop.
-                        sair = 1;
+                        sairMenu = 1;
                         break;
 
                     case ALLEGRO_KEY_ENTER:
@@ -169,15 +171,15 @@ int menu(){
                             server = readIP();
                 
                             ret=1;
-                            sair=1;
+                            sairMenu=1;
                         }
                         else if(opcao == 2){
                             ret=2;
-                            sair=1;
+                            sairMenu=1;
                         }
                         else if(opcao == 3){
                             ret=3;
-                            sair=1;
+                            sairMenu=1;
                         }
 
                     default:
@@ -489,8 +491,11 @@ void runGame(){
                         break;
                     //esc. sair=1 faz com que o programa saia do loop principal
                     case ALLEGRO_KEY_ESCAPE:
-                        sair = 0;
-
+                        msg.tipo=ENDGAME;
+                        ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
+                        if(ret != SERVER_DISCONNECTED){
+                            sair = 0;
+                        }
 
                 }
                 
@@ -873,6 +878,87 @@ int readIP(){
     return 0;
 }
 
+void lobby(){
+    int ret;
+
+    //aqui puxa a tela inicial.
+    al_clear_to_color(al_map_rgb(255,255,255));
+    // al_draw_bitmap(logo,0,0,0);
+    al_flip_display();
+    // al_rest(5.0);
+    al_clear_to_color(al_map_rgb(0,0,0));
+    al_draw_bitmap(mapa,0,0,0);
+    al_flip_display();
+    al_draw_bitmap(logo,0,0,0);
+    al_flip_display();
+    al_draw_bitmap(botao1,545,240+40,0);
+    al_draw_bitmap(botao1,545,240+120,0);
+    al_draw_bitmap(botao1,545,320+120,0);
+    al_draw_bitmap(setinha_dir,510,285,0);
+    al_draw_bitmap(setinha_esq,730,285,0);
+    fonte = al_load_font("./app/Resources/Fontes/kenvector_future.ttf", 20, 0);
+    al_draw_text(fonte,al_map_rgb(5,5,5),645,290,ALLEGRO_ALIGN_CENTER,"Iniciar o jogo");
+    al_draw_text(fonte,al_map_rgb(5,5,5),645,370,ALLEGRO_ALIGN_CENTER,"Tutorial");
+    al_draw_text(fonte,al_map_rgb(5,5,5),645,450,ALLEGRO_ALIGN_CENTER,"Creditos");
+
+    al_flip_display();
+    
+    al_register_event_source(fila_eventos, al_get_keyboard_event_source());
+    
+    int sairLobby = 1,opcao = 1, server=0;
+
+
+    while(sairLobby){
+       // puts("oi");
+        //enquanto esc nao for pressionado
+        while(!al_event_queue_is_empty(fila_eventos) && sairLobby){
+            ALLEGRO_EVENT evento;
+            al_wait_for_event(fila_eventos,&evento);
+            if (evento.type == ALLEGRO_EVENT_KEY_DOWN){
+                //verifica qual tecla foi pressionada
+                switch(evento.keyboard.keycode){
+                    
+                    case ALLEGRO_KEY_ESCAPE:
+                    //esc = sair do loop.
+                        puts("esc");
+                        sairLobby = 0;
+                        sendPlayer.jogador=jogador;
+                        sendPlayer.tipo=ENDGAME;
+                        ret = sendMsgToServer((PROTOCOLO_INICIAL *) &sendPlayer, sizeof(PROTOCOLO_INICIAL));
+                        if(ret == SERVER_DISCONNECTED){
+                            al_clear_to_color(al_map_rgb(255,255,255));
+                            al_draw_text(fonte,al_map_rgb(5,5,5),645,450,ALLEGRO_ALIGN_CENTER,"SERVER DOWN :'(");
+                            al_flip_display();
+                            al_rest(1.0);
+                        }
+                        endGame();
+                        exit(1);
+                        break;
+
+                    case ALLEGRO_KEY_ENTER:
+                        sairLobby = 0;
+                        jogador.ready=1;
+                    break;
+                    
+                    default:
+                        break;
+                }
+            }
+
+            if(jogador.ready){
+                //puts("aqui");
+                sendPlayer.tipo=COMECOU;
+                sendPlayer.jogador=jogador;
+                ret = sendMsgToServer((PROTOCOLO_INICIAL *) &sendPlayer, sizeof(PROTOCOLO_INICIAL));
+                if(ret != SERVER_DISCONNECTED){
+                    sairLobby = 0;
+                    sair=1;
+                }
+            }
+            
+        }
+    }
+}
 
 void tutorial(){
 
