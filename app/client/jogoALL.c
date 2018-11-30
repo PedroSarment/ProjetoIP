@@ -258,7 +258,7 @@ void carrega_arquivos(){
         al_destroy_audio_stream(musica_fundo);
     }
 
-    musica_fundo = al_load_audio_stream("./app/Resources/Musics/Musica_fundo.ogg",4,1024);
+    musica_fundo = al_load_audio_stream("./app/Resources/Musics/Musica-tema.ogg",4,1024);
     escolha = al_load_sample("./app/Resources/Musics/switch3.ogg");
 
     if(!musica_fundo || !escolha){
