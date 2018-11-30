@@ -55,6 +55,8 @@ ALLEGRO_BITMAP *capacetes = NULL;
 ALLEGRO_BITMAP *trap = NULL;
 ALLEGRO_BITMAP *shuriken = NULL;
 ALLEGRO_BITMAP *congelado = NULL;
+ALLEGRO_BITMAP *pronto = NULL;
+ALLEGRO_BITMAP *nao_pronto = NULL;
 // ALLEGRO_BITMAP *espaco_branco = NULL;
 
 ALLEGRO_EVENT evento;
@@ -245,7 +247,8 @@ void carrega_arquivos(){
     setinha_esq = al_load_bitmap("./app/Resources/Icons/yellow_sliderLeft.png");
     fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 24, 0);
     trap = al_load_bitmap("./app/Resources/Icons/ice_trap.png");
-    // espaco_branco = al_load_bitmap("./app/Resources/Icons/blue_button13-1.png");
+    nao_pronto = al_load_bitmap("./app/Resources/Icons/red_cross.png");
+    pronto = al_load_bitmap("./app/Resources/Icons/red_cross.png");
     shuriken = al_load_bitmap("./app/Resources/Icons/shuriken.png");
     congelado = al_load_bitmap("./app/Resources/Icons/congelado.png");
     capaceteAzul_1_menu = al_load_bitmap("./app/Resources/capacetes/capacete_azul_1.png");
@@ -678,8 +681,8 @@ void readInputIP(ALLEGRO_EVENT event, char str[], int limit){
         // al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
         //al_draw_bitmap(fundo,0,0,0);
         fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
-        al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "IP adress: ");
-        al_draw_textf(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "%s", ip);
+        al_draw_text(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "IP adress: ");
+        al_draw_textf(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "%s", ip);
         al_flip_display();
     }
 }
@@ -834,7 +837,7 @@ void readHelmet(){
                 else{
                     al_draw_bitmap(capaceteAzul_2_menu,100,200,0);
                     al_draw_bitmap(capaceteVerm_2_menu,980,200,0);
-                }    
+                }
                 al_flip_display();
                 ALLEGRO_EVENT evento1;
                 al_wait_for_event(fila_eventos,&evento1);
@@ -951,35 +954,20 @@ int readIP(){
 
 void lobby(){
     int ret;
+    fonte = al_load_font("./app/Resources/Fontes/kenvector_future.ttf", 20, 0);
+    al_rest(2.0);
     PROTOCOLO_JOGO estado_lobby;
-
-    //aqui puxa a tela inicial.
-    al_clear_to_color(al_map_rgb(255,255,255));
-    // al_draw_bitmap(fundo,0,0,0);
-    al_flip_display();
-    // al_rest(5.0);
+    // al_flip_display();
     al_clear_to_color(al_map_rgb(0,0,0));
-    al_draw_bitmap(mapa,0,0,0);
     al_flip_display();
     al_draw_bitmap(fundo,0,0,0);
+    al_draw_text(fonte,al_map_rgb(255,255,255),640,290,ALLEGRO_ALIGN_CENTRE,"O Jogo esta pronto para ser iniciado");
+    al_draw_text(fonte,al_map_rgb(255,255,255),640,360,ALLEGRO_ALIGN_CENTRE,"Pressione enter quando estiver preparado.");
+    al_draw_text(fonte,al_map_rgb(255,255,255),640,420,ALLEGRO_ALIGN_CENTRE,"Pronto");
+    al_draw_bitmap(nao_pronto,630,465,0);
     al_flip_display();
-    al_draw_bitmap(botao1,545,240+40,0);
-    al_draw_bitmap(botao1,545,240+120,0);
-    al_draw_bitmap(botao1,545,320+120,0);
-    al_draw_bitmap(setinha_dir,510,285,0);
-    al_draw_bitmap(setinha_esq,730,285,0);
-    fonte = al_load_font("./app/Resources/Fontes/kenvector_future.ttf", 20, 0);
-    al_draw_text(fonte,al_map_rgb(5,5,5),645,290,ALLEGRO_ALIGN_CENTER,"Iniciar o jogo");
-    al_draw_text(fonte,al_map_rgb(5,5,5),645,370,ALLEGRO_ALIGN_CENTER,"Tutorial");
-    al_draw_text(fonte,al_map_rgb(5,5,5),645,450,ALLEGRO_ALIGN_CENTER,"Creditos");
-
-    al_flip_display();
-    
     al_register_event_source(fila_eventos, al_get_keyboard_event_source());
-    
     int sairLobby = 1,opcao = 1, server=0;
-
-
     while(sairLobby){
        // puts("oi");
         //enquanto esc nao for pressionado
@@ -1009,7 +997,14 @@ void lobby(){
                             break;
 
                         case ALLEGRO_KEY_ENTER:
-                            //sairLobby = 0;
+                            al_clear_to_color(al_map_rgb(0,0,0));
+                            al_flip_display();
+                            al_draw_bitmap(fundo,0,0,0);
+                            al_draw_text(fonte,al_map_rgb(255,255,255),640,290,ALLEGRO_ALIGN_CENTRE,"O Jogo esta pronto para ser iniciado");
+                            al_draw_text(fonte,al_map_rgb(255,255,255),640,360,ALLEGRO_ALIGN_CENTRE,"Pressione enter quando estiver preparado.");
+                            al_draw_text(fonte,al_map_rgb(255,255,255),640,420,ALLEGRO_ALIGN_CENTRE,"Pronto");
+                            al_draw_bitmap(pronto,630,465,0);
+                            al_flip_display();
                             jogador.ready=1;
                         break;
                         
