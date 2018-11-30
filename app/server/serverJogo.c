@@ -237,6 +237,7 @@ void runGame(){
                                 
                             }
                         } 
+                        broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));
                     }
                     // Verifica se o jogador andou para baixo
                     else if(jogada_client.tipo == ANDAR_BAIXO){
@@ -512,7 +513,8 @@ void runGame(){
                         }
                         // printf("2 - %d %d \n", players[input.client_id].position.x, players[input.client_id].position.y);
                         printf("posi x = %d, posi y = %d\n", jogada_server.todosJogadores[input.client_id].position.x, jogada_server.todosJogadores[input.client_id].position.y);
-                        jogada_server.tipo = GAME;
+                        jogada_server.tipo = 2;
+                        printf("tipo = %d", jogada_server.tipo);
                         broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));
                     }
                 }
@@ -520,9 +522,9 @@ void runGame(){
         // }
         }
         
-        tempoAtual = al_get_time() - tempoInicio;
-        tempo.tipo = TEMPO;
-        sprintf(tempo.mensagem, "%lf", tempoAtual);
-        broadcast((PROTOCOLO_JOGO *) &tempo, sizeof(PROTOCOLO_JOGO)); 
+        // tempoAtual = al_get_time() - tempoInicio;
+        // tempo.tipo = TEMPO;
+        // sprintf(tempo.mensagem, "%lf", tempoAtual);
+        // broadcast((PROTOCOLO_JOGO *) &tempo, sizeof(PROTOCOLO_JOGO)); 
     }
 }

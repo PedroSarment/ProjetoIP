@@ -402,7 +402,9 @@ void runGame(){
     
     
     int n = recvMsgFromServer((PROTOCOLO_JOGO *) &estado_jogo, WAIT_FOR_IT);
+    printf("%d\n", estado_jogo.tipo);
     if(estado_jogo.tipo == GAME && n != SERVER_DISCONNECTED){
+        printf("oi");
         ALLEGRO_EVENT evento;
         while(!al_event_queue_is_empty(fila_eventos)){
             n = recvMsgFromServer((PROTOCOLO_JOGO *) &estado_jogo, WAIT_FOR_IT);
