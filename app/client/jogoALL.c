@@ -52,7 +52,7 @@ ALLEGRO_BITMAP *congelado = NULL;
 
 PROTOCOLO_INICIAL sendPlayer, rcvPlayer;
 Player jogador;
-Player jogadores[10];
+Player jogadores[6];
 char loginP[14], ip[30];
 int sair = 0;
 bool login = true;
@@ -397,18 +397,27 @@ void runGame(){
     PROTOCOLO_JOGO estado_jogo;
 
     al_draw_bitmap(mapa,0,0,0);
-    al_draw_bitmap(personagem,current_x,current_y,0);
-    al_flip_display();
+    al_draw_bitmap(personagem,jogador.position.x,current_y,0);
+    // al_flip_display();
 
-    recvMsgFromServer((PROTOCOLO_JOGO *) &estado_jogo, WAIT_FOR_IT);
-    jogador = estado_jogo.todosJogadores[jogador.id];
+    // recvMsgFromServer((PROTOCOLO_JOGO *) &estado_jogo, WAIT_FOR_IT);
+    // jogador = estado_jogo.todosJogadores[jogador.id];
     
     
     while(!al_event_queue_is_empty(fila_eventos)){
+        recvMsgFromServer((PROTOCOLO_JOGO *) &estado_jogo, WAIT_FOR_IT);
+        jogador = estado_jogo.todosJogadores[jogador.id];
         ALLEGRO_EVENT evento;
         ALLEGRO_EVENT evento2;
+        for(i=0;i<estado_jogo.qntJogadores;i++){
+            if(i!=jogador.id){
+                al_draw_bitmap(personagem, estado_jogo.todosJogadores[i].position.x, estado_jogo.todosJogadores[i].position.y, ALLEGRO_FLIP_HORIZONTAL);
+            }
+        }
+        // al_draw_bitmap(personagem)
+        al_flip_display();
         al_wait_for_event(fila_eventos,&evento);
-        if (evento.type == ALLEGRO_EVENT_KEY_CHAR){
+        if (evento.type == ALLEGRO_EVENT_KEY_DOWN){
             if(!jogador.estacongelado){
 
                 //verifica qual tecla foi pressionada
@@ -421,9 +430,9 @@ void runGame(){
                     // al_wait_for_event(fila_eventos,&evento2);
                         ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                         if(ret != SERVER_DISCONNECTED){
-                            al_draw_bitmap(mapa,0,0,0);
-                            current_y-=4;
-                            al_draw_bitmap(personagem,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
+                            // al_draw_bitmap(mapa,0,0,0);
+                            jogador.position.y-=4;
+                            al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
                         }
                         break;
                     //Baixo
@@ -433,9 +442,9 @@ void runGame(){
                         //al_wait_for_event(fila_eventos,&evento2);
                         ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                         if(ret != SERVER_DISCONNECTED){
-                            al_draw_bitmap(mapa,0,0,0);
-                            current_y+=4;
-                            al_draw_bitmap(personagem,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
+                            // al_draw_bitmap(mapa,0,0,0);
+                            jogador.position.y+=4;
+                            al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
                         }
                         break;
                     //Esquerda
@@ -445,9 +454,9 @@ void runGame(){
                         //al_wait_for_event(fila_eventos,&evento2);
                         ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                         if(ret != SERVER_DISCONNECTED){
-                            al_draw_bitmap(mapa,0,0,0);
-                            current_x-=4;
-                            al_draw_bitmap(personagem,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
+                            // al_draw_bitmap(mapa,0,0,0);
+                            jogador.position.x-=4;
+                            al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
                         }
                         break;
                     //Direita.
@@ -457,9 +466,9 @@ void runGame(){
                         //al_wait_for_event(fila_eventos,&evento2);
                         ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                         if(ret != SERVER_DISCONNECTED){
-                            al_draw_bitmap(mapa,0,0,0);
-                            current_x+=4;
-                            al_draw_bitmap(personagem,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
+                            // al_draw_bitmap(mapa,0,0,0);
+                            jogador.position.x+=4;
+                            al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
                         }
                         break;
                     //bota trap    
@@ -470,9 +479,8 @@ void runGame(){
                         ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
 
                         if(ret != SERVER_DISCONNECTED && jogador.armadilhas > 0){
-                            al_draw_bitmap(mapa,0,0,0);
-                            al_draw_bitmap(trap,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
-                            al_draw_bitmap(personagem,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
+                            al_draw_bitmap(trap,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
+                            al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
                         }
                         
                         break;
@@ -483,9 +491,9 @@ void runGame(){
                         ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
 
                         if(ret != SERVER_DISCONNECTED && jogador.congelamentos > 0){
-                            al_draw_bitmap(mapa,0,0,0);
-                            al_draw_bitmap(shuriken,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
-                            al_draw_bitmap(personagem,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
+                            //al_draw_bitmap(mapa,0,0,0);
+                            al_draw_bitmap(shuriken,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
+                            al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
                         }
 
                         break;
@@ -501,17 +509,19 @@ void runGame(){
                 
             }
             else{
-                al_draw_bitmap(mapa,0,0,0);
-                al_draw_bitmap(congelado,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
+                // al_draw_bitmap(mapa,0,0,0);
+                al_draw_bitmap(congelado,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
                 
                 for(i=0;estado_jogo.qntJogadores;i++){
                     if(estado_jogo.todosJogadores[i].congelou && estado_jogo.todosJogadores[i].team==jogador.team){
                         al_draw_bitmap(mapa,0,0,0);
-                        al_draw_bitmap(congelado,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
+                        al_draw_bitmap(congelado,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
                     }
                 }
             }
-            al_flip_display();
+            //al_draw_bitmap(mapa,0,0,0);
+            // al_flip_display();
+            
 
         }
     }
