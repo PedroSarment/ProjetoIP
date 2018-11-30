@@ -300,13 +300,8 @@ int iniciar(){
         printf("Nao foi possivel reservar os audios.");
         return 0;
     }
-    musica_fundo = al_load_audio_stream("./app/Resources/Musics/Musica_fundo.ogg",4,1024);
-    if(!musica_fundo){
-        error_msg("Musica nao foi carregada.");
-        return 0;
-    }
-    al_attach_audio_stream_to_mixer(musica_fundo, al_get_default_mixer());
-    al_set_audio_stream_playmode(musica_fundo,ALLEGRO_PLAYMODE_LOOP);
+    
+    
     janela = al_create_display(1280,720);
     if(!janela){
         error_msg("Falha ao iniciar a janela");
@@ -334,18 +329,18 @@ int iniciar(){
         al_destroy_display(janela);
         return 0;
     }
-    if (!al_install_mouse())
-    {
-        printf("Falha ao inicializar o mouse.\n");
-        al_destroy_display(janela);
-        return 0;
-    }
-    if (!al_set_system_mouse_cursor(janela, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT))
-    {
-        printf("Falha ao atribuir ponteiro do mouse.\n");
-        al_destroy_display(janela);
-        return 0;
-    }
+    // if (!al_install_mouse())
+    // {
+    //     printf("Falha ao inicializar o mouse.\n");
+    //     al_destroy_display(janela);
+    //     return 0;
+    // }
+    // if (!al_set_system_mouse_cursor(janela, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT))
+    // {
+    //     printf("Falha ao atribuir ponteiro do mouse.\n");
+    //     al_destroy_display(janela);
+    //     return 0;
+    // }
     al_clear_to_color(al_map_rgb(255,255,255));
    
     carrega_arquivos();
@@ -357,9 +352,9 @@ int iniciar(){
         return 0;
     }
     al_register_event_source(fila_eventos, al_get_keyboard_event_source());
-    al_register_event_source(fila_eventos, al_get_mouse_event_source());
+    // al_register_event_source(fila_eventos, al_get_mouse_event_source());
     al_register_event_source(evento_ip, al_get_keyboard_event_source());
-    al_register_event_source(evento_ip, al_get_mouse_event_source());
+    // al_register_event_source(evento_ip, al_get_mouse_event_source());
     return 1;
 }
 
