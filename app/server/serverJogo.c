@@ -59,7 +59,7 @@ int main() {
     int fim = 0,comecou = 1;
     int time_1 = 0,time_2 = 0;              // Quantidade de indivíduos nas equipes
     int armadilhas_1,armadilhas_2;          // Quantidade de armadilha por pessoa
-    char mapa [X_MAX][Y_MAX] = {'0'};
+    char mapa [X_MAX][Y_MAX];
     int xAnterior,yAnterior;
     int scoreBlue = 0, scoreRed = 0;
     int i, j;
@@ -71,12 +71,17 @@ int main() {
     struct msg_ret_t input;
 
     //CRIANDO MAPA 
-
+    for(i = 0; i < X_MAX; i++){
+        for(j = 0; j < Y_MAX; j++){
+            mapa[i][j] = VAZIO;
+        }
+    }
     //
     
     //INICIALIZAÇÃO DO SERVER
     serverInit(MAX_CLIENTS);
     puts("Server is running!!");
+    
     
     //INICIALIZAÇÃO DOS JOGADORES
     while (notReady) {
