@@ -68,7 +68,7 @@ typedef struct{
     int congelamentos;               // Quantidade de congelamentos que o player pode realizar
     int id;                          // A id do player ao se conectar ao server
     int comBandeira;                 // Se o player está ou não com a bandeira do time adversário
-    int estacongelado;               // Se o player foi ou não congelado por um player adversário
+    int estaCongelado;               // Se o player foi ou não congelado por um player adversário
     int congelou;                    // Se o player congelou alguém ou não           
     Position position;               // A posição x e y do player no mapa
     int ready;                       // Verifica se o jogador apertou pra começar ou não

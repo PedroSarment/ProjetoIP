@@ -19,7 +19,7 @@
 #define CIMA 0x57               //W
 #define BAIXO 0x53              //S
 #define VAZIO 0x30              //0
-#define INVALIDO 0x49           //I
+#define INVALIDO 0x49           //input.client_id
 #define BANDEIRA_BLUE 0x42      //B 
 #define BANDEIRA_RED 0x50       //P
 #define CONGELAR 0x20           //SPACE
@@ -105,17 +105,17 @@ void inicializaJogadores(){
                     // Inicializando os demais atributos do player atual
                     if(qntJogadores%2 == 0){
                         players[id].team = 1;
-                        players[id].position.x = 0;
-                        players[id].position.y = 0;
+                        players[id].position.x = 100;
+                        players[id].position.y = 100;
                        }
                     else{
                         players[id].team = 2;
-                        players[id].position.x = X_MAX;
-                        players[id].position.y = Y_MAX;
+                        players[id].position.x = 200;
+                        players[id].position.y = 200;
                     }                    
                     players[id].comBandeira = 0;
                     players[id].ready = 0;
-                    players[id].estacongelado = 0;
+                    players[id].estaCongelado = 0;
                     players[id].congelou = 0;
                     players[id].congelamentos = 4;
                     players[id].armadilhas = 3;
@@ -159,6 +159,7 @@ void inicializaJogadores(){
 
                 for(int i = 0; i < qntJogadores; i++){
                     jogada_server.todosJogadores[i] = players[i];
+                    //printf("%d - %d, %d", i, jogada_server.todosJogadores[i].position.x,jogada_server.todosJogadores[i].position.y );
                 }
                 broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));    
             }
@@ -173,54 +174,64 @@ void runGame(){
 
     tempoInicio = al_get_time();
     while( (al_get_time() - tempoInicio < TEMPO_LIMITE) && !fim){
+        //printf("loop");
         input = recvMsg((PROTOCOLO_JOGO *) &jogada_client);
-        for(i = 0; i < qntJogadores; i++){ 
-            if((players[i].id == input.client_id)){ 
+        if(input.status != NO_MESSAGE){
+        // for(input.client_id = 0; input.client_id < qntJogadores; input.client_id++){ 
+            //if((players[input.client_id].id == input.client_id)){ 
                 // Atualiza o player do server com o player enviado pelo client
-                players[i] = jogada_client.todosJogadores[0];
+                //players[input.client_id] = jogada_client.todosJogadores[0];
                 // Verifica se o jogador não está congelado
-                if(!players[i].estaCongelado){
+                if(!players[input.client_id].estaCongelado){
                     // Verifica se o jogador andou para cima
                     if(jogada_client.tipo == ANDAR_CIMA){
-                        jogada_server.tipo = ANDAR_CIMA; 
-                        if(players[i].position.y - 4 >= 0){         
-                            if(mapa[players[i].position.x][players[i].position.y-4] == VAZIO || mapa[players[i].position.x][players[i].position.y-4] == TRAP_TEAM_BLUE 
-                            || mapa[players[i].position.x][players[i].position.y-4] == TRAP_TEAM_RED ||  mapa[players[i].position.x][players[i].position.y-4] == BANDEIRA_BLUE 
-                            || mapa[players[i].position.x][players[i].position.y-4] == BANDEIRA_RED ){
+                        //printf("cima");
+                        //jogada_server.tipo = ANDAR_CIMA; 
+                        if(players[input.client_id].position.y - 4 >= 0){   
+                            //printf("cima1");   
+                            if(mapa[players[input.client_id].position.x][players[input.client_id].position.y-4] == VAZIO || mapa[players[input.client_id].position.x][players[input.client_id].position.y-4] == TRAP_TEAM_BLUE 
+                            || mapa[players[input.client_id].position.x][players[input.client_id].position.y-4] == TRAP_TEAM_RED ||  mapa[players[input.client_id].position.x][players[input.client_id].position.y-4] == BANDEIRA_BLUE 
+                            || mapa[players[input.client_id].position.x][players[input.client_id].position.y-4] == BANDEIRA_RED ){
                                  //considerando 0 um espaco livre
-                                if(mapa[players[i].position.x][players[i].position.y] == (char)((players[i].id + 97) + 10)){ // se o mapa = indicador do id do player + indicador da trap
-                                    if(players[i].team == 1)
-                                        mapa[players[i].position.x][players[i].position.y] = TRAP_TEAM_BLUE;
+                                 //printf("cima2"); 
+                                if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == (char)((players[input.client_id].id + 97) + 10)){ // se o mapa = indicador do id do player + indicador da trap
+                                    //printf("cima3"); 
+                                    if(players[input.client_id].team == 1)
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = TRAP_TEAM_BLUE;
                                     else
-                                        mapa[players[i].position.x][players[i].position.y] = TRAP_TEAM_RED;
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = TRAP_TEAM_RED;
                                 }
                                 else{
-                                    mapa[players[i].position.x][players[i].position.y] = VAZIO;
+                                    
+                                    //printf("1 - %d %d \n", players[input.client_id].position.x, players[input.client_id].position.y);
+                                    mapa[players[input.client_id].position.x][players[input.client_id].position.y] = VAZIO;
                                 }
                                 
-                                jogada_server.xAnterior = players[i].position.x;
-                                jogada_server.yAnterior = players[i].position.y;
-                                jogada_server.itemAnterior = mapa[players[i].position.x][players[i].position.y];
+                                jogada_server.xAnterior = players[input.client_id].position.x;
+                                jogada_server.yAnterior = players[input.client_id].position.y;
+                                jogada_server.itemAnterior = mapa[players[input.client_id].position.x][players[input.client_id].position.y];
+                                
+                                
+                                players[input.client_id].position.y -= 4;
+                               // printf("2 - %d %d \n", players[input.client_id].position.x, players[input.client_id].position.y);
+                                mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)(players[input.client_id].id + 97); // mapa = indicador do id do player
 
-                                players[i].position.y -= 4;
-                                mapa[players[i].position.x][players[i].position.y] = (char)(players[i].id + 97); // mapa = indicador do id do player
-
-                                if(players[i].team == 1){
-                                    if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_RED){
-                                        players[i].estaCongelado = 1;
-                                        mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));
+                                if(players[input.client_id].team == 1){
+                                    if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == TRAP_TEAM_RED){
+                                        players[input.client_id].estaCongelado = 1;
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)((players[input.client_id].id + 97));
                                     }
-                                    else if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_BLUE){
-                                        mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97) + 10);
+                                    else if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == TRAP_TEAM_BLUE){
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)((players[input.client_id].id + 97) + 10);
                                     }
                                 }
                                 else{
-                                    if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_BLUE){
-                                        players[i].estaCongelado = 1;
-                                        mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));
+                                    if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == TRAP_TEAM_BLUE){
+                                        players[input.client_id].estaCongelado = 1;
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)((players[input.client_id].id + 97));
                                     }
-                                    else if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_RED){
-                                        mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97) + 10);
+                                    else if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == TRAP_TEAM_RED){
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)((players[input.client_id].id + 97) + 10);
                                     }
                                 }  
                                 
@@ -229,45 +240,46 @@ void runGame(){
                     }
                     // Verifica se o jogador andou para baixo
                     else if(jogada_client.tipo == ANDAR_BAIXO){
-                        if(players[i].position.y + 4 <= Y_MAX){
+                        printf("baixo");
+                        if(players[input.client_id].position.y + 4 <= Y_MAX){
                             jogada_server.tipo = ANDAR_BAIXO;
-                            if(mapa[players[i].position.x][players[i].position.y+4] == VAZIO || mapa[players[i].position.x][players[i].position.y+4] == TRAP_TEAM_BLUE
-                            || mapa[players[i].position.x][players[i].position.y+4] == TRAP_TEAM_RED || mapa[players[i].position.x][players[i].position.y+4] == BANDEIRA_BLUE
-                            || mapa[players[i].position.x][players[i].position.y+4] == BANDEIRA_RED){
+                            if(mapa[players[input.client_id].position.x][players[input.client_id].position.y+4] == VAZIO || mapa[players[input.client_id].position.x][players[input.client_id].position.y+4] == TRAP_TEAM_BLUE
+                            || mapa[players[input.client_id].position.x][players[input.client_id].position.y+4] == TRAP_TEAM_RED || mapa[players[input.client_id].position.x][players[input.client_id].position.y+4] == BANDEIRA_BLUE
+                            || mapa[players[input.client_id].position.x][players[input.client_id].position.y+4] == BANDEIRA_RED){
                                 
-                              if(mapa[players[i].position.x][players[i].position.y] == (char)((players[i].id + 97) + 10)){ // se o mapa = indicador do id do player + indicador da trap
-                                    if(players[i].team == 1)
-                                        mapa[players[i].position.x][players[i].position.y] = TRAP_TEAM_BLUE;
+                              if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == (char)((players[input.client_id].id + 97) + 10)){ // se o mapa = indicador do id do player + indicador da trap
+                                    if(players[input.client_id].team == 1)
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = TRAP_TEAM_BLUE;
                                     else
-                                        mapa[players[i].position.x][players[i].position.y] = TRAP_TEAM_RED;
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = TRAP_TEAM_RED;
                                 }
                                 else{
-                                    mapa[players[i].position.x][players[i].position.y] = VAZIO;
+                                    mapa[players[input.client_id].position.x][players[input.client_id].position.y] = VAZIO;
                                 }
                                 
-                                jogada_server.xAnterior = players[i].position.x;
-                                jogada_server.yAnterior = players[i].position.y;
-                                jogada_server.itemAnterior = mapa[players[i].position.x][players[i].position.y];
+                                jogada_server.xAnterior = players[input.client_id].position.x;
+                                jogada_server.yAnterior = players[input.client_id].position.y;
+                                jogada_server.itemAnterior = mapa[players[input.client_id].position.x][players[input.client_id].position.y];
 
-                                players[i].position.y += 4;
-                                mapa[players[i].position.x][players[i].position.y] = (char)(players[i].id + 97); // mapa = indicador do id do player
+                                players[input.client_id].position.y += 4;
+                                mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)(players[input.client_id].id + 97); // mapa = indicador do id do player
 
-                                if(players[i].team == 1){
-                                    if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_RED){
-                                        players[i].estaCongelado = 1;
-                                        mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));
+                                if(players[input.client_id].team == 1){
+                                    if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == TRAP_TEAM_RED){
+                                        players[input.client_id].estaCongelado = 1;
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)((players[input.client_id].id + 97));
                                     }
-                                    else if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_BLUE){
-                                        mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97) + 10);
+                                    else if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == TRAP_TEAM_BLUE){
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)((players[input.client_id].id + 97) + 10);
                                     }
                                 }
                                 else{
-                                    if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_BLUE){
-                                        players[i].estaCongelado = 1;
-                                        mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));
+                                    if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == TRAP_TEAM_BLUE){
+                                        players[input.client_id].estaCongelado = 1;
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)((players[input.client_id].id + 97));
                                     }
-                                    else if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_RED){
-                                        mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97) + 10);
+                                    else if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == TRAP_TEAM_RED){
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)((players[input.client_id].id + 97) + 10);
                                     }
                                 }  
                             }  
@@ -275,44 +287,45 @@ void runGame(){
                     }
                     // Verifica se o jogador andou para direita
                     else if(jogada_client.tipo == ANDAR_DIREITA){
-                        if(players[i].position.x + 4 <= X_MAX){
-                            if(mapa[players[i].position.x+4][players[i].position.y] == VAZIO || mapa[players[i].position.x+4][players[i].position.y] == TRAP_TEAM_BLUE 
-                            || mapa[players[i].position.x+4][players[i].position.y] == TRAP_TEAM_RED || mapa[players[i].position.x+4][players[i].position.y] == BANDEIRA_BLUE 
-                            || mapa[players[i].position.x+4][players[i].position.y] == BANDEIRA_RED){
+                        printf("dir");
+                        if(players[input.client_id].position.x + 4 <= X_MAX){
+                            if(mapa[players[input.client_id].position.x+4][players[input.client_id].position.y] == VAZIO || mapa[players[input.client_id].position.x+4][players[input.client_id].position.y] == TRAP_TEAM_BLUE 
+                            || mapa[players[input.client_id].position.x+4][players[input.client_id].position.y] == TRAP_TEAM_RED || mapa[players[input.client_id].position.x+4][players[input.client_id].position.y] == BANDEIRA_BLUE 
+                            || mapa[players[input.client_id].position.x+4][players[input.client_id].position.y] == BANDEIRA_RED){
                                 
-                              if(mapa[players[i].position.x][players[i].position.y] == (char)((players[i].id + 97) + 10)){ // se o mapa = indicador do id do player + indicador da trap
-                                    if(players[i].team == 1)
-                                        mapa[players[i].position.x][players[i].position.y] = TRAP_TEAM_BLUE;
+                              if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == (char)((players[input.client_id].id + 97) + 10)){ // se o mapa = indicador do id do player + indicador da trap
+                                    if(players[input.client_id].team == 1)
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = TRAP_TEAM_BLUE;
                                     else
-                                        mapa[players[i].position.x][players[i].position.y] = TRAP_TEAM_RED;
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = TRAP_TEAM_RED;
                                 }
                                 else{
-                                    mapa[players[i].position.x][players[i].position.y] = VAZIO;
+                                    mapa[players[input.client_id].position.x][players[input.client_id].position.y] = VAZIO;
                                 }
                                 
-                                jogada_server.xAnterior = players[i].position.x;
-                                jogada_server.yAnterior = players[i].position.y;
-                                jogada_server.itemAnterior = mapa[players[i].position.x][players[i].position.y];
+                                jogada_server.xAnterior = players[input.client_id].position.x;
+                                jogada_server.yAnterior = players[input.client_id].position.y;
+                                jogada_server.itemAnterior = mapa[players[input.client_id].position.x][players[input.client_id].position.y];
 
-                                players[i].position.x += 4;
-                                mapa[players[i].position.x][players[i].position.y] = (char)(players[i].id + 97); // mapa = indicador do id do player
+                                players[input.client_id].position.x += 4;
+                                mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)(players[input.client_id].id + 97); // mapa = indicador do id do player
 
-                                if(players[i].team == 1){
-                                    if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_RED){
-                                        players[i].estaCongelado = 1;
-                                        mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));
+                                if(players[input.client_id].team == 1){
+                                    if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == TRAP_TEAM_RED){
+                                        players[input.client_id].estaCongelado = 1;
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)((players[input.client_id].id + 97));
                                     }
-                                    else if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_BLUE){
-                                        mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97) + 10);
+                                    else if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == TRAP_TEAM_BLUE){
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)((players[input.client_id].id + 97) + 10);
                                     }
                                 }
                                 else{
-                                    if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_BLUE){
-                                        players[i].estaCongelado = 1;
-                                        mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));
+                                    if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == TRAP_TEAM_BLUE){
+                                        players[input.client_id].estaCongelado = 1;
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)((players[input.client_id].id + 97));
                                     }
-                                    else if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_RED){
-                                        mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97) + 10);
+                                    else if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == TRAP_TEAM_RED){
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)((players[input.client_id].id + 97) + 10);
                                     }
                                 }  
                             }  
@@ -320,44 +333,45 @@ void runGame(){
                     }
                     // Verifica se o jogador andou para a esuqerda
                     else if(jogada_client.tipo == ANDAR_ESQUERDA){
-                        if(players[i].position.x - 4 >= 0){
-                            if(mapa[players[i].position.x-4][players[i].position.y] == VAZIO || mapa[players[i].position.x-4][players[i].position.y] == TRAP_TEAM_BLUE 
-                            || mapa[players[i].position.x-4][players[i].position.y] == TRAP_TEAM_RED || mapa[players[i].position.x-4][players[i].position.y] == BANDEIRA_BLUE 
-                            || mapa[players[i].position.x-4][players[i].position.y] == BANDEIRA_RED){
+                        printf("esq");
+                        if(players[input.client_id].position.x - 4 >= 0){
+                            if(mapa[players[input.client_id].position.x-4][players[input.client_id].position.y] == VAZIO || mapa[players[input.client_id].position.x-4][players[input.client_id].position.y] == TRAP_TEAM_BLUE 
+                            || mapa[players[input.client_id].position.x-4][players[input.client_id].position.y] == TRAP_TEAM_RED || mapa[players[input.client_id].position.x-4][players[input.client_id].position.y] == BANDEIRA_BLUE 
+                            || mapa[players[input.client_id].position.x-4][players[input.client_id].position.y] == BANDEIRA_RED){
                                 
-                              if(mapa[players[i].position.x][players[i].position.y] == (char)((players[i].id + 97) + 10)){ // se o mapa = indicador do id do player + indicador da trap
-                                    if(players[i].team == 1)
-                                        mapa[players[i].position.x][players[i].position.y] = TRAP_TEAM_BLUE;
+                              if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == (char)((players[input.client_id].id + 97) + 10)){ // se o mapa = indicador do id do player + indicador da trap
+                                    if(players[input.client_id].team == 1)
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = TRAP_TEAM_BLUE;
                                     else
-                                        mapa[players[i].position.x][players[i].position.y] = TRAP_TEAM_RED;
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = TRAP_TEAM_RED;
                                 }
                                 else{
-                                    mapa[players[i].position.x][players[i].position.y] = VAZIO;
+                                    mapa[players[input.client_id].position.x][players[input.client_id].position.y] = VAZIO;
                                 }
                                 
-                                jogada_server.xAnterior = players[i].position.x;
-                                jogada_server.yAnterior = players[i].position.y;
-                                jogada_server.itemAnterior = mapa[players[i].position.x][players[i].position.y];
+                                jogada_server.xAnterior = players[input.client_id].position.x;
+                                jogada_server.yAnterior = players[input.client_id].position.y;
+                                jogada_server.itemAnterior = mapa[players[input.client_id].position.x][players[input.client_id].position.y];
 
-                                players[i].position.x -= 4;
-                                mapa[players[i].position.x][players[i].position.y] = (char)(players[i].id + 97); // mapa = indicador do id do player
+                                players[input.client_id].position.x -= 4;
+                                mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)(players[input.client_id].id + 97); // mapa = indicador do id do player
 
-                                if(players[i].team == 1){
-                                    if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_RED){
-                                        players[i].estaCongelado = 1;
-                                        mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));
+                                if(players[input.client_id].team == 1){
+                                    if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == TRAP_TEAM_RED){
+                                        players[input.client_id].estaCongelado = 1;
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)((players[input.client_id].id + 97));
                                     }
-                                    else if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_BLUE){
-                                        mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97) + 10);
+                                    else if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == TRAP_TEAM_BLUE){
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)((players[input.client_id].id + 97) + 10);
                                     }
                                 }
                                 else{
-                                    if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_BLUE){
-                                        players[i].estaCongelado = 1;
-                                        mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));
+                                    if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == TRAP_TEAM_BLUE){
+                                        players[input.client_id].estaCongelado = 1;
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)((players[input.client_id].id + 97));
                                     }
-                                    else if(mapa[players[i].position.x][players[i].position.y] == TRAP_TEAM_RED){
-                                        mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97) + 10);
+                                    else if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == TRAP_TEAM_RED){
+                                        mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)((players[input.client_id].id + 97) + 10);
                                     }
                                 }  
                             }  
@@ -365,60 +379,62 @@ void runGame(){
                     }
                     // Verifica se o jogador botou alguma armadilha
                     else if(jogada_client.tipo == BOTARTRAPS){ 
+                        printf("trap");
                         // Verifica se tem armadilhas para botar
-                        if(players[i].armadilhas > 0){                                                          
+                        if(players[input.client_id].armadilhas > 0){                                                          
                             jogada_server.tipo = BOTARTRAPS;                                                    
                             // Se for do time azul
-                            if(players[i].team == 1){                                                           
-                                if(mapa[players[i].position.x][players[i].position.y] != TRAP_TEAM_BLUE){
-                                    mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97) + 10); // mapa = indicador do id do player + indicador da trap
-                                    players[i].armadilhas--;
+                            if(players[input.client_id].team == 1){                                                           
+                                if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] != TRAP_TEAM_BLUE){
+                                    mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)((players[input.client_id].id + 97) + 10); // mapa = indicador do id do player + indicador da trap
+                                    players[input.client_id].armadilhas--;
                                 }
                                 else{
                                     char msg[] = "armadilha ja existente";
-                                    mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));    // mapa = indicador do id do player
-                                    sendMsgToClient((char *) msg, sizeof(msg) + 1, players[i].id);
+                                    mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)((players[input.client_id].id + 97));    // mapa = indicador do id do player
+                                    sendMsgToClient((char *) msg, sizeof(msg) + 1, players[input.client_id].id);
                                 }
                             } 
                             // Se for do time vermelho   
                             else{                                                                               
-                                if(mapa[players[i].position.x][players[i].position.y] != TRAP_TEAM_RED){
-                                    mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97) + 10); // mapa = indicador do id do player + indicador da trap
-                                    players[i].armadilhas--;
+                                if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] != TRAP_TEAM_RED){
+                                    mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)((players[input.client_id].id + 97) + 10); // mapa = indicador do id do player + indicador da trap
+                                    players[input.client_id].armadilhas--;
                                 }
                                 else{
                                     char msg[] = "armadilha ja existente";
-                                    mapa[players[i].position.x][players[i].position.y] = (char)((players[i].id + 97));    // mapa = indicador do id do player
-                                    sendMsgToClient((char *) msg, sizeof(msg) + 1, players[i].id);
+                                    mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)((players[input.client_id].id + 97));    // mapa = indicador do id do player
+                                    sendMsgToClient((char *) msg, sizeof(msg) + 1, players[input.client_id].id);
                                 }
                             }
-                            jogada_server.itemAnterior = mapa[players[i].position.x][players[i].position.y];
-                            jogada_server.xAnterior = players[i].position.x;
-                            jogada_server.yAnterior = players[i].position.y;
+                            jogada_server.itemAnterior = mapa[players[input.client_id].position.x][players[input.client_id].position.y];
+                            jogada_server.xAnterior = players[input.client_id].position.x;
+                            jogada_server.yAnterior = players[input.client_id].position.y;
                         }
                     }
                     // Verifica se o jogador congelou/descongelou alguem 
                     else if(jogada_client.tipo == CONGELAR){
-                        int posi = i + 97;
+                        printf("congela");
+                        int posi = input.client_id + 97;
                         int flag = 1;
                         
-                        if(players[i].congelamentos > 0){
+                        if(players[input.client_id].congelamentos > 0){
                             // Verifica se tem algum player ao redor do player atual e salva a posição dele caso tenha algo
-                            if(mapa[players[i].position.x+1][players[i].position.y] >= 97 
-                            && mapa[players[i].position.x+1][players[i].position.y] <= 106)
-                                posi = (int) mapa[players[i].position.x+1][players[i].position.y];   
-                            else if(mapa[players[i].position.x-1][players[i].position.y] >= 97 
-                            && mapa[players[i].position.x-1][players[i].position.y] <= 106)
-                                posi = (int) mapa[players[i].position.x-1][players[i].position.y];
-                            else if(mapa[players[i].position.x][players[i].position.y+1] >= 97 
-                            && mapa[players[i].position.x][players[i].position.y+1] <= 106)
-                                posi = (int) mapa[players[i].position.x][players[i].position.y+1];
-                            else if(mapa[players[i].position.x][players[i].position.y-1] >= 97 
-                            && mapa[players[i].position.x][players[i].position.y-1] <= 106)
-                                posi = (int) mapa[players[i].position.x][players[i].position.y-1];
+                            if(mapa[players[input.client_id].position.x+1][players[input.client_id].position.y] >= 97 
+                            && mapa[players[input.client_id].position.x+1][players[input.client_id].position.y] <= 106)
+                                posi = (int) mapa[players[input.client_id].position.x+1][players[input.client_id].position.y];   
+                            else if(mapa[players[input.client_id].position.x-1][players[input.client_id].position.y] >= 97 
+                            && mapa[players[input.client_id].position.x-1][players[input.client_id].position.y] <= 106)
+                                posi = (int) mapa[players[input.client_id].position.x-1][players[input.client_id].position.y];
+                            else if(mapa[players[input.client_id].position.x][players[input.client_id].position.y+1] >= 97 
+                            && mapa[players[input.client_id].position.x][players[input.client_id].position.y+1] <= 106)
+                                posi = (int) mapa[players[input.client_id].position.x][players[input.client_id].position.y+1];
+                            else if(mapa[players[input.client_id].position.x][players[input.client_id].position.y-1] >= 97 
+                            && mapa[players[input.client_id].position.x][players[input.client_id].position.y-1] <= 106)
+                                posi = (int) mapa[players[input.client_id].position.x][players[input.client_id].position.y-1];
                     
                             // Se o player encontrado foi do time adversário, ele é congelado
-                            if(players[posi - 97].team != players[i].team){
+                            if(players[posi - 97].team != players[input.client_id].team){
                                 players[posi - 97].estaCongelado = 1;
                                 
                                 //jogada_server.todosJogadores = players[posi - 97]; 
@@ -429,46 +445,52 @@ void runGame(){
                             }
                         
                             if(flag){
-                                posi = i + 97;
+                                posi = input.client_id + 97;
 
                                 // Verifica se tem algum player congelado ao redor do player atual e salva a posição dele caso tenha algo
-                                if(mapa[players[i].position.x+1][players[i].position.y] >= 107 
-                                && mapa[players[i].position.x+1][players[i].position.y] <= 116)
-                                    posi = (int) mapa[players[i].position.x+1][players[i].position.y];   
-                                else if(mapa[players[i].position.x-1][players[i].position.y] >= 107 
-                                && mapa[players[i].position.x-1][players[i].position.y] <= 116)
-                                    posi = (int) mapa[players[i].position.x-1][players[i].position.y];
-                                else if(mapa[players[i].position.x][players[i].position.y+1] >= 107 
-                                && mapa[players[i].position.x][players[i].position.y+1] <= 116)
-                                    posi = (int) mapa[players[i].position.x][players[i].position.y+1];
-                                else if(mapa[players[i].position.x][players[i].position.y-1] >= 107 
-                                && mapa[players[i].position.x][players[i].position.y-1] <= 116)
-                                    posi = (int) mapa[players[i].position.x][players[i].position.y-1];
+                                if(mapa[players[input.client_id].position.x+1][players[input.client_id].position.y] >= 107 
+                                && mapa[players[input.client_id].position.x+1][players[input.client_id].position.y] <= 116)
+                                    posi = (int) mapa[players[input.client_id].position.x+1][players[input.client_id].position.y];   
+                                else if(mapa[players[input.client_id].position.x-1][players[input.client_id].position.y] >= 107 
+                                && mapa[players[input.client_id].position.x-1][players[input.client_id].position.y] <= 116)
+                                    posi = (int) mapa[players[input.client_id].position.x-1][players[input.client_id].position.y];
+                                else if(mapa[players[input.client_id].position.x][players[input.client_id].position.y+1] >= 107 
+                                && mapa[players[input.client_id].position.x][players[input.client_id].position.y+1] <= 116)
+                                    posi = (int) mapa[players[input.client_id].position.x][players[input.client_id].position.y+1];
+                                else if(mapa[players[input.client_id].position.x][players[input.client_id].position.y-1] >= 107 
+                                && mapa[players[input.client_id].position.x][players[input.client_id].position.y-1] <= 116)
+                                    posi = (int) mapa[players[input.client_id].position.x][players[input.client_id].position.y-1];
 
                                 // Se o player encontrado foi do mesmo time, ele é descongelado
-                                if((players[posi - 97].team == players[i].team) && (posi != (i + 97))){
+                                if((players[posi - 97].team == players[input.client_id].team) && (posi != (input.client_id + 97))){
                                     players[posi - 97].estaCongelado = 0;
                                     //jogada_server.todosJogadores = players[posi - 97]; 
                                     jogada_server.tipo = DESCONGELA;
                                     //broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));      
                                 }
                             }
-                            players[i].congelou = 1;
-                            players[i].congelamentos--;   
+                            players[input.client_id].congelou = 1;
+                            players[input.client_id].congelamentos--;   
                         }
                                               
                     }
+                    else if(jogada_client.tipo == ENDGAME){
+                        //printf("oi");
+                        printf("%s disconnected id = %d\n", players[input.client_id].name, input.client_id);
+                        disconnectClient(input.client_id);
+                        jogada_client.tipo = -1;
+                    }
 
                     // Se ele chegou na bandeira vermelha e ele é do time azul ou Se ele chegou na bandeira azul e ele é do time vermelho = ele tá quase ganhando!
-                    if((players[i].position.x == X_FLAG_RED && players[i].position.y == Y_FLAG_RED && players[i].team == 1) || (players[i].position.x == X_FLAG_BLUE && players[i].position.y == Y_FLAG_BLUE && players[i].team == 2)){
-                        if(mapa[players[i].position.x][players[i].position.y] == BANDEIRA_RED){
-                            players[i].comBandeira = 1;
-                            mapa[players[i].position.x][players[i].position.y] = (char)(players[i].id + 97);
+                    if((players[input.client_id].position.x == X_FLAG_RED && players[input.client_id].position.y == Y_FLAG_RED && players[input.client_id].team == 1) || (players[input.client_id].position.x == X_FLAG_BLUE && players[input.client_id].position.y == Y_FLAG_BLUE && players[input.client_id].team == 2)){
+                        if(mapa[players[input.client_id].position.x][players[input.client_id].position.y] == BANDEIRA_RED){
+                            players[input.client_id].comBandeira = 1;
+                            mapa[players[input.client_id].position.x][players[input.client_id].position.y] = (char)(players[input.client_id].id + 97);
                         }
                             
                     }
                     // Se ele chegou na base vermelha, ele é do time vermelho e está com a bandeira azul = ele ganhou uma partida!
-                    else if(((players[i].position.x == X_ENTRADA_1_RED && players[i].position.y == Y_ENTRADA_1_RED) || (players[i].position.x == X_ENTRADA_2_RED && players[i].position.y == Y_ENTRADA_2_RED) || (players[i].position.x == X_ENTRADA_3_RED && players[i].position.y == Y_ENTRADA_3_RED)) && (players[i].team == 2) && (players[i].comBandeira == 1)){
+                    else if(((players[input.client_id].position.x == X_ENTRADA_1_RED && players[input.client_id].position.y == Y_ENTRADA_1_RED) || (players[input.client_id].position.x == X_ENTRADA_2_RED && players[input.client_id].position.y == Y_ENTRADA_2_RED) || (players[input.client_id].position.x == X_ENTRADA_3_RED && players[input.client_id].position.y == Y_ENTRADA_3_RED)) && (players[input.client_id].team == 2) && (players[input.client_id].comBandeira == 1)){
                         PROTOCOLO_JOGO msg_final;
                         strcpy(msg_final.mensagem, "Time Vermelho Ganhou!");
                         msg_final.tipo = ENDGAME;
@@ -476,7 +498,7 @@ void runGame(){
                         fim = 1;
                     }
                     // Se ele chegou na base azul com a bandeira vermelha e ele é do time azul = ele ganhou uma partida!
-                    else if(((players[i].position.x == X_ENTRADA_1_BLUE && players[i].position.y == Y_ENTRADA_1_BLUE) || (players[i].position.x == X_ENTRADA_2_BLUE && players[i].position.y == Y_ENTRADA_2_BLUE) || (players[i].position.x == X_ENTRADA_3_BLUE && players[i].position.y == Y_ENTRADA_3_BLUE)) && (players[i].team == 1) && (players[i].comBandeira == 1)){
+                    else if(((players[input.client_id].position.x == X_ENTRADA_1_BLUE && players[input.client_id].position.y == Y_ENTRADA_1_BLUE) || (players[input.client_id].position.x == X_ENTRADA_2_BLUE && players[input.client_id].position.y == Y_ENTRADA_2_BLUE) || (players[input.client_id].position.x == X_ENTRADA_3_BLUE && players[input.client_id].position.y == Y_ENTRADA_3_BLUE)) && (players[input.client_id].team == 1) && (players[input.client_id].comBandeira == 1)){
                         PROTOCOLO_JOGO msg_final;
                         strcpy(msg_final.mensagem, "Time Azul Ganhou!");
                         msg_final.tipo = ENDGAME;
@@ -488,13 +510,16 @@ void runGame(){
                         for(int i = 0; i < qntJogadores; i++){
                             jogada_server.todosJogadores[i] = players[i];
                         }
-                        
+                        // printf("2 - %d %d \n", players[input.client_id].position.x, players[input.client_id].position.y);
+                        printf("posi x = %d, posi y = %d\n", jogada_server.todosJogadores[input.client_id].position.x, jogada_server.todosJogadores[input.client_id].position.y);
                         jogada_server.tipo = GAME;
                         broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));
                     }
                 }
-            }
+            // }
+        // }
         }
+        
         tempoAtual = al_get_time() - tempoInicio;
         tempo.tipo = TEMPO;
         sprintf(tempo.mensagem, "%lf", tempoAtual);
