@@ -399,7 +399,7 @@ void runGame(){
     al_flip_display();
 
     recvMsgFromServer((PROTOCOLO_JOGO *) &estado_jogo, WAIT_FOR_IT);
-    jogador = estado_jogo.jogadorAtual[jogador.id];
+    jogador = estado_jogo.todosJogadores[jogador.id];
     
     
     while(!al_event_queue_is_empty(fila_eventos)){
@@ -415,7 +415,7 @@ void runGame(){
                     //seta para cima
                     case ALLEGRO_KEY_W:
                         msg.tipo= ANDAR_CIMA;
-                        msg.jogadorAtual[0] = jogador;
+                        msg.todosJogadores[0] = jogador;
                     // al_wait_for_event(fila_eventos,&evento2);
                         ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                         if(ret != SERVER_DISCONNECTED){
@@ -427,7 +427,7 @@ void runGame(){
                     //Baixo
                     case ALLEGRO_KEY_S:
                         msg.tipo= ANDAR_BAIXO;
-                        msg.jogadorAtual[0] = jogador;
+                        msg.todosJogadores[0] = jogador;
                         //al_wait_for_event(fila_eventos,&evento2);
                         ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                         if(ret != SERVER_DISCONNECTED){
@@ -439,7 +439,7 @@ void runGame(){
                     //Esquerda
                     case ALLEGRO_KEY_A:
                         msg.tipo= ANDAR_ESQUERDA;
-                        msg.jogadorAtual[0] = jogador;
+                        msg.todosJogadores[0] = jogador;
                         //al_wait_for_event(fila_eventos,&evento2);
                         ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                         if(ret != SERVER_DISCONNECTED){
@@ -451,7 +451,7 @@ void runGame(){
                     //Direita.
                     case ALLEGRO_KEY_D:
                         msg.tipo= ANDAR_DIREITA;
-                        msg.jogadorAtual[0] = jogador;
+                        msg.todosJogadores[0] = jogador;
                         //al_wait_for_event(fila_eventos,&evento2);
                         ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                         if(ret != SERVER_DISCONNECTED){
@@ -463,7 +463,7 @@ void runGame(){
                     //bota trap    
                     case ALLEGRO_KEY_SPACE:
                         msg.tipo= BOTARTRAPS;
-                        msg.jogadorAtual[0] = jogador;
+                        msg.todosJogadores[0] = jogador;
                         //al_wait_for_event(fila_eventos,&evento2);
                         ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
 
@@ -477,7 +477,7 @@ void runGame(){
 
                     case ALLEGRO_KEY_LSHIFT:
                         msg.tipo = CONGELA;
-                        msg.jogadorAtual[0] = jogador;
+                        msg.todosJogadores[0] = jogador;
                         ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
 
                         if(ret != SERVER_DISCONNECTED && jogador.congelamentos > 0){
@@ -500,7 +500,7 @@ void runGame(){
                 al_draw_bitmap(congelado,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
                 
                 for(i=0;estado_jogo.qntJogadores;i++){
-                    if(estado_jogo.jogadorAtual[i].congelou && estado_jogo.jogadorAtual[i].team==jogador.team){
+                    if(estado_jogo.todosJogadores[i].congelou && estado_jogo.todosJogadores[i].team==jogador.team){
                         al_draw_bitmap(mapa,0,0,0);
                         al_draw_bitmap(congelado,current_x,current_y,ALLEGRO_FLIP_HORIZONTAL);
                     }

@@ -132,11 +132,11 @@ int main() {
                 players[msg_client.jogador.id] = msg_client.jogador;
 
                 if(msg_client.jogador.id == 0){
-                    if(qntJogadoresProntos >= 4){
+                    //if(qntJogadoresProntos >= 4){
                         jogada_server.qntJogadores = jogadores;
                         jogada_server.tipo = COMECOU;
                         notReady = 0;
-                    }    
+                    //}    
                 }
                 else{
                     jogada_server.tipo = WAITING;
