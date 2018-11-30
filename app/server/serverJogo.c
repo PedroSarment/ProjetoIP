@@ -173,9 +173,9 @@ int main() {
                     if(jogada.tipo == ANDAR_CIMA){
                         jogada_server.tipo = ANDAR_CIMA; 
                         if(players[i].position.y != 0){          // Verifica se não é o fim do mapa
-                            if(mapa[players[i].position.x][players[i].position.y-1] == VAZIO || mapa[players[i].position.x][players[i].position.y-1] == TRAP_TEAM_BLUE 
-                            || mapa[players[i].position.x][players[i].position.y-1] == TRAP_TEAM_RED ||  mapa[players[i].position.x][players[i].position.y-1] == BANDEIRA_BLUE 
-                            || mapa[players[i].position.x][players[i].position.y-1] == BANDEIRA_RED ){
+                            if(mapa[players[i].position.x][players[i].position.y-4] == VAZIO || mapa[players[i].position.x][players[i].position.y-4] == TRAP_TEAM_BLUE 
+                            || mapa[players[i].position.x][players[i].position.y-4] == TRAP_TEAM_RED ||  mapa[players[i].position.x][players[i].position.y-4] == BANDEIRA_BLUE 
+                            || mapa[players[i].position.x][players[i].position.y-4] == BANDEIRA_RED ){
                                  //considerando 0 um espaco livre
                                 if(mapa[players[i].position.x][players[i].position.y] == (char)((players[i].id + 97) + 10)){ // se o mapa = indicador do id do player + indicador da trap
                                     if(players[i].team == 1)
@@ -191,7 +191,7 @@ int main() {
                                 jogada_server.yAnterior = players[i].position.y;
                                 jogada_server.itemAnterior = mapa[players[i].position.x][players[i].position.y];
 
-                                players[i].position.y--;
+                                players[i].position.y -= 4;
                                 mapa[players[i].position.x][players[i].position.y] = (char)(players[i].id + 97); // mapa = indicador do id do player
 
                                 if(players[i].team == 1){
@@ -220,9 +220,9 @@ int main() {
                     else if(jogada.tipo == ANDAR_BAIXO){
                         if(players[i].position.y != Y_MAX){
                             jogada_server.tipo = ANDAR_BAIXO;
-                            if(mapa[players[i].position.x][players[i].position.y+1] == VAZIO || mapa[players[i].position.x][players[i].position.y+1] == TRAP_TEAM_BLUE
-                            || mapa[players[i].position.x][players[i].position.y+1] == TRAP_TEAM_RED || mapa[players[i].position.x][players[i].position.y+1] == BANDEIRA_BLUE
-                            || mapa[players[i].position.x][players[i].position.y+1] == BANDEIRA_RED){
+                            if(mapa[players[i].position.x][players[i].position.y+4] == VAZIO || mapa[players[i].position.x][players[i].position.y+4] == TRAP_TEAM_BLUE
+                            || mapa[players[i].position.x][players[i].position.y+4] == TRAP_TEAM_RED || mapa[players[i].position.x][players[i].position.y+4] == BANDEIRA_BLUE
+                            || mapa[players[i].position.x][players[i].position.y+4] == BANDEIRA_RED){
                                 
                               if(mapa[players[i].position.x][players[i].position.y] == (char)((players[i].id + 97) + 10)){ // se o mapa = indicador do id do player + indicador da trap
                                     if(players[i].team == 1)
@@ -238,7 +238,7 @@ int main() {
                                 jogada_server.yAnterior = players[i].position.y;
                                 jogada_server.itemAnterior = mapa[players[i].position.x][players[i].position.y];
 
-                                players[i].position.y++;
+                                players[i].position.y += 4;
                                 mapa[players[i].position.x][players[i].position.y] = (char)(players[i].id + 97); // mapa = indicador do id do player
 
                                 if(players[i].team == 1){
@@ -265,9 +265,9 @@ int main() {
                     // Verifica se o jogador andou para direita
                     else if(jogada.tipo == ANDAR_DIREITA){
                         if(players[i].position.x != X_MAX){
-                            if(mapa[players[i].position.x+1][players[i].position.y] == VAZIO || mapa[players[i].position.x+1][players[i].position.y] == TRAP_TEAM_BLUE 
-                            || mapa[players[i].position.x+1][players[i].position.y] == TRAP_TEAM_RED || mapa[players[i].position.x+1][players[i].position.y] == BANDEIRA_BLUE 
-                            || mapa[players[i].position.x+1][players[i].position.y] == BANDEIRA_RED){
+                            if(mapa[players[i].position.x+4][players[i].position.y] == VAZIO || mapa[players[i].position.x+4][players[i].position.y] == TRAP_TEAM_BLUE 
+                            || mapa[players[i].position.x+4][players[i].position.y] == TRAP_TEAM_RED || mapa[players[i].position.x+4][players[i].position.y] == BANDEIRA_BLUE 
+                            || mapa[players[i].position.x+4][players[i].position.y] == BANDEIRA_RED){
                                 
                               if(mapa[players[i].position.x][players[i].position.y] == (char)((players[i].id + 97) + 10)){ // se o mapa = indicador do id do player + indicador da trap
                                     if(players[i].team == 1)
@@ -283,7 +283,7 @@ int main() {
                                 jogada_server.yAnterior = players[i].position.y;
                                 jogada_server.itemAnterior = mapa[players[i].position.x][players[i].position.y];
 
-                                players[i].position.x++;
+                                players[i].position.x += 4;
                                 mapa[players[i].position.x][players[i].position.y] = (char)(players[i].id + 97); // mapa = indicador do id do player
 
                                 if(players[i].team == 1){
@@ -310,9 +310,9 @@ int main() {
                     // Verifica se o jogador andou para a esuqerda
                     else if(jogada.tipo == ANDAR_ESQUERDA){
                         if(players[i].position.x != 0){
-                            if(mapa[players[i].position.x-1][players[i].position.y] == VAZIO || mapa[players[i].position.x-1][players[i].position.y] == TRAP_TEAM_BLUE 
-                            || mapa[players[i].position.x-1][players[i].position.y] == TRAP_TEAM_RED || mapa[players[i].position.x-1][players[i].position.y] == BANDEIRA_BLUE 
-                            || mapa[players[i].position.x-1][players[i].position.y] == BANDEIRA_RED){
+                            if(mapa[players[i].position.x-4][players[i].position.y] == VAZIO || mapa[players[i].position.x-4][players[i].position.y] == TRAP_TEAM_BLUE 
+                            || mapa[players[i].position.x-4][players[i].position.y] == TRAP_TEAM_RED || mapa[players[i].position.x-4][players[i].position.y] == BANDEIRA_BLUE 
+                            || mapa[players[i].position.x-4][players[i].position.y] == BANDEIRA_RED){
                                 
                               if(mapa[players[i].position.x][players[i].position.y] == (char)((players[i].id + 97) + 10)){ // se o mapa = indicador do id do player + indicador da trap
                                     if(players[i].team == 1)
@@ -328,7 +328,7 @@ int main() {
                                 jogada_server.yAnterior = players[i].position.y;
                                 jogada_server.itemAnterior = mapa[players[i].position.x][players[i].position.y];
 
-                                players[i].position.x--;
+                                players[i].position.x -= 4;
                                 mapa[players[i].position.x][players[i].position.y] = (char)(players[i].id + 97); // mapa = indicador do id do player
 
                                 if(players[i].team == 1){
