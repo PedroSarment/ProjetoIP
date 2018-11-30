@@ -49,7 +49,9 @@ char mapa [X_MAX][Y_MAX];
 Player players[6];
 int qntJogadores = 0;
 PROTOCOLO_JOGO jogada_client, jogada_server, tempo;                 // Protocolo de envio a ser enviado para o cliente com as infos do jogo;
-
+int fim = 0;
+struct msg_ret_t input;
+PROTOCOLO_JOGO jogada, updateServer;
 
 //INICIALIZAÇÃO DAS FUNÇÕES
 void inicializaMapa();
@@ -70,7 +72,7 @@ int main() {
     inicializaJogadores();
 
     //JOGO
-    runGame();
+    runGameTest();
    
     return 0;
 }
@@ -548,21 +550,24 @@ void runGame(){
 }
 
 void runGameTest(){
-    int fim = 0;
-    struct msg_ret_t input;
-    PROTOCOLO_JOGO jogada, updateServer;
+    char teste;
 
     while(!fim){
         input = recvMsgFromClient((PROTOCOLO_JOGO *) &jogada, 0, WAIT_FOR_IT);
-       
+        if(input.status!=NO_MESSAGE){
             if(jogada.tipo == ANDAR_CIMA){
+                
                 updateServer.tipo=GAME;
                 updateServer.todosJogadores[0]=jogada.todosJogadores[0];
                 updateServer.todosJogadores[0].position.y-=4;
-                broadcast((PROTOCOLO_JOGO *) &jogada, sizeof(PROTOCOLO_JOGO));
+                // broadcast(&teste, sizeof(char));
+                sendMsgToClient(&updateServer, sizeof(PROTOCOLO_JOGO), 0);
+                printf("enviou\n");
                 //players[input.client_id].position.y -= 4;
             }
             printf("tipo %d\n", jogada.tipo);
+        }
+        
         
     }
 }
