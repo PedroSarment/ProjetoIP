@@ -116,9 +116,6 @@ void error_msg(char *text){
 int menu(){
     int ret;
     //aqui puxa a tela inicial.
-    al_clear_to_color(al_map_rgb(255,255,255));
-    al_flip_display();
-    al_clear_to_color(al_map_rgb(0,0,0));
     al_draw_bitmap(mapa,0,0,0);
     al_flip_display();
     al_draw_bitmap(logo,0,0,0);
@@ -128,8 +125,8 @@ int menu(){
     al_draw_bitmap(botao1,545,320+120,0);
     al_draw_bitmap(setinha_dir,510,285,0);
     al_draw_bitmap(setinha_esq,730,285,0);
-    fonte = al_load_font("./app/Resources/Fontes/kenvector_future.ttf", 20, 0);
-    fonte_grande = al_load_font("./app/Resources/Fontes/kenvector_future.ttf", 40, 0);
+    fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 20, 0);
+    fonte_grande = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 52, 0);
     al_draw_text(fonte,al_map_rgb(5,5,5),645,290,ALLEGRO_ALIGN_CENTER,"Iniciar o jogo");
     al_draw_text(fonte,al_map_rgb(5,5,5),645,370,ALLEGRO_ALIGN_CENTER,"Tutorial");
     al_draw_text(fonte,al_map_rgb(5,5,5),645,450,ALLEGRO_ALIGN_CENTER,"Creditos");
@@ -240,7 +237,7 @@ void carrega_arquivos(){
     botao2 = al_load_bitmap("./app/Resources/Icons/grey_button03.png");
     botao2_pressionado = al_load_bitmap("./app/Resources/Icons/grey_button04.png");
     logo = al_load_bitmap("./app/Resources/Characters/logo2.png");
-    mapa = al_load_bitmap("./app/Resources/Characters/mapa.jpeg");
+    mapa = al_load_bitmap("./app/Resources/Characters/mapa.png");
     setinha_dir = al_load_bitmap("./app/Resources/Icons/yellow_sliderRight.png");
     setinha_esq = al_load_bitmap("./app/Resources/Icons/yellow_sliderLeft.png");
     fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 24, 0);
@@ -421,8 +418,9 @@ void runGame(){
                     msg.todosJogadores[0] = jogador;
                     //al_wait_for_event(fila_eventos,&evento2);
                     ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
+                    al_flip_display();
                     break;
-                //Direita.
+                    //Direita.
                 case ALLEGRO_KEY_D:
                     msg.tipo= ANDAR_DIREITA;
                     msg.todosJogadores[0] = jogador;
@@ -433,6 +431,7 @@ void runGame(){
                     //     jogador.position.x+=4;
                     //     al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
                     // }
+                    al_flip_display();
                     break;
                 //bota trap    
                 case ALLEGRO_KEY_SPACE:
@@ -444,6 +443,7 @@ void runGame(){
                     //     al_draw_bitmap(trap,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
                     //     al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
                     // }
+                    al_flip_display();
                     break;
                 case ALLEGRO_KEY_LSHIFT:
                     msg.tipo = CONGELA;
@@ -454,6 +454,7 @@ void runGame(){
                         al_draw_bitmap(shuriken,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
                         al_draw_bitmap(capaceteVerm_2,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
                     }
+                    al_flip_display();
                     break;
                 //esc. sair=1 faz com que o programa saia do loop principal
                 case ALLEGRO_KEY_ESCAPE:
@@ -475,6 +476,7 @@ void runGame(){
         if(estado_jogo.todosJogadores[i].congelou && estado_jogo.todosJogadores[i].team==jogador.team){
             al_draw_bitmap(mapa,0,0,0);
             al_draw_bitmap(congelado,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
+            al_flip_display();
         }
     }
     int n = recvMsgFromServer((PROTOCOLO_JOGO *) &estado_jogo, WAIT_FOR_IT);
@@ -491,11 +493,14 @@ void runGame(){
         // ALLEGRO_EVENT evento2;
         for(i=0;i<estado_jogo.qntJogadores;i++){  
             al_draw_bitmap(capaceteVerm_2, estado_jogo.todosJogadores[i].position.x, estado_jogo.todosJogadores[i].position.y, ALLEGRO_FLIP_HORIZONTAL);
+            al_flip_display();
             if(estado_jogo.todosJogadores[i].estaCongelado){
                 al_draw_bitmap(congelado, estado_jogo.todosJogadores[i].position.x, estado_jogo.todosJogadores[i].position.y, ALLEGRO_FLIP_HORIZONTAL);
+                al_flip_display();
             }
             else if(estado_jogo.todosJogadores[i].congelou){
                 al_draw_bitmap(shuriken, estado_jogo.todosJogadores[i].position.x, estado_jogo.todosJogadores[i].position.y, ALLEGRO_FLIP_HORIZONTAL);
+                al_flip_display();
             }
         }
         // al_draw_bitmap(personagem)
@@ -750,7 +755,7 @@ void readHelmet(){
     else {
         capacetes = capaceteVerm_1;
     }
-    al_clear_to_color(al_map_rgb(255,255,255));
+    al_draw_bitmap(mapa,0,0,0);
     //al_draw_bitmap(logo,0,0,0);
     fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 32, 0);
     al_draw_text(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/6, ALLEGRO_ALIGN_CENTRE, "Escolha seu capacete");
@@ -791,9 +796,9 @@ void readHelmet(){
                 }
             }
             if(!foi){
-                al_clear_to_color(al_map_rgb(255, 255, 255));
+                al_draw_bitmap(mapa,0,0,0);
                 al_draw_text(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/6, ALLEGRO_ALIGN_CENTRE, "Tem certeza?");            
-                al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/5, ALLEGRO_ALIGN_CENTRE, "1-Sim     2-Nao");            
+                al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/5+25, ALLEGRO_ALIGN_CENTRE, "1 - Sim     2 - Nao");            
                 
                 if (tecla == 1) {
                     al_draw_bitmap(capaceteAzul_1_menu, 100,200,0);
@@ -822,7 +827,6 @@ void readHelmet(){
                             break;
                         case ALLEGRO_KEY_PAD_2:
                             foi=1;
-                            capaCheck=0;
                             break;
                     }
                 }
@@ -834,7 +838,7 @@ void readHelmet(){
 }
 int readIP(){
     enum conn_ret_t serverConnection;
-    al_draw_bitmap(logo,0,0,0);
+    al_draw_bitmap(mapa,0,0,0);
     fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
     al_draw_text(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "IP adress: ");
     al_flip_display();
