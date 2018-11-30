@@ -242,7 +242,7 @@ void carrega_arquivos(){
     setinha_esq = al_load_bitmap("./app/Resources/Icons/yellow_sliderLeft.png");
     fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 24, 0);
     trap = al_load_bitmap("./app/Resources/Icons/ice_trap.png");
-    espaco_branco = al_load_bitmap("./app/Resources/Icons/blue_button13.png");
+    espaco_branco = al_load_bitmap("./app/Resources/Icons/blue_button13-1.png");
     shuriken = al_load_bitmap("./app/Resources/Icons/shuriken.png");
     congelado = al_load_bitmap("./app/Resources/Icons/congelado.png");
     capaceteAzul_1_menu = al_load_bitmap("./app/Resources/capacetes/capacete_azul_1.png");
@@ -649,7 +649,8 @@ void readInputIP(ALLEGRO_EVENT event, char str[], int limit){
         if (event.keyboard.keycode == ALLEGRO_KEY_BACKSPACE && strlen(str) != 0){
             str[strlen(str) - 1] = '\0';
         }
-        al_draw_bitmap(logo,0,0,0);
+        al_draw_bitmap(mapa,0,0,0);
+        al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
         //al_draw_bitmap(logo,0,0,0);
         fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
         al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "IP adress: ");
@@ -680,7 +681,8 @@ void readInput2(ALLEGRO_EVENT event, char str[], int limit){
         {
             str[strlen(str) - 1] = '\0';
         }
-        al_draw_bitmap(logo,0,0,0);
+        al_draw_bitmap(mapa,0,0,0);
+        al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
         fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
         al_draw_text(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Login: ");
         al_draw_textf(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "%s", loginP);
@@ -689,9 +691,9 @@ void readInput2(ALLEGRO_EVENT event, char str[], int limit){
 }
 
 void readLogin(){
-    al_clear_to_color(al_map_rgb(255,255,255));
     //al_draw_bitmap(logo,0,0,0);
     fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
+    al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
     al_draw_text(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Login: ");
     al_flip_display();
     ALLEGRO_EVENT_QUEUE *eventsQueue3;
@@ -716,6 +718,7 @@ void readLogin(){
                             login = false;
                         }else{
                             al_clear_to_color(al_map_rgb(255,255,255));
+                            al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
                             al_draw_text(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Login: ");
                             al_draw_textf(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "%s", loginP);
                             al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/4, ALLEGRO_ALIGN_CENTRE, "Digite um nick de no minimo 2 caracteres!");
@@ -839,6 +842,7 @@ void readHelmet(){
 int readIP(){
     enum conn_ret_t serverConnection;
     al_draw_bitmap(mapa,0,0,0);
+    al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
     fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
     al_draw_text(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "IP adress: ");
     al_flip_display();
@@ -869,7 +873,7 @@ int readIP(){
             sendPlayer.jogador = jogador;
             sendPlayer.tipo = INICIAL;
             int ret = sendMsgToServer((PROTOCOLO_INICIAL *) &sendPlayer, sizeof(PROTOCOLO_INICIAL));
-            al_draw_bitmap(logo,0,0,0);
+            al_draw_bitmap(mapa,0,0,0);
             al_draw_text(fonte, al_map_rgb(0, 100 , 200), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Servidor conectado!");
             al_flip_display();
             recvMsgFromServer((PROTOCOLO_INICIAL *) &rcvPlayer, WAIT_FOR_IT);
