@@ -30,7 +30,8 @@ ALLEGRO_DISPLAY *janela = NULL;
 ALLEGRO_AUDIO_STREAM *musica_fundo = NULL;
 ALLEGRO_BITMAP *mapa = NULL;
 ALLEGRO_EVENT_QUEUE *fila_eventos = NULL;
-ALLEGRO_BITMAP *logo = NULL;
+ALLEGRO_BITMAP *fundo = NULL;
+ALLEGRO_BITMAP *fundo_pergaminho = NULL;
 ALLEGRO_KEYBOARD *teclado = NULL;
 ALLEGRO_EVENT_QUEUE *eventsQueue2=NULL;
 ALLEGRO_EVENT_QUEUE *evento_ip=NULL;
@@ -54,7 +55,7 @@ ALLEGRO_BITMAP *capacetes = NULL;
 ALLEGRO_BITMAP *trap = NULL;
 ALLEGRO_BITMAP *shuriken = NULL;
 ALLEGRO_BITMAP *congelado = NULL;
-ALLEGRO_BITMAP *espaco_branco = NULL;
+// ALLEGRO_BITMAP *espaco_branco = NULL;
 
 ALLEGRO_EVENT evento;
 PROTOCOLO_INICIAL sendPlayer, rcvPlayer;
@@ -93,7 +94,7 @@ int main(){
 
     iniciar();
     startScreen();
-    printf("%lf", sizeof(PROTOCOLO_JOGO));
+    //printf("%lf", sizeof(PROTOCOLO_JOGO));
     ret = menu();
     if(ret ==1){
         lobby();
@@ -121,9 +122,7 @@ void error_msg(char *text){
 int menu(){
     int ret;
     //aqui puxa a tela inicial.
-    al_draw_bitmap(mapa,0,0,0);
-    al_flip_display();
-    al_draw_bitmap(logo,0,0,0);
+    al_draw_bitmap(fundo,0,0,0);
     al_flip_display();
     al_draw_bitmap(botao1,545,240+40,0);
     al_draw_bitmap(botao1,545,240+120,0);
@@ -191,7 +190,7 @@ int menu(){
                 switch(opcao){
                     case 1:
                     //caso a opcao seja 1, printar a seta em cima do "iniciar o jogo"
-                        al_draw_bitmap(mapa,0,0,0);
+                        al_draw_bitmap(fundo_pergaminho,0,0,0);
                         al_draw_bitmap(botao1_pressionado,545,280,0);
                         al_draw_bitmap(botao1,545,360,0);
                         al_draw_bitmap(botao1,545,440,0);
@@ -204,7 +203,7 @@ int menu(){
                         break;
                     case 2:
                     //caso a opcao seja 2, printar a seta em cima de tutorial
-                        al_draw_bitmap(mapa,0,0,0);
+                        al_draw_bitmap(fundo_pergaminho,0,0,0);
                         al_draw_bitmap(botao1,545,240+40,0);
                         al_draw_bitmap(botao1_pressionado,545,240+120,0);
                         al_draw_bitmap(botao1,545,320+120,0);
@@ -217,7 +216,7 @@ int menu(){
                         break;
                     case 3:
                     //caso a opcao seja 3, printar a seta em cima de creditos
-                        al_draw_bitmap(mapa,0,0,0);
+                        al_draw_bitmap(fundo_pergaminho,0,0,0);
                         al_draw_bitmap(botao1,545,280,0);
                         al_draw_bitmap(botao1,545,360,0);
                         al_draw_bitmap(botao1_pressionado,545,320+120,0);
@@ -237,17 +236,16 @@ int menu(){
 }
 void carrega_arquivos(){
     //aqui serao colocados todos os arquivos a serem carregados no jogo
-    botao1 = al_load_bitmap("./app/Resources/Icons/grey_button00.png");
-    botao1_pressionado = al_load_bitmap("./app/Resources/Icons/grey_button01.png");
-    botao2 = al_load_bitmap("./app/Resources/Icons/grey_button03.png");
-    botao2_pressionado = al_load_bitmap("./app/Resources/Icons/grey_button04.png");
-    logo = al_load_bitmap("./app/Resources/Characters/logo2.png");
+    botao1 = al_load_bitmap("./app/Resources/Icons/grey_button03.png");
+    botao1_pressionado = al_load_bitmap("./app/Resources/Icons/grey_button04.png");
+    fundo = al_load_bitmap("./app/Resources/Icons/Plano_de_fundo.jpeg");
+    fundo_pergaminho = al_load_bitmap("./app/Resources/Icons/Plano_de_fundo_perg.jpeg");
     mapa = al_load_bitmap("./app/Resources/Characters/mapa.png");
     setinha_dir = al_load_bitmap("./app/Resources/Icons/yellow_sliderRight.png");
     setinha_esq = al_load_bitmap("./app/Resources/Icons/yellow_sliderLeft.png");
     fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 24, 0);
     trap = al_load_bitmap("./app/Resources/Icons/ice_trap.png");
-    espaco_branco = al_load_bitmap("./app/Resources/Icons/blue_button13-1.png");
+    // espaco_branco = al_load_bitmap("./app/Resources/Icons/blue_button13-1.png");
     shuriken = al_load_bitmap("./app/Resources/Icons/shuriken.png");
     congelado = al_load_bitmap("./app/Resources/Icons/congelado.png");
     capaceteAzul_1_menu = al_load_bitmap("./app/Resources/capacetes/capacete_azul_1.png");
@@ -258,7 +256,7 @@ void carrega_arquivos(){
     capaceteVerm_1 = al_load_bitmap("./app/Resources/Characters/Personagem(1).png");
     capaceteAzul_2 = al_load_bitmap("./app/Resources/Characters/Personagem(1).png");
     capaceteVerm_2 = al_load_bitmap("./app/Resources/Characters/Personagem(1).png");
-    if(!botao1 || !botao1_pressionado || !botao2 || !botao2_pressionado || !logo || !mapa || !capaceteVerm_2_menu || !capaceteAzul_2_menu ){
+    if(!botao1 || !botao1_pressionado || !fundo || !mapa || !capaceteVerm_2_menu || !capaceteAzul_2_menu ){
         //checar se foram abertos, adicionar o nome do arquivo depois de um ou (||!).
         printf("Nao foi possivel carregar um dos botoes.");
         al_destroy_audio_stream(musica_fundo);
@@ -350,7 +348,7 @@ int iniciar(){
 }
 void startScreen(){
     // printf("%ld", sizeof(PROTOCOLO_JOGO));
-    al_draw_bitmap(logo,0,0,0);
+    al_draw_bitmap(fundo,0,0,0);
     fonte = al_load_font("./app/Resources/Fontes/Minecraft.ttf", 48, 0);
     al_draw_text(fonte, al_map_rgb(255, 255, 255), 640, 600, ALLEGRO_ALIGN_CENTRE, "PRESS START!");
     al_flip_display();
@@ -676,9 +674,9 @@ void readInputIP(ALLEGRO_EVENT event, char str[], int limit){
         if (event.keyboard.keycode == ALLEGRO_KEY_BACKSPACE && strlen(str) != 0){
             str[strlen(str) - 1] = '\0';
         }
-        al_draw_bitmap(mapa,0,0,0);
-        al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
-        //al_draw_bitmap(logo,0,0,0);
+        al_draw_bitmap(fundo_pergaminho,0,0,0);
+        // al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
+        //al_draw_bitmap(fundo,0,0,0);
         fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
         al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "IP adress: ");
         al_draw_textf(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "%s", ip);
@@ -708,8 +706,8 @@ void readInput2(ALLEGRO_EVENT event, char str[], int limit){
         {
             str[strlen(str) - 1] = '\0';
         }
-        al_draw_bitmap(mapa,0,0,0);
-        al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
+        al_draw_bitmap(fundo_pergaminho,0,0,0);
+        // al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
         fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
         al_draw_text(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Login: ");
         al_draw_textf(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "%s", loginP);
@@ -718,9 +716,9 @@ void readInput2(ALLEGRO_EVENT event, char str[], int limit){
 }
 
 void readLogin(){
-    //al_draw_bitmap(logo,0,0,0);
+    //al_draw_bitmap(fundo,0,0,0);
     fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
-    al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
+    // al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
     al_draw_text(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Login: ");
     al_flip_display();
     ALLEGRO_EVENT_QUEUE *eventsQueue3;
@@ -745,7 +743,7 @@ void readLogin(){
                             login = false;
                         }else{
                             al_clear_to_color(al_map_rgb(255,255,255));
-                            al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
+                            // al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
                             al_draw_text(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Login: ");
                             al_draw_textf(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "%s", loginP);
                             al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/4, ALLEGRO_ALIGN_CENTRE, "Digite um nick de no minimo 2 caracteres!");
@@ -785,20 +783,19 @@ void readHelmet(){
     else {
         capacetes = capaceteVerm_1;
     }
-    al_draw_bitmap(mapa,0,0,0);
-    //al_draw_bitmap(logo,0,0,0);
+    al_draw_bitmap(fundo_pergaminho,0,0,0);
+    //al_draw_bitmap(fundo,0,0,0);
     fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 32, 0);
-    al_draw_text(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/6, ALLEGRO_ALIGN_CENTRE, "Escolha seu capacete");
-    al_draw_bitmap(capacetes, 0,0,0);
+    al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "Escolha seu capacete");
     al_flip_display();
     while(capaCheck){
         while(!al_is_event_queue_empty(fila_eventos)){
-            al_draw_bitmap(mapa,0,0,0);
-            al_draw_text(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/6, ALLEGRO_ALIGN_CENTRE, "Escolha seu capacete");           
-            al_draw_bitmap(capaceteAzul_1_menu, 100,60,0);
-            al_draw_bitmap(capaceteVerm_1_menu, 980,60,0);
-            al_draw_bitmap(capaceteAzul_2_menu, 100,300,0);
-            al_draw_bitmap(capaceteVerm_2_menu, 980,300,0);
+            al_draw_bitmap(fundo,0,0,0);
+            al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "Escolha seu capacete");           
+            al_draw_bitmap(capaceteAzul_1_menu, 100,100,0);
+            al_draw_bitmap(capaceteVerm_1_menu, 980,100,0);
+            al_draw_bitmap(capaceteAzul_2_menu, 100,340,0);
+            al_draw_bitmap(capaceteVerm_2_menu, 980,340,0);
             al_flip_display();
             ALLEGRO_EVENT evento;
             int tecla;
@@ -826,9 +823,9 @@ void readHelmet(){
                 }
             }
             if(!foi){
-                al_draw_bitmap(mapa,0,0,0);
-                al_draw_text(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/6, ALLEGRO_ALIGN_CENTRE, "Tem certeza?");            
-                al_draw_text(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/5+25, ALLEGRO_ALIGN_CENTRE, "1 - Sim     2 - Nao");            
+                al_draw_bitmap(fundo,0,0,0);
+                al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "Tem certeza?");            
+                al_draw_text(fonte, al_map_rgb(255, 255, 255), LARGURA_TELA/2, ALTURA_TELA/2+50, ALLEGRO_ALIGN_CENTRE, "1 - Sim     2 - Nao");            
                 
                 if (tecla == 1) {
                     al_draw_bitmap(capaceteAzul_1_menu, 100,200,0);
@@ -868,8 +865,8 @@ void readHelmet(){
 }
 int readIP(){
     enum conn_ret_t serverConnection;
-    al_draw_bitmap(mapa,0,0,0);
-    al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
+    al_draw_bitmap(fundo_pergaminho,0,0,0);
+    // al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
     fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
     al_draw_text(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "IP adress: ");
     al_flip_display();
@@ -900,7 +897,7 @@ int readIP(){
             sendPlayer.jogador = jogador;
             sendPlayer.tipo = INICIAL;
             int ret = sendMsgToServer((PROTOCOLO_INICIAL *) &sendPlayer, sizeof(PROTOCOLO_INICIAL));
-            al_draw_bitmap(mapa,0,0,0);
+            al_draw_bitmap(fundo,0,0,0);
             al_draw_text(fonte, al_map_rgb(0, 100 , 200), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Servidor conectado!");
             al_flip_display();
             recvMsgFromServer((PROTOCOLO_INICIAL *) &rcvPlayer, WAIT_FOR_IT);
@@ -915,7 +912,7 @@ int readIP(){
             return 1;
         }
         else if(serverConnection == SERVER_DOWN){
-            al_clear_to_color(al_map_rgb(255,255,255));
+            al_draw_bitmap(fundo,0,0,0);
             al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Servidor fora do ar, tente novamente");
             al_flip_display();
             al_rest(2.0);
@@ -923,7 +920,7 @@ int readIP(){
             strcpy(ip, "");
         }
         else if(serverConnection == SERVER_FULL){
-            al_clear_to_color(al_map_rgb(255,255,255));
+            al_draw_bitmap(fundo,0,0,0);
             al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Servidor cheio!");
             al_flip_display();
             al_rest(2.0); 
@@ -931,7 +928,7 @@ int readIP(){
             strcpy(ip, "");       
         }
         else if(serverConnection == SERVER_CLOSED){
-            al_clear_to_color(al_map_rgb(255,255,255));
+            al_draw_bitmap(fundo,0,0,0);
             al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Servidor fechado!");
             al_flip_display();
             al_rest(2.0);
@@ -939,7 +936,7 @@ int readIP(){
             strcpy(ip, "");
         }
         else if(serverConnection == SERVER_TIMEOUT){
-            al_clear_to_color(al_map_rgb(255,255,255));
+            al_draw_bitmap(fundo,0,0,0);
             al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_LEFT, "Tempo excedido! Tente novamente");
             al_flip_display();
             al_rest(2.0);
@@ -958,13 +955,13 @@ void lobby(){
 
     //aqui puxa a tela inicial.
     al_clear_to_color(al_map_rgb(255,255,255));
-    // al_draw_bitmap(logo,0,0,0);
+    // al_draw_bitmap(fundo,0,0,0);
     al_flip_display();
     // al_rest(5.0);
     al_clear_to_color(al_map_rgb(0,0,0));
     al_draw_bitmap(mapa,0,0,0);
     al_flip_display();
-    al_draw_bitmap(logo,0,0,0);
+    al_draw_bitmap(fundo,0,0,0);
     al_flip_display();
     al_draw_bitmap(botao1,545,240+40,0);
     al_draw_bitmap(botao1,545,240+120,0);
@@ -1040,6 +1037,8 @@ void lobby(){
     }
 }
 void tutorial(){
+    menu();
 }
 void creditos(){
+    menu();
 }
