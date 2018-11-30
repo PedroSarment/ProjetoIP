@@ -55,6 +55,7 @@ PROTOCOLO_JOGO jogada_client, jogada_server, tempo;                 // Protocolo
 void inicializaMapa();
 void inicializaJogadores();
 void runGame();
+void runGameTest();
 
 
 int main() {
@@ -240,7 +241,7 @@ void runGame(){
                     }
                     // Verifica se o jogador andou para baixo
                     else if(jogada_client.tipo == ANDAR_BAIXO){
-                        printf("baixo");
+                        //printf("baixo");
                         if(players[input.client_id].position.y + 4 <= Y_MAX){
                             jogada_server.tipo = ANDAR_BAIXO;
                             if(mapa[players[input.client_id].position.x][players[input.client_id].position.y+4] == VAZIO || mapa[players[input.client_id].position.x][players[input.client_id].position.y+4] == TRAP_TEAM_BLUE
@@ -287,7 +288,7 @@ void runGame(){
                     }
                     // Verifica se o jogador andou para direita
                     else if(jogada_client.tipo == ANDAR_DIREITA){
-                        printf("dir");
+                        //printf("dir");
                         if(players[input.client_id].position.x + 4 <= X_MAX){
                             if(mapa[players[input.client_id].position.x+4][players[input.client_id].position.y] == VAZIO || mapa[players[input.client_id].position.x+4][players[input.client_id].position.y] == TRAP_TEAM_BLUE 
                             || mapa[players[input.client_id].position.x+4][players[input.client_id].position.y] == TRAP_TEAM_RED || mapa[players[input.client_id].position.x+4][players[input.client_id].position.y] == BANDEIRA_BLUE 
@@ -333,7 +334,7 @@ void runGame(){
                     }
                     // Verifica se o jogador andou para a esuqerda
                     else if(jogada_client.tipo == ANDAR_ESQUERDA){
-                        printf("esq");
+                       // printf("esq");
                         if(players[input.client_id].position.x - 4 >= 0){
                             if(mapa[players[input.client_id].position.x-4][players[input.client_id].position.y] == VAZIO || mapa[players[input.client_id].position.x-4][players[input.client_id].position.y] == TRAP_TEAM_BLUE 
                             || mapa[players[input.client_id].position.x-4][players[input.client_id].position.y] == TRAP_TEAM_RED || mapa[players[input.client_id].position.x-4][players[input.client_id].position.y] == BANDEIRA_BLUE 
@@ -379,7 +380,7 @@ void runGame(){
                     }
                     // Verifica se o jogador botou alguma armadilha
                     else if(jogada_client.tipo == BOTARTRAPS){ 
-                        printf("trap");
+                       // printf("trap");
                         // Verifica se tem armadilhas para botar
                         if(players[input.client_id].armadilhas > 0){                                                          
                             jogada_server.tipo = BOTARTRAPS;                                                    
@@ -414,7 +415,7 @@ void runGame(){
                     }
                     // Verifica se o jogador congelou/descongelou alguem 
                     else if(jogada_client.tipo == CONGELAR){
-                        printf("congela");
+                        //printf("congela");
                         int posi = input.client_id + 97;
                         int flag = 1;
                         
@@ -543,5 +544,25 @@ void runGame(){
        
         broadcast((PROTOCOLO_JOGO *) &jogada_server, sizeof(PROTOCOLO_JOGO));
         //broadcast((PROTOCOLO_JOGO *) &tempo, sizeof(PROTOCOLO_JOGO)); 
+    }
+}
+
+void runGameTest(){
+    int fim = 0;
+    struct msg_ret_t input;
+    PROTOCOLO_JOGO jogada, updateServer;
+
+    while(!fim){
+        input = recvMsgFromClient((PROTOCOLO_JOGO *) &jogada, 0, WAIT_FOR_IT);
+       
+            if(jogada.tipo == ANDAR_CIMA){
+                updateServer.tipo=GAME;
+                updateServer.todosJogadores[0]=jogada.todosJogadores[0];
+                updateServer.todosJogadores[0].position.y-=4;
+                broadcast((PROTOCOLO_JOGO *) &jogada, sizeof(PROTOCOLO_JOGO));
+                //players[input.client_id].position.y -= 4;
+            }
+            printf("tipo %d\n", jogada.tipo);
+        
     }
 }
