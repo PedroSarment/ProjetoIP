@@ -33,6 +33,7 @@ ALLEGRO_EVENT_QUEUE *fila_eventos = NULL;
 ALLEGRO_BITMAP *fundo = NULL;
 ALLEGRO_BITMAP *fundo_pergaminho = NULL;
 ALLEGRO_BITMAP *telaError = NULL;
+// ALLEGRO_BITMAP *logo = NULL;
 ALLEGRO_KEYBOARD *teclado = NULL;
 ALLEGRO_EVENT_QUEUE *eventsQueue2=NULL;
 ALLEGRO_EVENT_QUEUE *evento_ip=NULL;
@@ -56,9 +57,9 @@ ALLEGRO_BITMAP *capacetes = NULL;
 ALLEGRO_BITMAP *trap = NULL;
 ALLEGRO_BITMAP *shuriken = NULL;
 ALLEGRO_BITMAP *congelado = NULL;
+// ALLEGRO_BITMAP *espaco_branco = NULL;
 ALLEGRO_BITMAP *pronto = NULL;
 ALLEGRO_BITMAP *nao_pronto = NULL;
-// ALLEGRO_BITMAP *espaco_branco = NULL;
 
 ALLEGRO_EVENT evento;
 PROTOCOLO_INICIAL sendPlayer, rcvPlayer;
@@ -66,16 +67,17 @@ PROTOCOLO_JOGO estado_jogo;
 Player jogador;
 Player jogadores[6];
 char loginP[14], ip[30];
-int sair = 0;
+int sair = 0, loopLobby = 1;
 bool login = true;
 bool ipAd = true;
 int current_x = 0, current_y = 0;
 int checkType = 1;
 int idCLient;
-int tecla, ret, i, n;
+int tecla, ret, i, n, capaEscolhido;
 char teste='n';
 PROTOCOLO_JOGO msg;
-int capaEscolhido;
+PROTOCOLO_TESTE teste_recebe;
+int sairLobby = 1,opcao = 1, server=0, jogadorReady = 0, qntJogadores = 0;
 
 void error_msg(char *text);
 int menu();
@@ -101,9 +103,10 @@ int main(){
     //printf("%lf", sizeof(PROTOCOLO_JOGO));
     ret = menu();
     if(ret ==1){
-        lobby();
+        while(loopLobby)
+            lobby();
         while(sair){
-            //printf("%d", oi++);
+            //puts("gamee");
             runGame();
         }
         endGame();
@@ -126,6 +129,8 @@ void error_msg(char *text){
 int menu(){
     int ret;
     //aqui puxa a tela inicial.
+    // al_draw_bitmap(mapa,0,0,0);
+    // al_flip_display();
     al_draw_bitmap(fundo,0,0,0);
     al_flip_display();
     al_draw_bitmap(botao1,545,240+40,0);
@@ -382,22 +387,27 @@ void runGame(){
     
     //printf("1 - %d %d\n", jogador.position.x, jogador.position.y);
     al_draw_bitmap(mapa,0,0,0);
-    if(jogador.team == 1){
-        if(jogador.helmet==1){
-            al_draw_bitmap(capaceteAzul_1,jogador.position.x,jogador.position.y,0);
-        }
-        else
-            al_draw_bitmap(capaceteAzul_2,jogador.position.x,jogador.position.y,0);
-    }
-    else{
-        if(jogador.helmet == 1){
-            al_draw_bitmap(capaceteVerm_1,jogador.position.x,jogador.position.y,0);
+    for(i = 0; i < qntJogadores; i++){
+        if(teste_recebe.todosJogadores[i].team == 1){
+            if(teste_recebe.todosJogadores[i].helmet==1){
+                al_draw_bitmap(capaceteAzul_1,teste_recebe.todosJogadores[i].position.x,teste_recebe.todosJogadores[i].position.y,0);
+            }
+            else
+                al_draw_bitmap(capaceteAzul_2,teste_recebe.todosJogadores[i].position.x,teste_recebe.todosJogadores[i].position.y,0);
         }
         else{
-            al_draw_bitmap(capaceteVerm_2,jogador.position.x,jogador.position.y,0);
+            if(teste_recebe.todosJogadores[i].helmet == 1){
+                al_draw_bitmap(capaceteVerm_1,teste_recebe.todosJogadores[i].position.x,teste_recebe.todosJogadores[i].position.y,0);
+            }
+            else{
+                al_draw_bitmap(capaceteVerm_2,teste_recebe.todosJogadores[i].position.x,teste_recebe.todosJogadores[i].position.y,0);
+            }
         }
     }
     al_flip_display();
+    //printf("qnt = %d",qntJogadores);
+
+    
     //printf("%d %d", jogador.position.x, jogador.position.y);
     msg.tipo=GAME;
     // recvMsgFromServer((PROTOCOLO_JOGO *) &estado_jogo, WAIT_FOR_IT);
@@ -415,35 +425,37 @@ void runGame(){
                 //seta para cima
                 case ALLEGRO_KEY_W:
                     msg.tipo= ANDAR_CIMA;
-                    msg.todosJogadores[0] = jogador;
+                    msg.todosJogadores[idCLient] = jogador;
                     checkType=0;
 
                 // al_wait_for_event(fila_eventos,&evento2);
                     // ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                     //printf("%d %d\n",estado_jogo.todosJogadores[jogador.id].position.x, estado_jogo.todosJogadores[jogador.id].position.y);
-                    if(ret != SERVER_DISCONNECTED){
-                        // al_draw_bitmap(mapa,0,0,0);
-                        // jogador.position.y-=4;
-                        // al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
-                    }
-                    printf("tipo %d enviou", msg.tipo);
+                    // if(ret != SERVER_DISCONNECTED){
+                    //     endGame();
+                    //     // al_draw_bitmap(mapa,0,0,0);
+                    //     // jogador.position.y-=4;
+                    //     // al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
+                    // }
+                    //printf("tipo %d enviou", msg.tipo);
                     break;
                 //Baixo
                 case ALLEGRO_KEY_S:
                     msg.tipo= ANDAR_BAIXO;
-                    msg.todosJogadores[0] = jogador;
+                    msg.todosJogadores[idCLient] = jogador;
+                    checkType = 0;
                     // ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
-                    if(ret != SERVER_DISCONNECTED){
-                        // al_draw_bitmap(mapa,0,0,0);
-                        // jogador.position.y+=4;
-                        // al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
-                    }
+                    // if(ret != SERVER_DISCONNECTED){
+                    //     // al_draw_bitmap(mapa,0,0,0);
+                    //     // jogador.position.y+=4;
+                    //     // al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
+                    // }
                     break;
                 //Esquerda
                 case ALLEGRO_KEY_A:
-                    msg.tipo= ANDAR_ESQUERDA;
-                    msg.todosJogadores[0] = jogador;
-                    checkType=0;
+                    msg.tipo = ANDAR_ESQUERDA;
+                    msg.todosJogadores[idCLient] = jogador;
+                    checkType = 0;
 
                     //al_wait_for_event(fila_eventos,&evento2);
                     // ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
@@ -452,7 +464,8 @@ void runGame(){
                     //Direita.
                 case ALLEGRO_KEY_D:
                     msg.tipo= ANDAR_DIREITA;
-                    msg.todosJogadores[0] = jogador;
+                    msg.todosJogadores[idCLient] = jogador;
+                    checkType = 0;
                     //al_wait_for_event(fila_eventos,&evento2);
                     // ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                     // if(ret != SERVER_DISCONNECTED){
@@ -465,7 +478,7 @@ void runGame(){
                 //bota trap    
                 case ALLEGRO_KEY_SPACE:
                     msg.tipo= BOTARTRAPS;
-                    msg.todosJogadores[0] = jogador;
+                    msg.todosJogadores[idCLient] = jogador;
                     //al_wait_for_event(fila_eventos,&evento2);
                     // ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                     // if(ret != SERVER_DISCONNECTED && jogador.armadilhas > 0){
@@ -476,13 +489,13 @@ void runGame(){
                     break;
                 case ALLEGRO_KEY_LSHIFT:
                     msg.tipo = CONGELA;
-                    msg.todosJogadores[0] = jogador;
+                    msg.todosJogadores[idCLient] = jogador;
                     // ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
-                    if(ret != SERVER_DISCONNECTED && jogador.congelamentos > 0){
-                        //al_draw_bitmap(mapa,0,0,0);
-                        al_draw_bitmap(shuriken,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
-                        al_draw_bitmap(capaceteVerm_2,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
-                    }
+                    // if(ret != SERVER_DISCONNECTED && jogador.congelamentos > 0){
+                    //     //al_draw_bitmap(mapa,0,0,0);
+                    //     al_draw_bitmap(shuriken,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
+                    //     al_draw_bitmap(capaceteVerm_2,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
+                    // }
                     // al_flip_display();
                     break;
                 // esc. sair=1 faz com que o programa saia do loop principal
@@ -496,28 +509,56 @@ void runGame(){
                 default:
                     break;
                 }
-
+                //printf("%i\n",msg.tipo);
                 ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                 
                 if(ret != SERVER_DISCONNECTED){
-                    printf("enviou tipo %d", msg.tipo);
+                    //printf("enviou tipo %d", msg.tipo);
                     checkType=0;
+                }
+                else{
+                    endGame();
                 }
                     al_flip_display();
             //al_draw_bitmap(mapa,0,0,0);
             }
-         }
-        n = recvMsgFromServer((PROTOCOLO_JOGO *) &estado_jogo, DONT_WAIT);
+        }
+        // n = recvMsgFromServer((PROTOCOLO_JOGO *) &estado_jogo, DONT_WAIT);
+        n = recvMsgFromServer((PROTOCOLO_TESTE *) &teste_recebe, DONT_WAIT);
         if(n!=NO_MESSAGE){
-            jogador = estado_jogo.todosJogadores[jogador.id];
-            // printf("chegou X:%d Y:%d\n", jogador.position.x, jogador.position.y);
+            if(teste_recebe.tipo=='G'){
+                //printf("estado: %d %c\n ", teste_recebe.id_acao, teste_recebe.acao);
+               // if(teste_recebe.id_acao==jogador.id){
+                    if(teste_recebe.acao=='c'){
+                        //jogador.position.y-=8;
+                        teste_recebe.todosJogadores[teste_recebe.id_acao].position.y -= 16;
+                    }
+                    else if(teste_recebe.acao=='b'){
+                        //jogador.position.y+=4;
+                        teste_recebe.todosJogadores[teste_recebe.id_acao].position.y += 16;
+                    }
+                    else if(teste_recebe.acao=='e'){
+                        //jogador.position.x-=4;
+                        teste_recebe.todosJogadores[teste_recebe.id_acao].position.x -= 16;
+
+                    }
+                    else if(teste_recebe.acao=='d'){
+                        //jogador.position.x+=4;
+                        teste_recebe.todosJogadores[teste_recebe.id_acao].position.x += 16;
+                    }
+
+                    jogador = teste_recebe.todosJogadores[idCLient];
+                        
+                   // printf("chegou X:%d Y:%d\n", jogador.position.x, jogador.position.y);
+               // }
+            }
         }
     }
     else{
     // al_draw_bitmap(mapa,0,0,0);
         al_draw_bitmap(congelado,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
-        for(i=0;estado_jogo.qntJogadores;i++){
-            if(estado_jogo.todosJogadores[i].congelou && estado_jogo.todosJogadores[i].team==jogador.team){
+        for(i=0;i < qntJogadores;i++){
+            if(teste_recebe.todosJogadores[i].congelou && teste_recebe.todosJogadores[i].team==jogador.team){
                 al_draw_bitmap(mapa,0,0,0);
                 al_draw_bitmap(congelado,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
                 al_flip_display();
@@ -601,9 +642,9 @@ void readInput2(ALLEGRO_EVENT event, char str[], int limit){
 }
 
 void readLogin(){
-    //al_draw_bitmap(fundo,0,0,0);
+    // al_draw_bitmap(fundo,0,0,0);
     fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
-    // al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
+    //al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
     al_draw_text(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Login: ");
     al_flip_display();
     ALLEGRO_EVENT_QUEUE *eventsQueue3;
@@ -628,7 +669,7 @@ void readLogin(){
                             login = false;
                         }else{
                             al_clear_to_color(al_map_rgb(255,255,255));
-                            // al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
+                           // al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
                             al_draw_text(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Login: ");
                             al_draw_textf(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "%s", loginP);
                             al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/4, ALLEGRO_ALIGN_CENTRE, "Digite um nick de no minimo 2 caracteres!");
@@ -850,28 +891,53 @@ int readIP(){
 
 void lobby(){
     int ret;
-    fonte = al_load_font("./app/Resources/Fontes/kenvector_future.ttf", 20, 0);
-    al_rest(2.0);
     PROTOCOLO_JOGO estado_lobby;
-    // al_flip_display();
+
+    //aqui puxa a tela inicial.
+    al_clear_to_color(al_map_rgb(255,255,255));
+    // al_draw_bitmap(logo,0,0,0);
+    al_flip_display();
+    // al_rest(5.0);
     al_clear_to_color(al_map_rgb(0,0,0));
+    // al_draw_bitmap(mapa,0,0,0);
+    // al_flip_display();
+    // al_draw_bitmap(logo,0,0,0);
+    // al_flip_display();
+    // al_draw_bitmap(botao1,545,240+40,0);
+    // al_draw_bitmap(botao1,545,240+120,0);
+    // al_draw_bitmap(botao1,545,320+120,0);
+    // al_draw_bitmap(setinha_dir,510,285,0);
+    // al_draw_bitmap(setinha_esq,730,285,0);
+    fonte = al_load_font("./app/Resources/Fontes/kenvector_future.ttf", 20, 0);
     al_flip_display();
     al_draw_bitmap(fundo,0,0,0);
     al_draw_text(fonte,al_map_rgb(255,255,255),640,290,ALLEGRO_ALIGN_CENTRE,"O Jogo esta pronto para ser iniciado");
     al_draw_text(fonte,al_map_rgb(255,255,255),640,360,ALLEGRO_ALIGN_CENTRE,"Pressione enter quando estiver preparado.");
     al_draw_text(fonte,al_map_rgb(255,255,255),640,420,ALLEGRO_ALIGN_CENTRE,"Pronto");
     al_draw_bitmap(nao_pronto,630,465,0);
+    //al_flip_display();
+    // al_draw_text(fonte,al_map_rgb(5,5,5),645,290,ALLEGRO_ALIGN_CENTER,"Iniciar o jogo");
+    // al_draw_text(fonte,al_map_rgb(5,5,5),645,370,ALLEGRO_ALIGN_CENTER,"Tutorial");
+    // al_draw_text(fonte,al_map_rgb(5,5,5),645,450,ALLEGRO_ALIGN_CENTER,"Creditos");
+
     al_flip_display();
+    
     al_register_event_source(fila_eventos, al_get_keyboard_event_source());
-    int sairLobby = 1,opcao = 1, server=0;
+    
+    
+
+    sairLobby = 1;
     while(sairLobby){
+        //puts("looplobby");
+        sendPlayer.tipo = -1;
        // puts("oi");
         //enquanto esc nao for pressionado
-        while(!al_event_queue_is_empty(fila_eventos) && sairLobby){
+        while(!al_event_queue_is_empty(fila_eventos) && !jogador.ready){
             ALLEGRO_EVENT evento;
             al_wait_for_event(fila_eventos,&evento);
-            if(!jogador.ready){
+            if(!jogadorReady){
                 if (evento.type == ALLEGRO_EVENT_KEY_DOWN){
+                   // puts("apertou");
                     //verifica qual tecla foi pressionada
                     switch(evento.keyboard.keycode){
                         
@@ -893,6 +959,7 @@ void lobby(){
                             break;
 
                         case ALLEGRO_KEY_ENTER:
+                            //sairLobby = 0;
                             al_clear_to_color(al_map_rgb(0,0,0));
                             al_flip_display();
                             al_draw_bitmap(fundo,0,0,0);
@@ -901,7 +968,8 @@ void lobby(){
                             al_draw_text(fonte,al_map_rgb(255,255,255),640,420,ALLEGRO_ALIGN_CENTRE,"Pronto");
                             al_draw_bitmap(pronto,630,465,0);
                             al_flip_display();
-                            jogador.ready=1;
+                            jogadorReady = 1;
+                            sairLobby = 0;
                         break;
                         
                         default:
@@ -910,20 +978,66 @@ void lobby(){
                 }
             }
             else{
-                //puts("aqui");
-                sendPlayer.tipo=COMECOU;
-                sendPlayer.jogador=jogador;
-                ret = sendMsgToServer((PROTOCOLO_INICIAL *) &sendPlayer, sizeof(PROTOCOLO_INICIAL));
-                if(ret != SERVER_DISCONNECTED){
-                    int retLobby = recvMsgFromServer((PROTOCOLO_JOGO *) &estado_lobby, WAIT_FOR_IT);
-                    if(estado_lobby.tipo == COMECOU){
-                        jogador = estado_lobby.todosJogadores[idCLient];
-                        sairLobby = 0;
-                        printf("lobby %d", jogador.position.x);
-                        sair=1;
+                if(!jogador.ready){
+                    sendPlayer.tipo = COMECOU;
+                    sendPlayer.jogador = jogador;
+                    ret = sendMsgToServer((PROTOCOLO_INICIAL *) &sendPlayer, sizeof(PROTOCOLO_INICIAL));
+                    if(ret != SERVER_DISCONNECTED){
+                       // puts("prelobby");
+                        int retLobby = recvMsgFromServer((PROTOCOLO_TESTE*) &teste_recebe, WAIT_FOR_IT);
+                        if(retLobby > 0){
+                            qntJogadores = teste_recebe.qntJogadores;
+                            jogador = teste_recebe.todosJogadores[idCLient];
+                            if(teste_recebe.tipo == 'l'){
+                                sairLobby = 0;
+                                //printf("ready = %d\n", jogador.ready);
+                                sair=1;
+                                loopLobby = 0;
+                            }
+                            else{
+                               //puts("waiting");
+                            }
+                            
+
+                        }
                     }
+                    else{
+                        endGame();
+                    }
+                    //sendPlayer.tipo = -1;
+                }
+               
+            }
+        }
+        if(jogador.ready == 1){
+            if(idCLient == 0){
+                sairLobby = 0;
+                //printf("lobby %d\n", jogador.position.x);
+                sair=1;
+                loopLobby = 0;
+            }
+            else{
+                //puts("non");
+                int retLobby = recvMsgFromServer((PROTOCOLO_TESTE*) &teste_recebe, WAIT_FOR_IT);
+                qntJogadores = teste_recebe.qntJogadores;
+                if(retLobby > 0){
+                    jogador = teste_recebe.todosJogadores[idCLient];
+                    if(teste_recebe.tipo == 'l'){
+                        sairLobby = 0;
+                        //printf("lobby %d\n", jogador.position.x);
+                        sair=1;
+                        loopLobby = 0;
+                        //printf("ready = %d\n", jogador.ready);
+                    }
+                    else{
+                        //puts("waiting");
+                        
+                    }
+                // printf("ready = %d\n", jogador.ready);
+
                 }
             }
+            
         }
     }
 }
