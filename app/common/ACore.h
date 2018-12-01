@@ -85,6 +85,14 @@ typedef struct{
     int qntJogadores;
 }PROTOCOLO_JOGO;
 
+typedef struct{
+    char tipo;
+    char acao;
+    Player todosJogadores[6];
+    int id_acao;
+    int qntJogadores;
+}PROTOCOLO_TESTE;
+
 // Estrutura para o protocolo da mensagem  inicial do server para o client
 //para poder atualizar o player do client após a inicialização dele no server
 typedef struct{
