@@ -45,7 +45,7 @@
 #define Y_ENTRADA_3_RED 710
 
 //INICIALIZAÇÃO DAS VARIÁVEIS GLOBAIS
-char mapa [X_MAX][Y_MAX];
+char mapa [48][49];
 Player players[6];
 int qntJogadores = 0;
 PROTOCOLO_JOGO jogada_client, jogada_server, tempo;                 // Protocolo de envio a ser enviado para o cliente com as infos do jogo;
@@ -82,12 +82,56 @@ int main() {
 }
 
 void inicializaMapa(){
-    int i, j;
-    for(i = 0; i < X_MAX; i++){
-        for(j = 0; j < Y_MAX; j++){
-            mapa[i][j] = VAZIO;
-        }
-    }
+
+    strcpy(mapa[0],"NNNNNNNNNNNNNNNNNNXXXXNNNNXXXXXXXXXXXXXNNNNNXNNN");
+    strcpy(mapa[1],"NNNNNNNNNNNNNNNNNNXXXXNNNNXXXXXXXXXXXXXNNNNNXNNN");
+    strcpy(mapa[2],"XXXXXXXXXXXXXXXXXXXXXXNNNNXXXXXXXXXXXXXNNNNSSSSS");
+    strcpy(mapa[3],"XXXXXXXXXXXXXXXXXXXXXXNNNNXXXXXXXXXXXXXSNNZSSSSS");
+    strcpy(mapa[4],"XXXXXXXXXXXXXXXXXXXXXXNNNNXXXXXXXXXXXXXSSNZZSSSS");
+    strcpy(mapa[5],"XXXXXXXXXXXXXXXXXXXXXXNNNNXXXXXXXXXXXXXSSNZZSSSS");
+    strcpy(mapa[6],"XXXXXXXXXXXXXXXXXXXXXXNNNNXXXXXXXXXXXXXXXSSZZSNN");
+    strcpy(mapa[7],"XXXXXXXXXXXXXXXXXXXXSSSSSSSSXXXXXXXXXXXXXSSNZZSS");
+    strcpy(mapa[8],"XXXXXXXXXXXXXXXXXXXXSSSSSSSSXXXXXXXXXXXXXSSNNZNS");
+    strcpy(mapa[9],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXSNNNN");
+    strcpy(mapa[10],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXSNNNN");
+    strcpy(mapa[11],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[12],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[13],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[14],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[15],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[16],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[17],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[18],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[19],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[20],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[21],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[22],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[23],"XXXXXXXXXXXVVVVVXXVVSSSSSSSSXXXXXXXXXXXXXXXXXXXX");
+    strcpy(mapa[24],"XXXXXXXXXXXVVVVVXXVVSSSSSSSSXXXXXXXXXXXXXXXXXXXX");
+    strcpy(mapa[25],"XXXXXXXXXXXVVVVVXXVVSSSSSSSSXXXXXXXXXXXXXXXXXXXX");
+    strcpy(mapa[26],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[27],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[28],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[29],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[30],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[31],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[32],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[33],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[34],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[35],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[36],"XXXXXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[37],"NNNSXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[38],"NNNSXXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[39],"NZNNSXXXXXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[40],"SSZNNSSXXXXVVVVVXXVVVSSSSSSXXXXXXXXXXXXXXXXXXXXX");
+    strcpy(mapa[41],"NSZZSSSXXXXXXXXXXXXXXSSSSSSXXXXXXXXXXXXXXXXXXXXX");
+    strcpy(mapa[42],"NSSZZZNXXXXXXXXXXXXXXXNNNNXXXXXXXXXXXXXXXXXXXXXX");
+    strcpy(mapa[43],"SSSSZZNSSXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXX");
+    strcpy(mapa[44],"SSSSSZZNSSXXXXXXXXXXXXNNNNXXXXXXXXXXXXXXXXXXXXXX");
+    strcpy(mapa[45],"SSSSSZZNNSXXXXXXXXXXXXNNNNXXXXXXXXXXXXXXXXXXXXXX");
+    strcpy(mapa[46],"NNSSNNNNNSXXXXXXXXXXXXNNNNXXXXNNNNNNNNNNNNNNNNNN");
+    strcpy(mapa[47],"NNNSNNNNNSXXXXXXXXXXXXNNNNXXXXNNNNNNNNNNNNNNNNNN");
+    
 }
 
 void inicializaJogadores(){
@@ -115,13 +159,13 @@ void inicializaJogadores(){
                             // Inicializando os demais atributos do player atual
                             if(qntJogadores%2 == 0){
                                 players[id].team = 1;
-                                players[id].position.x = 500;
-                                players[id].position.y = 100;
+                                players[id].position.x = 27;
+                                players[id].position.y = 10;
                             }
                             else{
                                 players[id].team = 2;
-                                players[id].position.x = 200;
-                                players[id].position.y = 200;
+                                players[id].position.x = 20;
+                                players[id].position.y = 20;
                             }                    
                             players[id].comBandeira = 0;
                             players[id].ready = 0;
@@ -214,6 +258,7 @@ void runGame(){
                 //players[input.client_id] = jogada_client.todosJogadores[0];
                 // Verifica se o jogador não está congelado
                 if(!players[input.client_id].estaCongelado){
+                    printf("x = %d, Y = %d", players[input.client_id].position.x, players[input.client_id].position.y);
                     // Verifica se o jogador andou para cima
                     if(jogada_client.tipo == ANDAR_CIMA){
 
@@ -609,7 +654,7 @@ void runGameTest(){
            // printf("id = %d team = %d", players[i].id, players[i].team);
         }
         if(input.status != NO_MESSAGE){
-            if(jogada.tipo == ANDAR_CIMA){
+            if(jogada.tipo == ANDAR_CIMA && mapa[ players[input.client_id].position.x ] [ players[input.client_id].position.y - 1 ] != 'N'){
                 // puts("cima");
                 teste_envia.acao = 'c';
                 teste_envia.tipo = 'G';
@@ -621,7 +666,7 @@ void runGameTest(){
                 }
                 broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
             }
-            else if(jogada.tipo == ANDAR_BAIXO){
+            else if(jogada.tipo == ANDAR_BAIXO && mapa[ players[input.client_id].position.x ][ players[input.client_id].position.y + 1] != 'N'){
                 teste_envia.acao = 'b';
                 teste_envia.tipo = 'G';
                 teste_envia.id_acao = input.client_id;
@@ -631,7 +676,7 @@ void runGameTest(){
                 //printf("acao = %c, id = %d", teste_envia.acao, teste_envia.id_acao);
                 broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
             }
-            else if(jogada.tipo == ANDAR_ESQUERDA){
+            else if(jogada.tipo == ANDAR_ESQUERDA && mapa[ players[input.client_id].position.x -1][players[input.client_id].position.y] != 'N'){
                 teste_envia.acao = 'e';
                 teste_envia.tipo = 'G';
                 teste_envia.id_acao = input.client_id;
@@ -641,7 +686,7 @@ void runGameTest(){
                // printf("acao = %c, id = %d", teste_envia.acao, teste_envia.id_acao);
                 broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
             }
-            else if(jogada.tipo == ANDAR_DIREITA){
+            else if(jogada.tipo == ANDAR_DIREITA && mapa[ players[input.client_id].position.x + 1][players[input.client_id].position.y] != 'N'){
                 teste_envia.acao = 'd';
                 teste_envia.tipo = 'G';
                 teste_envia.id_acao = input.client_id;
