@@ -428,6 +428,7 @@ void runGame(){
             switch(evento.keyboard.keycode){
                 //seta para cima
                 case ALLEGRO_KEY_W:
+                    puts("cima");
                     msg.tipo = ANDAR_CIMA;
                     msg.todosJogadores[idCLient] = jogador;
                     checkType = 0;
@@ -506,7 +507,7 @@ void runGame(){
 
                     // printf("tipo %d enviou", msg.tipo);
                     break;
-                case ALLEGRO_KEY_LSHIFT:
+                case ALLEGRO_KEY_J:
                     msg.tipo = CONGELA;
                     msg.todosJogadores[idCLient] = jogador;
                     ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
@@ -849,9 +850,6 @@ int readIP(){
             sendPlayer.jogador = jogador;
             sendPlayer.tipo = INICIAL;
             int ret = sendMsgToServer((PROTOCOLO_INICIAL *) &sendPlayer, sizeof(PROTOCOLO_INICIAL));
-            al_draw_bitmap(fundo,0,0,0);
-            al_draw_text(fonte, al_map_rgb(0, 100 , 200), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Servidor conectado!");
-            al_flip_display();
             recvMsgFromServer((PROTOCOLO_INICIAL *) &rcvPlayer, WAIT_FOR_IT);
             if(rcvPlayer.tipo==INICIAL){
                 checkType = 0;
@@ -1035,6 +1033,11 @@ void lobby(){
                 int retLobby = recvMsgFromServer((PROTOCOLO_TESTE*) &teste_recebe, WAIT_FOR_IT);
                 qntJogadores = teste_recebe.qntJogadores;
                 if(retLobby > 0){
+                    
+                    qntJogadores = teste_recebe.qntJogadores;
+                    for(i = 0; i < qntJogadores; i++){
+                        jogadores[i] = teste_recebe.todosJogadores[i];
+                    }
                     jogador = teste_recebe.todosJogadores[idCLient];
                     if(teste_recebe.tipo == 'l'){
                         sairLobby = 0;
