@@ -244,7 +244,7 @@ void carrega_arquivos(){
     botao1_pressionado = al_load_bitmap("./app/Resources/Icons/grey_button04.png");
     fundo = al_load_bitmap("./app/Resources/Icons/Plano_de_fundo.jpeg");
     fundo_pergaminho = al_load_bitmap("./app/Resources/Icons/Plano_de_fundo_perg.jpeg");
-    telaError = al_load_bitmap("./app/Resources/Icons/tela_erro.jpeg");
+    telaError = al_load_bitmap("./app/Resources/Icons/tela_erro.jpg");
     mapa = al_load_bitmap("./app/Resources/Characters/mapa.png");
     setinha_dir = al_load_bitmap("./app/Resources/Icons/yellow_sliderRight.png");
     setinha_esq = al_load_bitmap("./app/Resources/Icons/yellow_sliderLeft.png");
@@ -792,11 +792,11 @@ int readIP(){
             return 1;
         }
         else if(serverConnection == SERVER_DOWN){
-            al_draw_bitmap(fundo,0,0,0);
-            al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Servidor fora do ar, tente novamente");
-            al_flip_display();
+            // al_draw_bitmap(fundo,0,0,0);
+            // al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Servidor fora do ar, tente novamente");
+            // al_flip_display();
+            endGame();
             al_rest(2.0);
-            //endGame();
             ipAd=true;
             strcpy(ip, "");
         }
