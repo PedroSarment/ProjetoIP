@@ -74,6 +74,7 @@ int idCLient;
 int tecla, ret, i, n;
 char teste='n';
 PROTOCOLO_JOGO msg;
+int capaEscolhido;
 
 void error_msg(char *text);
 int menu();
@@ -255,10 +256,10 @@ void carrega_arquivos(){
     capaceteVerm_1_menu = al_load_bitmap("./app/Resources/capacetes/capacete_vermelho_1.png");
     capaceteAzul_2_menu = al_load_bitmap("./app/Resources/capacetes/capacete_azul_2.png");
     capaceteVerm_2_menu = al_load_bitmap("./app/Resources/capacetes/capacete_vermelho_2.png");
-    capaceteAzul_1 = al_load_bitmap("./app/Resources/Characters/Personagem(1).png");
-    capaceteVerm_1 = al_load_bitmap("./app/Resources/Characters/Personagem(1).png");
-    capaceteAzul_2 = al_load_bitmap("./app/Resources/Characters/Personagem(1).png");
-    capaceteVerm_2 = al_load_bitmap("./app/Resources/Characters/Personagem(1).png");
+    capaceteAzul_1 = al_load_bitmap("./app/Resources/Characters/C1A.png");
+    capaceteVerm_1 = al_load_bitmap("./app/Resources/Characters/C1V.png");
+    capaceteAzul_2 = al_load_bitmap("./app/Resources/Characters/C2A.png");
+    capaceteVerm_2 = al_load_bitmap("./app/Resources/Characters/C2V.png");
     if(!botao1 || !botao1_pressionado || !fundo || !mapa || !capaceteVerm_2_menu || !capaceteAzul_2_menu ){
         //checar se foram abertos, adicionar o nome do arquivo depois de um ou (||!).
         printf("Nao foi possivel carregar um dos botoes.");
@@ -779,13 +780,7 @@ void readLogin(){
 
 void readHelmet(){
     int capaCheck=1;
-    int foi=1, capaEscolhido;
-    if(jogador.team==1){
-        capacetes = capaceteAzul_1;
-    }
-    else {
-        capacetes = capaceteVerm_1;
-    }
+    int foi=1;
     al_draw_bitmap(fundo_pergaminho,0,0,0);
     //al_draw_bitmap(fundo,0,0,0);
     fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 32, 0);
@@ -861,10 +856,9 @@ void readHelmet(){
                     }
                 }
             }        
-            capaEscolhido=tecla;    
+            capaEscolhido=tecla;
         }
     }
-    jogador.helmet=capaEscolhido;
 }
 int readIP(){
     enum conn_ret_t serverConnection;
@@ -908,6 +902,7 @@ int readIP(){
                 checkType = 0;
                 jogador = rcvPlayer.jogador;
                 idCLient = jogador.id;
+
             }
             if (ret == SERVER_DISCONNECTED){
                 exit(1);
@@ -948,7 +943,25 @@ int readIP(){
         }  
         al_flip_display(); 
     }
-    
+
+    /* --------------------------- Selecionar o capacete do personagem --------------------------- 
+    if(jogador.team == 1){
+        if(capaEscolhido == 1){
+            jogador.helmet = capaceteAzul_1;
+        }
+        else if(capaEscolhido == 2){
+            jogador.helmet = capaceteAzul_2;
+        }
+    }
+    else if(jogador.team == 2){
+        if(capaEscolhido == 1){
+            jogador.helmet = capaceteVerm_1;
+        }
+        else if(capaEscolhido == 2){
+            jogador.helmet = capaceteVerm_2;
+        }
+    }
+      --------------------------- Fim da funcao ---------------------------*/
     return 0;
 }
 
