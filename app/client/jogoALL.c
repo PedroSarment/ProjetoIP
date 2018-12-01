@@ -366,7 +366,7 @@ void startScreen(){
                 //verifica qual tecla foi pressionada
                 switch(evento.keyboard.keycode){
                     //seta para cima
-                    case ALLEGRO_KEY_SPACE:
+                    case ALLEGRO_KEY_ENTER:
                         sair = 1;
                         break;
                 }
@@ -380,7 +380,21 @@ void runGame(){
     
     //printf("1 - %d %d\n", jogador.position.x, jogador.position.y);
     al_draw_bitmap(mapa,0,0,0);
-    al_draw_bitmap(capaceteVerm_1,jogador.position.x,jogador.position.y,0);
+    if(jogador.team == 1){
+        if(jogador.helmet==1){
+            al_draw_bitmap(capaceteAzul_1,jogador.position.x,jogador.position.y,0);
+        }
+        else
+            al_draw_bitmap(capaceteAzul_2,jogador.position.x,jogador.position.y,0);
+    }
+    else{
+        if(jogador.helmet == 1){
+            al_draw_bitmap(capaceteVerm_1,jogador.position.x,jogador.position.y,0);
+        }
+        else{
+            al_draw_bitmap(capaceteVerm_2,jogador.position.x,jogador.position.y,0);
+        }
+    }
     al_flip_display();
     //printf("%d %d", jogador.position.x, jogador.position.y);
     msg.tipo=GAME;
@@ -857,6 +871,7 @@ void readHelmet(){
                 }
             }        
             capaEscolhido=tecla;
+            jogador.helmet=capaEscolhido;
         }
     }
 }
