@@ -32,6 +32,7 @@ ALLEGRO_BITMAP *mapa = NULL;
 ALLEGRO_EVENT_QUEUE *fila_eventos = NULL;
 ALLEGRO_BITMAP *fundo = NULL;
 ALLEGRO_BITMAP *fundo_pergaminho = NULL;
+ALLEGRO_BITMAP *telaError = NULL;
 ALLEGRO_KEYBOARD *teclado = NULL;
 ALLEGRO_EVENT_QUEUE *eventsQueue2=NULL;
 ALLEGRO_EVENT_QUEUE *evento_ip=NULL;
@@ -243,6 +244,7 @@ void carrega_arquivos(){
     botao1_pressionado = al_load_bitmap("./app/Resources/Icons/grey_button04.png");
     fundo = al_load_bitmap("./app/Resources/Icons/Plano_de_fundo.jpeg");
     fundo_pergaminho = al_load_bitmap("./app/Resources/Icons/Plano_de_fundo_perg.jpeg");
+    telaError = al_load_bitmap("./app/Resources/Icons/tela_erro.jpeg");
     mapa = al_load_bitmap("./app/Resources/Characters/mapa.png");
     setinha_dir = al_load_bitmap("./app/Resources/Icons/yellow_sliderRight.png");
     setinha_esq = al_load_bitmap("./app/Resources/Icons/yellow_sliderLeft.png");
@@ -260,7 +262,7 @@ void carrega_arquivos(){
     capaceteVerm_1 = al_load_bitmap("./app/Resources/Characters/C1V.png");
     capaceteAzul_2 = al_load_bitmap("./app/Resources/Characters/C2A.png");
     capaceteVerm_2 = al_load_bitmap("./app/Resources/Characters/C2V.png");
-    if(!botao1 || !botao1_pressionado || !fundo || !mapa || !capaceteVerm_2_menu || !capaceteAzul_2_menu ){
+    if(!botao1 || !botao1_pressionado || !fundo || !mapa || !capaceteVerm_2_menu || !capaceteAzul_2_menu){
         //checar se foram abertos, adicionar o nome do arquivo depois de um ou (||!).
         printf("Nao foi possivel carregar um dos botoes.");
         al_destroy_audio_stream(musica_fundo);
@@ -522,150 +524,15 @@ void runGame(){
             }
         }
     }
-//    n = recvMsgFromServer((PROTOCOLO_JOGO *) &estado_jogo, DONT_WAIT);
-   // printf("tipo = %d", estado_jogo.tipo);
-    // if(estado_jogo.tipo == GAME && n!=NO_MESSAGE){
-    //     // n = recvMsgFromServer((PROTOCOLO_JOGO *) &estado_jogo, WAIT_FOR_IT);
-    //     printf("%d %d\n", estado_jogo.todosJogadores[idCLient].position.x, estado_jogo.todosJogadores[idCLient].position.y);
-    //     if(estado_jogo.tipo == GAME){
-    //         //printf("2 - %d %d\n", jogador.position.x, jogador.position.y);
-    //         jogador = estado_jogo.todosJogadores[idCLient];
-    //         //printf("%d %d\n", estado_jogo.todosJogadores[jogador.id].position.x, estado_jogo.todosJogadores[jogador.id].position.y);
-    //         //printf("3 - %d %d\n", jogador.position.x, jogador.position.y);
-    //     }
-    //     // ALLEGRO_EVENT evento2;
-    //     for(i=0;i<estado_jogo.qntJogadores;i++){  
-    //         al_draw_bitmap(capaceteVerm_2, estado_jogo.todosJogadores[i].position.x, estado_jogo.todosJogadores[i].position.y, ALLEGRO_FLIP_HORIZONTAL);
-    //         al_flip_display();
-    //         if(estado_jogo.todosJogadores[i].estaCongelado){
-    //             al_draw_bitmap(congelado, estado_jogo.todosJogadores[i].position.x, estado_jogo.todosJogadores[i].position.y, ALLEGRO_FLIP_HORIZONTAL);
-    //             al_flip_display();
-    //         }
-    //         else if(estado_jogo.todosJogadores[i].congelou){
-    //             al_draw_bitmap(shuriken, estado_jogo.todosJogadores[i].position.x, estado_jogo.todosJogadores[i].position.y, ALLEGRO_FLIP_HORIZONTAL);
-    //             al_flip_display();
-    //         }
-    //     }
-    //     // al_draw_bitmap(personagem)
-    //    // al_flip_display();
-    // }
-    
-    // while(!al_event_queue_is_empty(fila_eventos)){
-    //     recvMsgFromServer((PROTOCOLO_JOGO *) &estado_jogo, WAIT_FOR_IT);
-    //     jogador = estado_jogo.todosJogadores[jogador.id];
-    //     //printf("%d %d\n", jogador.position.x, jogador.position.y);
-    //     // ALLEGRO_EVENT evento2;
-    //     for(i=0;i<estado_jogo.qntJogadores;i++){  
-    //         al_draw_bitmap(personagem, estado_jogo.todosJogadores[i].position.x, estado_jogo.todosJogadores[i].position.y, ALLEGRO_FLIP_HORIZONTAL);
-    //         if(estado_jogo.todosJogadores[i].estaCongelado){
-    //             al_draw_bitmap(congelado, estado_jogo.todosJogadores[i].position.x, estado_jogo.todosJogadores[i].position.y, ALLEGRO_FLIP_HORIZONTAL);
-    //         }
-    //         else if(estado_jogo.todosJogadores[i].congelou){
-    //             al_draw_bitmap(shuriken, estado_jogo.todosJogadores[i].position.x, estado_jogo.todosJogadores[i].position.y, ALLEGRO_FLIP_HORIZONTAL);
-    //         }
-    //     }
-    //     // al_draw_bitmap(personagem)
-    //     al_flip_display();
-    //     if(!jogador.estaCongelado){
-    //         al_wait_for_event(fila_eventos,&evento);
-    //         if (evento.type == ALLEGRO_EVENT_KEY_DOWN){     
-    //             //verifica qual tecla foi pressionada
-    //             switch(evento.keyboard.keycode){        
-    //                 //seta para cima
-    //                 case ALLEGRO_KEY_W:
-    //                     msg.tipo= ANDAR_CIMA;
-    //                     msg.todosJogadores[0] = jogador;
-    //                 // al_wait_for_event(fila_eventos,&evento2);
-    //                     ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
-    //                     //printf("%d %d\n",estado_jogo.todosJogadores[jogador.id].position.x, estado_jogo.todosJogadores[jogador.id].position.y);
-    //                     if(ret != SERVER_DISCONNECTED){
-    //                         // al_draw_bitmap(mapa,0,0,0);
-    //                         // jogador.position.y-=4;
-    //                         // al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
-    //                     }
-    //                     break;
-    //                 //Baixo
-    //                 case ALLEGRO_KEY_S:
-    //                     msg.tipo= ANDAR_BAIXO;
-    //                     msg.todosJogadores[0] = jogador;
-    //                     ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
-    //                     if(ret != SERVER_DISCONNECTED){
-    //                         // al_draw_bitmap(mapa,0,0,0);
-    //                         // jogador.position.y+=4;
-    //                         // al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
-    //                     }
-    //                     break;
-    //                 //Esquerda
-    //                 case ALLEGRO_KEY_A:
-    //                     msg.tipo= ANDAR_ESQUERDA;
-    //                     msg.todosJogadores[0] = jogador;
-    //                     //al_wait_for_event(fila_eventos,&evento2);
-    //                     ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
-    //                     break;
-    //                 //Direita.
-    //                 case ALLEGRO_KEY_D:
-    //                     msg.tipo= ANDAR_DIREITA;
-    //                     msg.todosJogadores[0] = jogador;
-    //                     //al_wait_for_event(fila_eventos,&evento2);
-    //                     ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
-    //                     // if(ret != SERVER_DISCONNECTED){
-    //                     //     // al_draw_bitmap(mapa,0,0,0);
-    //                     //     jogador.position.x+=4;
-    //                     //     al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
-    //                     // }
-    //                     break;
-    //                 //bota trap    
-    //                 case ALLEGRO_KEY_SPACE:
-    //                     msg.tipo= BOTARTRAPS;
-    //                     msg.todosJogadores[0] = jogador;
-    //                     //al_wait_for_event(fila_eventos,&evento2);
-    //                     ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
 
-    //                     // if(ret != SERVER_DISCONNECTED && jogador.armadilhas > 0){
-    //                     //     al_draw_bitmap(trap,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
-    //                     //     al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
-    //                     // }
-                        
-    //                     break;
-
-    //                 case ALLEGRO_KEY_LSHIFT:
-    //                     msg.tipo = CONGELA;
-    //                     msg.todosJogadores[0] = jogador;
-    //                     ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
-
-    //                     if(ret != SERVER_DISCONNECTED && jogador.congelamentos > 0){
-    //                         //al_draw_bitmap(mapa,0,0,0);
-    //                         al_draw_bitmap(shuriken,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
-    //                         al_draw_bitmap(personagem,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
-    //                     }
-
-    //                     break;
-    //                 //esc. sair=1 faz com que o programa saia do loop principal
-    //                 case ALLEGRO_KEY_ESCAPE:
-    //                     msg.tipo=ENDGAME;
-    //                     ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
-    //                     if(ret != SERVER_DISCONNECTED){
-    //                         sair = 0;
-    //                     }
-    //                 }              
-    //             //al_draw_bitmap(mapa,0,0,0);
-    //             // al_flip_display();
-    //         }
-    //     }
-    //     else{
-    //         // al_draw_bitmap(mapa,0,0,0);
-    //         al_draw_bitmap(congelado,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);       
-    //         for(i=0;estado_jogo.qntJogadores;i++){
-    //             if(estado_jogo.todosJogadores[i].congelou && estado_jogo.todosJogadores[i].team==jogador.team){
-    //                 al_draw_bitmap(mapa,0,0,0);
-    //                 al_draw_bitmap(congelado,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
-    //             }
-    //         }
-    //     }
-    // }
 }
 
 void endGame(){
+    al_clear_to_color(al_map_rgb(0,0,0));
+    al_draw_bitmap(telaError,0,0,0);
+    al_flip_display();
+    al_rest(2.0);
+    
     al_destroy_display(janela);
     al_destroy_audio_stream(musica_fundo);
     al_destroy_event_queue(fila_eventos);
@@ -929,6 +796,7 @@ int readIP(){
             al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Servidor fora do ar, tente novamente");
             al_flip_display();
             al_rest(2.0);
+            //endGame();
             ipAd=true;
             strcpy(ip, "");
         }
