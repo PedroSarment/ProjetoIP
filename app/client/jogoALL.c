@@ -177,7 +177,7 @@ int menu(){
                             readLogin();
                             readHelmet();
                             server = readIP();
-                
+
                             ret=1;
                             sairMenu=1;
                         }
@@ -256,7 +256,7 @@ void carrega_arquivos(){
     fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 24, 0);
     trap = al_load_bitmap("./app/Resources/Icons/ice_trap.png");
     nao_pronto = al_load_bitmap("./app/Resources/Icons/red_cross.png");
-    pronto = al_load_bitmap("./app/Resources/Icons/red_cross.png");
+    pronto = al_load_bitmap("./app/Resources/Icons/green_checkmark.png");
     shuriken = al_load_bitmap("./app/Resources/Icons/shuriken.png");
     congelado = al_load_bitmap("./app/Resources/Icons/congelado.png");
     capaceteAzul_1_menu = al_load_bitmap("./app/Resources/capacetes/capacete_azul_1.png");
@@ -291,7 +291,7 @@ int iniciar(){
         return 0;
     }
     al_init_font_addon();
-    if(!al_init_ttf_addon()){ 
+    if(!al_init_ttf_addon()){
         printf("Falha ao iniciar o ttf addon.");
         return 0;
     }
@@ -368,7 +368,7 @@ void startScreen(){
         while(!al_event_queue_is_empty(fila_eventos)){
             ALLEGRO_EVENT evento;
             al_wait_for_event(fila_eventos,&evento);
-            
+
             if (evento.type == ALLEGRO_EVENT_KEY_CHAR){
                 //verifica qual tecla foi pressionada
                 switch(evento.keyboard.keycode){
@@ -384,7 +384,7 @@ void startScreen(){
 // void menuScreen(){
 // }
 void runGame(){
-    
+
     //printf("1 - %d %d\n", jogador.position.x, jogador.position.y);
     al_draw_bitmap(mapa,0,0,0);
     for(i = 0; i < qntJogadores; i++){
@@ -407,12 +407,12 @@ void runGame(){
     al_flip_display();
     //printf("qnt = %d",qntJogadores);
 
-    
+
     //printf("%d %d", jogador.position.x, jogador.position.y);
     msg.tipo=GAME;
     // recvMsgFromServer((PROTOCOLO_JOGO *) &estado_jogo, WAIT_FOR_IT);
     // jogador = estado_jogo.todosJogadores[jogador.id];
-    
+
     if(!jogador.estaCongelado){
     checkType=1;
     //printf("fora\n");
@@ -475,7 +475,7 @@ void runGame(){
                     // }
                     // al_flip_display();
                     break;
-                //bota trap    
+                //bota trap
                 case ALLEGRO_KEY_SPACE:
                     msg.tipo= BOTARTRAPS;
                     msg.todosJogadores[idCLient] = jogador;
@@ -511,7 +511,7 @@ void runGame(){
                 }
                 //printf("%i\n",msg.tipo);
                 ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
-                
+
                 if(ret != SERVER_DISCONNECTED){
                     //printf("enviou tipo %d", msg.tipo);
                     checkType=0;
@@ -548,7 +548,7 @@ void runGame(){
                     }
 
                     jogador = teste_recebe.todosJogadores[idCLient];
-                        
+
                    // printf("chegou X:%d Y:%d\n", jogador.position.x, jogador.position.y);
                // }
             }
@@ -573,7 +573,7 @@ void endGame(){
     al_draw_bitmap(telaError,0,0,0);
     al_flip_display();
     al_rest(2.0);
-    
+
     al_destroy_display(janela);
     al_destroy_audio_stream(musica_fundo);
     al_destroy_event_queue(fila_eventos);
@@ -706,12 +706,11 @@ void readHelmet(){
     al_draw_bitmap(fundo_pergaminho,0,0,0);
     //al_draw_bitmap(fundo,0,0,0);
     fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 32, 0);
-    al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "Escolha seu capacete");
     al_flip_display();
     while(capaCheck){
         while(!al_is_event_queue_empty(fila_eventos)){
             al_draw_bitmap(fundo,0,0,0);
-            al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "Escolha seu capacete");           
+            al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "Escolha seu capacete");
             al_draw_bitmap(capaceteAzul_1_menu, 100,100,0);
             al_draw_bitmap(capaceteVerm_1_menu, 980,100,0);
             al_draw_bitmap(capaceteAzul_2_menu, 100,340,0);
@@ -744,9 +743,9 @@ void readHelmet(){
             }
             if(!foi){
                 al_draw_bitmap(fundo,0,0,0);
-                al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "Tem certeza?");            
-                al_draw_text(fonte, al_map_rgb(255, 255, 255), LARGURA_TELA/2, ALTURA_TELA/2+50, ALLEGRO_ALIGN_CENTRE, "1 - Sim     2 - Nao");            
-                
+                al_draw_text(fonte_grande, al_map_rgb(255, 255, 255), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "Tem certeza?");
+                al_draw_text(fonte, al_map_rgb(255, 255, 255), LARGURA_TELA/2, ALTURA_TELA/2+50, ALLEGRO_ALIGN_CENTRE, "1 - Sim     2 - Nao");
+
                 if (tecla == 1) {
                     al_draw_bitmap(capaceteAzul_1_menu, 100,200,0);
                     al_draw_bitmap(capaceteVerm_1_menu, 980,200,0);
@@ -761,14 +760,14 @@ void readHelmet(){
                 if (evento1.type == ALLEGRO_EVENT_KEY_DOWN){
                     //verifica qual tecla foi pressionada
                     switch(evento1.keyboard.keycode){
-                        case ALLEGRO_KEY_1:                      
+                        case ALLEGRO_KEY_1:
                             foi=1;
                             capaCheck=0;
                             break;
-                        case ALLEGRO_KEY_2:                           
+                        case ALLEGRO_KEY_2:
                             foi=1;
                             break;
-                        case ALLEGRO_KEY_PAD_1:                           
+                        case ALLEGRO_KEY_PAD_1:
                             foi=1;
                             capaCheck=0;
                             break;
@@ -777,7 +776,7 @@ void readHelmet(){
                             break;
                     }
                 }
-            }        
+            }
             capaEscolhido=tecla;
             jogador.helmet=capaEscolhido;
         }
@@ -845,9 +844,9 @@ int readIP(){
             al_draw_bitmap(fundo,0,0,0);
             al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Servidor cheio!");
             al_flip_display();
-            al_rest(2.0); 
+            al_rest(2.0);
             ipAd=true;
-            strcpy(ip, "");       
+            strcpy(ip, "");
         }
         else if(serverConnection == SERVER_CLOSED){
             al_draw_bitmap(fundo,0,0,0);
@@ -864,11 +863,11 @@ int readIP(){
             al_rest(2.0);
             ipAd=true;
             strcpy(ip, "");
-        }  
-        al_flip_display(); 
+        }
+        al_flip_display();
     }
 
-    /* --------------------------- Selecionar o capacete do personagem --------------------------- 
+    /* --------------------------- Selecionar o capacete do personagem ---------------------------
     if(jogador.team == 1){
         if(capaEscolhido == 1){
             jogador.helmet = capaceteAzul_1;
@@ -892,22 +891,10 @@ int readIP(){
 void lobby(){
     int ret;
     PROTOCOLO_JOGO estado_lobby;
-
     //aqui puxa a tela inicial.
     al_clear_to_color(al_map_rgb(255,255,255));
-    // al_draw_bitmap(logo,0,0,0);
     al_flip_display();
-    // al_rest(5.0);
     al_clear_to_color(al_map_rgb(0,0,0));
-    // al_draw_bitmap(mapa,0,0,0);
-    // al_flip_display();
-    // al_draw_bitmap(logo,0,0,0);
-    // al_flip_display();
-    // al_draw_bitmap(botao1,545,240+40,0);
-    // al_draw_bitmap(botao1,545,240+120,0);
-    // al_draw_bitmap(botao1,545,320+120,0);
-    // al_draw_bitmap(setinha_dir,510,285,0);
-    // al_draw_bitmap(setinha_esq,730,285,0);
     fonte = al_load_font("./app/Resources/Fontes/kenvector_future.ttf", 20, 0);
     al_flip_display();
     al_draw_bitmap(fundo,0,0,0);
@@ -915,17 +902,8 @@ void lobby(){
     al_draw_text(fonte,al_map_rgb(255,255,255),640,360,ALLEGRO_ALIGN_CENTRE,"Pressione enter quando estiver preparado.");
     al_draw_text(fonte,al_map_rgb(255,255,255),640,420,ALLEGRO_ALIGN_CENTRE,"Pronto");
     al_draw_bitmap(nao_pronto,630,465,0);
-    //al_flip_display();
-    // al_draw_text(fonte,al_map_rgb(5,5,5),645,290,ALLEGRO_ALIGN_CENTER,"Iniciar o jogo");
-    // al_draw_text(fonte,al_map_rgb(5,5,5),645,370,ALLEGRO_ALIGN_CENTER,"Tutorial");
-    // al_draw_text(fonte,al_map_rgb(5,5,5),645,450,ALLEGRO_ALIGN_CENTER,"Creditos");
-
     al_flip_display();
-    
     al_register_event_source(fila_eventos, al_get_keyboard_event_source());
-    
-    
-
     sairLobby = 1;
     while(sairLobby){
         //puts("looplobby");
@@ -940,7 +918,7 @@ void lobby(){
                    // puts("apertou");
                     //verifica qual tecla foi pressionada
                     switch(evento.keyboard.keycode){
-                        
+
                         case ALLEGRO_KEY_ESCAPE:
                         //esc = sair do loop.
                             puts("esc");
@@ -971,7 +949,7 @@ void lobby(){
                             jogadorReady = 1;
                             sairLobby = 0;
                         break;
-                        
+
                         default:
                             break;
                     }
@@ -997,7 +975,7 @@ void lobby(){
                             else{
                                //puts("waiting");
                             }
-                            
+
 
                         }
                     }
@@ -1006,7 +984,7 @@ void lobby(){
                     }
                     //sendPlayer.tipo = -1;
                 }
-               
+
             }
         }
         if(jogador.ready == 1){
@@ -1031,13 +1009,13 @@ void lobby(){
                     }
                     else{
                         //puts("waiting");
-                        
+
                     }
                 // printf("ready = %d\n", jogador.ready);
 
                 }
             }
-            
+
         }
     }
 }
