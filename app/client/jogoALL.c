@@ -77,7 +77,8 @@ int tecla, ret, i, n, capaEscolhido;
 char teste='n';
 PROTOCOLO_JOGO msg;
 PROTOCOLO_TESTE teste_recebe;
-int sairLobby = 1,opcao = 1, server=0, jogadorReady = 0, qntJogadores = 0, jogoInicio = 1;
+int sairLobby = 1,opcao = 1, server=0, jogadorReady = 0, qntJogadores = 0, jogoInicio = 1, x_tela = 0,y_tela = 0;
+
 
 void error_msg(char *text);
 int menu();
@@ -393,7 +394,7 @@ void startScreen(){
 void runGame(){
 
     //printf("1 - %d %d\n", jogador.position.x, jogador.position.y);
-    al_draw_bitmap(mapa,0,0,0);
+    al_draw_bitmap(mapa,x_tela,y_tela,0);
     // printf("qnt = %d",qntJogadores);
     for(i = 0; i < qntJogadores; i++){
         if(jogadores[i].team == 1){
@@ -432,6 +433,10 @@ void runGame(){
                     msg.tipo = ANDAR_CIMA;
                     msg.todosJogadores[idCLient] = jogador;
                     checkType = 0;
+
+                    for(i = 0; i < qntJogadores; i++){
+                        msg.todosJogadores[i] = jogadores[i]; 
+                    }
                     ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                     if(ret != SERVER_DISCONNECTED){
                     //printf("1 - enviou tipo %d\n", msg.tipo);
@@ -448,6 +453,9 @@ void runGame(){
                     msg.tipo= ANDAR_BAIXO;
                     msg.todosJogadores[idCLient] = jogador;
                     checkType = 0;
+                    for(i = 0; i < qntJogadores; i++){
+                        msg.todosJogadores[i] = jogadores[i]; 
+                    }
                     ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                     if(ret != SERVER_DISCONNECTED){
                     //printf("1 - enviou tipo %d\n", msg.tipo);
@@ -464,6 +472,9 @@ void runGame(){
                     msg.tipo = ANDAR_ESQUERDA;
                     msg.todosJogadores[idCLient] = jogador;
                     checkType = 0;
+                    for(i = 0; i < qntJogadores; i++){
+                        msg.todosJogadores[i] = jogadores[i]; 
+                    }
                     ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                     if(ret != SERVER_DISCONNECTED){
                     //printf("1 - enviou tipo %d\n", msg.tipo);
@@ -480,6 +491,9 @@ void runGame(){
                     msg.tipo= ANDAR_DIREITA;
                     msg.todosJogadores[idCLient] = jogador;
                     checkType = 0;
+                    for(i = 0; i < qntJogadores; i++){
+                        msg.todosJogadores[i] = jogadores[i]; 
+                    }
                     ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                     if(ret != SERVER_DISCONNECTED){
                     //printf("1 - enviou tipo %d\n", msg.tipo);
@@ -496,6 +510,9 @@ void runGame(){
                 case ALLEGRO_KEY_SPACE:
                     msg.tipo= BOTARTRAPS;
                     msg.todosJogadores[idCLient] = jogador;
+                    for(i = 0; i < qntJogadores; i++){
+                        msg.todosJogadores[i] = jogadores[i]; 
+                    }
                     ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                     if(ret != SERVER_DISCONNECTED){
                     //printf("1 - enviou tipo %d\n", msg.tipo);
@@ -510,6 +527,9 @@ void runGame(){
                 case ALLEGRO_KEY_J:
                     msg.tipo = CONGELA;
                     msg.todosJogadores[idCLient] = jogador;
+                    for(i = 0; i < qntJogadores; i++){
+                        msg.todosJogadores[i] = jogadores[i]; 
+                    }
                     ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                     if(ret != SERVER_DISCONNECTED){
                     //printf("1 - enviou tipo %d\n", msg.tipo);
@@ -548,16 +568,35 @@ void runGame(){
                     if(teste_recebe.acao=='c'){
                         // puts("posi");
                         teste_recebe.todosJogadores[teste_recebe.id_acao].position.y -= 16;
+                        if(teste_recebe.id_acao == idCLient){
+                            if(y_tela != 0){
+                                y_tela += 40;
+                            }
+                        }
                     }
                     else if(teste_recebe.acao=='b'){
                         teste_recebe.todosJogadores[teste_recebe.id_acao].position.y += 16;
+                        if(teste_recebe.id_acao == idCLient){
+                            if(y_tela > -1240){
+                                y_tela -= 40;
+                            }
+                        }
                     }
                     else if(teste_recebe.acao=='e'){
                         teste_recebe.todosJogadores[teste_recebe.id_acao].position.x -= 16;
-
+                        if(teste_recebe.id_acao == idCLient){
+                            if(x_tela != 0){
+                                x_tela += 16;
+                            }
+                        }
                     }
                     else if(teste_recebe.acao=='d'){
                         teste_recebe.todosJogadores[teste_recebe.id_acao].position.x += 16;
+                        if(teste_recebe.id_acao == idCLient){
+                           if(x_tela > -640){
+                                x_tela -= 16;
+                            }
+                        }
                     }
 
                     jogador = teste_recebe.todosJogadores[idCLient];
@@ -867,7 +906,7 @@ int readIP(){
             // al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Servidor fora do ar, tente novamente");
             // al_flip_display();
             endGame();
-            al_rest(2.0);
+            //al_rest(2.0);
             ipAd=true;
             strcpy(ip, "");
         }

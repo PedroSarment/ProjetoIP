@@ -604,6 +604,10 @@ void runGameTest(){
         input = recvMsg((PROTOCOLO_JOGO *) &jogada);
         // printf("acao = %c, id = %d", jogada.winner, jogada.qntJogadores);
         players[input.client_id] = jogada.todosJogadores[input.client_id];
+        for(int i = 0; i < qntJogadores; i++){
+            players[i] = jogada.todosJogadores[i];
+           // printf("id = %d team = %d", players[i].id, players[i].team);
+        }
         if(input.status != NO_MESSAGE){
             if(jogada.tipo == ANDAR_CIMA){
                 // puts("cima");
