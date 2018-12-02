@@ -397,9 +397,9 @@ void runGame(){
    
 
     //printf("1 - %d %d\n", jogador.position.x, jogador.position.y);
-    // y_tela = jogadores[idCLient].position.y;
-    // x_tela = jogadores[idCLient].position.x;
-    al_draw_bitmap(mapa,x_tela,y_tela,0);
+    y_tela = jogadores[idCLient].position.y/40;
+    x_tela = jogadores[idCLient].position.x/40;
+    al_draw_bitmap(mapa,x_tela,y_tela+40,0);
     // printf("qnt = %d",qntJogadores);
     for(i = 0; i < qntJogadores; i++){
         if(jogadores[i].team == 1){
@@ -591,7 +591,7 @@ void runGame(){
                             jogadores[i] = teste_recebe.todosJogadores[i]; 
                             if(i == teste_recebe.id_acao){
                                 jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
-                                jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y - 1);
+                                jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y - 40);
                             } 
                             else{
                                 jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
@@ -622,7 +622,7 @@ void runGame(){
                             jogadores[i] = teste_recebe.todosJogadores[i]; 
                             if(i == teste_recebe.id_acao){
                                 jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
-                                jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y + 1);
+                                jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y + 40);
                             } 
                             else{
                                 jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
@@ -654,7 +654,7 @@ void runGame(){
                             jogadoresServer[i].position.y -= 1;
                             jogadores[i] = teste_recebe.todosJogadores[i]; 
                             if(i == teste_recebe.id_acao){
-                                jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x - 1);
+                                jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x - 40);
                                 jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y);
                             } 
                             else{
@@ -681,7 +681,7 @@ void runGame(){
                             jogadoresServer[i].position.y += 1;
                             jogadores[i] = teste_recebe.todosJogadores[i]; 
                             if(i == teste_recebe.id_acao){
-                                jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x + 1);
+                                jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x + 40);
                                 jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y);
                             } 
                             else{
