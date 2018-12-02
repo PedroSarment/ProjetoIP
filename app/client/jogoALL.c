@@ -74,7 +74,7 @@ int current_x = 0, current_y = 0;
 int checkType = 1;
 int idCLient;
 int tecla, ret, i, n, capaEscolhido;
-char teste='n';
+char teste='n', flag='s';
 PROTOCOLO_JOGO msg;
 PROTOCOLO_TESTE teste_recebe;
 int sairLobby = 1,opcao = 1, server=0, jogadorReady = 0, qntJogadores = 0, jogoInicio = 1, x_tela = 0,y_tela = 0;
@@ -106,8 +106,9 @@ int main(){
     if(ret ==1){
         while(loopLobby)
             lobby();
-        // al_destroy_display(janela);
-        // janela = al_create_display(480,480);
+        al_destroy_display(janela);
+        janela = al_create_display(912+22,912+22);
+        // al_clear_to_color(al_map_rgb(0,255,0));
         while(sair){
             //puts("gamee");
             runGame();
@@ -397,9 +398,14 @@ void runGame(){
    
 
     //printf("1 - %d %d\n", jogador.position.x, jogador.position.y);
-    y_tela = jogadores[idCLient].position.y/40;
-    x_tela = jogadores[idCLient].position.x/40;
-    al_draw_bitmap(mapa,x_tela,y_tela+40,0);
+    // if(flag=='s'){
+    //     y_tela = jogadores[idCLient].position.y/40;
+    //     x_tela = jogadores[idCLient].position.x/40;
+    //     // flag='n';
+    // }
+
+    al_draw_bitmap(mapa,0+19,0+19,0);
+    printf("xtela: %d \nytela: %d", x_tela, y_tela);
     // printf("qnt = %d",qntJogadores);
     for(i = 0; i < qntJogadores; i++){
         if(jogadores[i].team == 1){
@@ -568,7 +574,7 @@ void runGame(){
             //al_draw_bitmap(mapa,0,0,0);
             }
         }
-        printf("x = %d, Y = %d\n", jogadores[idCLient].position.x, jogadores[idCLient].position.y);
+        //printf("x = %d, Y = %d\n", jogadores[idCLient].position.x, jogadores[idCLient].position.y);
         // n = recvMsgFromServer((PROTOCOLO_JOGO *) &estado_jogo, DONT_WAIT);
         n = recvMsgFromServer((PROTOCOLO_TESTE *) &teste_recebe, DONT_WAIT);
         if(n!=NO_MESSAGE){
@@ -591,7 +597,7 @@ void runGame(){
                             jogadores[i] = teste_recebe.todosJogadores[i]; 
                             if(i == teste_recebe.id_acao){
                                 jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
-                                jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y - 40);
+                                jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y - 19);
                             } 
                             else{
                                 jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
@@ -604,8 +610,11 @@ void runGame(){
                         }
                         msg.tipo = -1;
                         if(teste_recebe.id_acao == idCLient){
-                            if(y_tela != 0){
-                                y_tela += 80;
+                            if(y_tela < 1){
+                                if(y_tela+40>1) y_tela=1;
+                                else y_tela += 40;
+                                
+                                // else y_tela=1;
                             }
                         }
                     }
@@ -622,7 +631,7 @@ void runGame(){
                             jogadores[i] = teste_recebe.todosJogadores[i]; 
                             if(i == teste_recebe.id_acao){
                                 jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
-                                jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y + 40);
+                                jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y + 19);
                             } 
                             else{
                                 jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
@@ -636,7 +645,10 @@ void runGame(){
                         msg.tipo = -1;
                         if(teste_recebe.id_acao == idCLient){
                             if(y_tela > -1240){
-                                y_tela -= 80;
+                                if(y_tela-10 < -1240) y_tela=-1240;
+                                else y_tela -= 40;
+                                
+                                // else y_tela = -1240;
                             }
                         }
                     }
@@ -654,7 +666,7 @@ void runGame(){
                             jogadoresServer[i].position.y -= 1;
                             jogadores[i] = teste_recebe.todosJogadores[i]; 
                             if(i == teste_recebe.id_acao){
-                                jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x - 40);
+                                jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x - 19);
                                 jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y);
                             } 
                             else{
@@ -668,8 +680,10 @@ void runGame(){
                         msg.tipo = -1;
                        
                         if(teste_recebe.id_acao == idCLient){
-                            if(x_tela != 0){
-                                x_tela += 40;
+                            if(x_tela < 1){
+                                if(x_tela + 40>1) x_tela=1;
+                                else x_tela += 40;
+                                // else x_tela=1;
                             }
                         }
                     }
@@ -681,7 +695,7 @@ void runGame(){
                             jogadoresServer[i].position.y += 1;
                             jogadores[i] = teste_recebe.todosJogadores[i]; 
                             if(i == teste_recebe.id_acao){
-                                jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x + 40);
+                                jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x + 19);
                                 jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y);
                             } 
                             else{
@@ -696,7 +710,9 @@ void runGame(){
                         msg.tipo = -1;
                         if(teste_recebe.id_acao == idCLient){
                            if(x_tela > -640){
-                                x_tela -= 40;
+                                if(x_tela-40 < -640) x_tela = -640;
+                                else x_tela -= 40;
+                                // els x_tela = -640;
                             }
                         }
                     }
@@ -1187,8 +1203,8 @@ void lobby(){
                     qntJogadores = teste_recebe.qntJogadores;
                     for(i = 0; i < qntJogadores; i++){
                         jogadores[i] = teste_recebe.todosJogadores[i];
-                        jogadores[i].position.x *= 40;
-                        jogadores[i].position.y *= 40;
+                        jogadores[i].position.x *= 19;
+                        jogadores[i].position.y *= 19;
                         jogadoresServer[i] = teste_recebe.todosJogadores[i];
                     }
                     jogador = teste_recebe.todosJogadores[idCLient];

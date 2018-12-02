@@ -45,7 +45,7 @@
 #define Y_ENTRADA_3_RED 710
 
 //INICIALIZAÇÃO DAS VARIÁVEIS GLOBAIS
-char mapa [49][51];
+char mapa [50][51];
 Player players[6];
 int qntJogadores = 0;
 PROTOCOLO_JOGO jogada_client, jogada_server, tempo;                 // Protocolo de envio a ser enviado para o cliente com as infos do jogo;
@@ -84,7 +84,6 @@ int main() {
 void inicializaMapa(){
     
     strcpy(mapa[0],"NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
-
     strcpy(mapa[1],"NNNNNNNNNNNNNNNNNNNXXXXNNNNXXXXXXXXXXXXXNNNNNXNNNN");
     strcpy(mapa[2],"NNNNNNNNNNNNNNNNNNNXXXXNNNNXXXXXXXXXXXXXNNNNNXNNNN");
     strcpy(mapa[3],"NXXXXXXXXXXXXXXXXXXXXXXNNNNXXXXXXXXXXXXXNNNNSSSSSN");
@@ -172,15 +171,15 @@ void inicializaJogadores(){
                                 players[id].team = 1;
                                 players[id].position.x = 30;
                                 players[id].position.y = 30;
-                                players[id].posicaoPrint.x = players[id].position.x * 40;
-                                players[id].posicaoPrint.y = players[id].position.y * 40;
+                                players[id].posicaoPrint.x = players[id].position.x * 19;
+                                players[id].posicaoPrint.y = players[id].position.y * 19;
                             }
                             else{
                                 players[id].team = 2;
                                 players[id].position.x = 20;
                                 players[id].position.y = 20;
-                                players[id].posicaoPrint.x = players[id].position.x * 40;
-                                players[id].posicaoPrint.y = players[id].position.y * 40;
+                                players[id].posicaoPrint.x = players[id].position.x * 19;
+                                players[id].posicaoPrint.y = players[id].position.y * 19;
                             }                    
                             players[id].comBandeira = 0;
                             players[id].ready = 0;
