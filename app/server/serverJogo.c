@@ -132,7 +132,15 @@ void inicializaMapa(){
     strcpy(mapa[46],"NNSSNNNNNSXXXXXXXXXXXXNNNNXXXXNNNNNNNNNNNNNNNNNN");
     strcpy(mapa[47],"NNNSNNNNNSXXXXXXXXXXXXNNNNXXXXNNNNNNNNNNNNNNNNNN");
     
+//   for(i = 0; i < 48; i++){
+//       for(j = 0; j < 24; j++){
+//           printf("%c",mapa[i][j]);
+//       }
+//       printf("\n");
+//   }
+//   printf("\n");
 }
+
 
 void inicializaJogadores(){
     int notReady = 1;
@@ -159,13 +167,17 @@ void inicializaJogadores(){
                             // Inicializando os demais atributos do player atual
                             if(qntJogadores%2 == 0){
                                 players[id].team = 1;
-                                players[id].position.x = 27;
-                                players[id].position.y = 10;
+                                players[id].position.x = 2;
+                                players[id].position.y = 2;
+                                players[id].posicaoPrint.x = players[id].position.x * 40;
+                                players[id].posicaoPrint.y = players[id].position.y * 40;
                             }
                             else{
                                 players[id].team = 2;
-                                players[id].position.x = 20;
-                                players[id].position.y = 20;
+                                players[id].position.x = 1;
+                                players[id].position.y = 1;
+                                players[id].posicaoPrint.x = players[id].position.x * 40;
+                                players[id].posicaoPrint.y = players[id].position.y * 40;
                             }                    
                             players[id].comBandeira = 0;
                             players[id].ready = 0;
@@ -258,7 +270,8 @@ void runGame(){
                 //players[input.client_id] = jogada_client.todosJogadores[0];
                 // Verifica se o jogador não está congelado
                 if(!players[input.client_id].estaCongelado){
-                    printf("x = %d, Y = %d", players[input.client_id].position.x, players[input.client_id].position.y);
+                    //puts("recebe");
+                    //printf("x = %d, Y = %d", players[input.client_id].position.x, players[input.client_id].position.y);
                     // Verifica se o jogador andou para cima
                     if(jogada_client.tipo == ANDAR_CIMA){
 
@@ -648,13 +661,26 @@ void runGameTest(){
     while(!fim){
         input = recvMsg((PROTOCOLO_JOGO *) &jogada);
         // printf("acao = %c, id = %d", jogada.winner, jogada.qntJogadores);
-        players[input.client_id] = jogada.todosJogadores[input.client_id];
-        for(int i = 0; i < qntJogadores; i++){
-            players[i] = jogada.todosJogadores[i];
-           // printf("id = %d team = %d", players[i].id, players[i].team);
-        }
+       // players[input.client_id] = jogada.todosJogadores[input.client_id];
+        // for(int i = 0; i < qntJogadores; i++){
+        //     players[i] = jogada.todosJogadores[i];
+        //    // printf("id = %d team = %d", players[i].id, players[i].team);
+        // }
+        // printf("x = %d, Y = %d", jogada.todosJogadores[input.client_id].position.x, jogada.todosJogadores[input.client_id].position.y);
+
         if(input.status != NO_MESSAGE){
-            if(jogada.tipo == ANDAR_CIMA && mapa[ players[input.client_id].position.x ] [ players[input.client_id].position.y - 1 ] != 'N'){
+            printf("X = %d, Y = %d,", jogada.todosJogadores[input.client_id].position.x, jogada.todosJogadores[input.client_id].position.y);
+            printf(" Mc = %c",  mapa[jogada.todosJogadores[input.client_id].position.x -1] [ jogada.todosJogadores[input.client_id].position.y]);
+            printf(" Mb = %c",  mapa[jogada.todosJogadores[input.client_id].position.x +1] [ jogada.todosJogadores[input.client_id].position.y]);
+            printf(" Me = %c",  mapa[jogada.todosJogadores[input.client_id].position.x] [ jogada.todosJogadores[input.client_id].position.y -1]);
+            printf(" Md = %c\n",  mapa[jogada.todosJogadores[input.client_id].position.x] [ jogada.todosJogadores[input.client_id].position.y + 1]);
+
+             for(int i = 0; i < qntJogadores; i++){
+                players[i] = jogada.todosJogadores[i];
+           // printf("id = %d team = %d", players[i].id, players[i].team);
+            }
+            // printf("x = %d, Y = %d", players[input.client_id].position.x, players[input.client_id].position.y);
+            if(jogada.tipo == ANDAR_CIMA && mapa[jogada.todosJogadores[input.client_id].position.x - 1] [ jogada.todosJogadores[input.client_id].position.y] != 'N'){
                 // puts("cima");
                 teste_envia.acao = 'c';
                 teste_envia.tipo = 'G';
@@ -666,7 +692,7 @@ void runGameTest(){
                 }
                 broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
             }
-            else if(jogada.tipo == ANDAR_BAIXO && mapa[ players[input.client_id].position.x ][ players[input.client_id].position.y + 1] != 'N'){
+            else if(jogada.tipo == ANDAR_BAIXO && mapa[jogada.todosJogadores[input.client_id].position.x + 1] [ jogada.todosJogadores[input.client_id].position.y] != 'N'){
                 teste_envia.acao = 'b';
                 teste_envia.tipo = 'G';
                 teste_envia.id_acao = input.client_id;
@@ -676,7 +702,7 @@ void runGameTest(){
                 //printf("acao = %c, id = %d", teste_envia.acao, teste_envia.id_acao);
                 broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
             }
-            else if(jogada.tipo == ANDAR_ESQUERDA && mapa[ players[input.client_id].position.x -1][players[input.client_id].position.y] != 'N'){
+            else if(jogada.tipo == ANDAR_ESQUERDA && mapa[jogada.todosJogadores[input.client_id].position.x] [ jogada.todosJogadores[input.client_id].position.y - 1] != 'N'){
                 teste_envia.acao = 'e';
                 teste_envia.tipo = 'G';
                 teste_envia.id_acao = input.client_id;
@@ -686,7 +712,7 @@ void runGameTest(){
                // printf("acao = %c, id = %d", teste_envia.acao, teste_envia.id_acao);
                 broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
             }
-            else if(jogada.tipo == ANDAR_DIREITA && mapa[ players[input.client_id].position.x + 1][players[input.client_id].position.y] != 'N'){
+            else if(jogada.tipo == ANDAR_DIREITA && mapa[jogada.todosJogadores[input.client_id].position.x] [ jogada.todosJogadores[input.client_id].position.y + 1] != 'N'){
                 teste_envia.acao = 'd';
                 teste_envia.tipo = 'G';
                 teste_envia.id_acao = input.client_id;

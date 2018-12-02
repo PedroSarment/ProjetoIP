@@ -72,6 +72,7 @@ typedef struct{
     int congelou;                    // Se o player congelou alguém ou não           
     Position position;               // A posição x e y do player no mapa
     int ready;                       // Verifica se o jogador apertou pra começar ou não
+    Position posicaoPrint;
 }Player;
 
 // Estrutura para o protocolo de mensagem enviadas entre server/client durante o jogo
