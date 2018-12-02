@@ -59,6 +59,10 @@ typedef struct{
     int x, y;
 }Position;
 
+typedef struct{
+    int team;
+    Position posiT;
+}Traps;
 // Estrutura do jogador
 typedef struct{
     char name[LOGIN_MAX_SIZE];
@@ -92,6 +96,8 @@ typedef struct{
     Player todosJogadores[6];
     int id_acao;
     int qntJogadores;
+    Traps traps[20];
+    int tp;
 }PROTOCOLO_TESTE;
 
 // Estrutura para o protocolo da mensagem  inicial do server para o client
