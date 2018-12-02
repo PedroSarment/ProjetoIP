@@ -605,7 +605,7 @@ void runGame(){
                     // }
                     for(i = 0; i < qntJogadores; i++){
                         jogadoresServer[i] = teste_recebe.todosJogadores[i];
-                        jogadoresServer[i].position.x -= 1;
+                        jogadoresServer[i].position.x -= 19;
                         jogadores[i] = teste_recebe.todosJogadores[i]; 
                         if(i == teste_recebe.id_acao){
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
@@ -621,14 +621,14 @@ void runGame(){
                         
                     }
                     msg.tipo = -1;
-                    if(teste_recebe.id_acao == idCLient){
-                        if(y_tela < 1){
-                            if(y_tela+40>1) y_tela=1;
-                            else y_tela += 40;
+                    // if(teste_recebe.id_acao == idCLient){
+                    //     if(y_tela < 1){
+                    //         if(y_tela+40>1) y_tela=1;
+                    //         else y_tela += 40;
                             
-                            // else y_tela=1;
-                        }
-                    }
+                    //         // else y_tela=1;
+                    //     }
+                    // }
                 }
                 else if(teste_recebe.acao == 'b'){
                     //teste_recebe.todosJogadores[teste_recebe.id_acao].position.y += 1;
@@ -639,7 +639,7 @@ void runGame(){
                     // }
                     for(i = 0; i < qntJogadores; i++){
                         jogadoresServer[i] = teste_recebe.todosJogadores[i];
-                        jogadoresServer[i].position.x += 1;
+                        jogadoresServer[i].position.x += 19;
                         jogadores[i] = teste_recebe.todosJogadores[i]; 
                         if(i == teste_recebe.id_acao){
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
@@ -655,14 +655,14 @@ void runGame(){
                         
                     }
                     msg.tipo = -1;
-                    if(teste_recebe.id_acao == idCLient){
-                        if(y_tela > -1240){
-                            if(y_tela-10 < -1240) y_tela=-1240;
-                            else y_tela -= 40;
+                    // if(teste_recebe.id_acao == idCLient){
+                    //     if(y_tela > -1240){
+                    //         if(y_tela-10 < -1240) y_tela=-1240;
+                    //         else y_tela -= 40;
                             
-                            // else y_tela = -1240;
-                        }
-                    }
+                    //         // else y_tela = -1240;
+                    //     }
+                    // }
                 }
                 else if(teste_recebe.acao == 'e'){
                     
@@ -675,7 +675,7 @@ void runGame(){
                     // }
                     for(i = 0; i < qntJogadores; i++){
                         jogadoresServer[i] = teste_recebe.todosJogadores[i];
-                        jogadoresServer[i].position.y -= 1;
+                        jogadoresServer[i].position.y -= 19;
                         jogadores[i] = teste_recebe.todosJogadores[i]; 
                         if(i == teste_recebe.id_acao){
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x - 19);
@@ -691,20 +691,20 @@ void runGame(){
                     }
                     msg.tipo = -1;
                     
-                    if(teste_recebe.id_acao == idCLient){
-                        if(x_tela < 1){
-                            if(x_tela + 40>1) x_tela=1;
-                            else x_tela += 40;
-                            // else x_tela=1;
-                        }
-                    }
+                    // if(teste_recebe.id_acao == idCLient){
+                    //     if(x_tela < 1){
+                    //         if(x_tela + 40>1) x_tela=1;
+                    //         else x_tela += 40;
+                    //         // else x_tela=1;
+                    //     }
+                    // }
                 }
                 else if(teste_recebe.acao == 'd'){
                     
                     // jogadores[teste_recebe.id_acao].position.x = (10 * jogadores[teste_recebe.id_acao].position.x) + 40;
                     for(i = 0; i < qntJogadores; i++){
                         jogadoresServer[i] = teste_recebe.todosJogadores[i];
-                        jogadoresServer[i].position.y += 1;
+                        jogadoresServer[i].position.y += 19;
                         jogadores[i] = teste_recebe.todosJogadores[i]; 
                         if(i == teste_recebe.id_acao){
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x + 19);
@@ -720,13 +720,13 @@ void runGame(){
                         
                     }
                     msg.tipo = -1;
-                    if(teste_recebe.id_acao == idCLient){
-                        if(x_tela > -640){
-                            if(x_tela-40 < -640) x_tela = -640;
-                            else x_tela -= 40;
-                            // els x_tela = -640;
-                        }
-                    }
+                    // if(teste_recebe.id_acao == idCLient){
+                    //     if(x_tela > -640){
+                    //         if(x_tela-40 < -640) x_tela = -640;
+                    //         else x_tela -= 40;
+                    //         // els x_tela = -640;
+                    //     }
+                    // }
                 }
                 else if(teste_recebe.acao == 't'){
                     puts("trap");
@@ -781,7 +781,7 @@ void runGame(){
         al_draw_bitmap(congelado,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
         for(i=0;i < qntJogadores;i++){
             if(teste_recebe.todosJogadores[i].congelou && teste_recebe.todosJogadores[i].team==jogador.team){
-                al_draw_bitmap(mapa,0,0,0);
+                al_draw_bitmap(mapa,0+19,0+19,0);
                 al_draw_bitmap(congelado,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
                 al_flip_display();
             }

@@ -81,6 +81,12 @@ int main() {
     return 0;
 }
 
+void imprimeMatriz(){
+    for(i=0;i<50;i++){
+        printf("%s\n", mapa[i]);
+    }
+}
+
 void inicializaMapa(){
     
     strcpy(mapa[0],"NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
@@ -683,6 +689,7 @@ void runGameTest(){
             }
             // printf("x = %d, Y = %d", players[input.client_id].position.x, players[input.client_id].position.y);
             if(jogada.tipo == ANDAR_CIMA && mapa[jogada.todosJogadores[input.client_id].position.x - 1] [ jogada.todosJogadores[input.client_id].position.y] != 'N' && jogada.todosJogadores[input.client_id].estaCongelado != 1){
+                // imprimeMatriz();
                 if(jogada.todosJogadores[input.client_id].team == 1 && mapa[jogada.todosJogadores[input.client_id].position.x - 1] [ jogada.todosJogadores[input.client_id].position.y] != 'R'  || jogada.todosJogadores[input.client_id].team == 2 && mapa[jogada.todosJogadores[input.client_id].position.x - 1] [ jogada.todosJogadores[input.client_id].position.y] != 'B'){
                     jogada.todosJogadores[input.client_id].estaCongelado = 1;
                     teste_envia.acao = 'c';
@@ -785,7 +792,7 @@ void runGameTest(){
             else if(jogada.tipo == BOTARTRAPS && mapa[jogada.todosJogadores[input.client_id].position.x] [jogada.todosJogadores[input.client_id].position.y] != 'S' && jogada.todosJogadores[input.client_id].estaCongelado != 1){
                 if(mapa[jogada.todosJogadores[input.client_id].position.x][ jogada.todosJogadores[input.client_id].position.y] != 'Z'){
                     if(jogada.todosJogadores[input.client_id].team == 1 && mapa[jogada.todosJogadores[input.client_id].position.x] [ jogada.todosJogadores[input.client_id].position.y] != 'B' && jogada.todosJogadores[input.client_id].armadilhas > 0){
-                        puts("traps");
+                        // puts("traps");
                         for(int i = 0; i < qntJogadores; i++){
                             teste_envia.todosJogadores[i] = players[i];
                         }
@@ -796,13 +803,13 @@ void runGameTest(){
                         teste_envia.traps[tp].posiT.y= jogada.todosJogadores[input.client_id].position.y;
                         teste_envia.traps[tp].team = 1;
                         teste_envia.tp++;
-                        printf("%d %d\n", teste_envia.traps[tp].posiT.x, teste_envia.traps[tp].posiT.y);
+                        // printf("%d %d\n", teste_envia.traps[tp].posiT.x, teste_envia.traps[tp].posiT.y);
                         tp++;
                         mapa[jogada.todosJogadores[input.client_id].position.x][jogada.todosJogadores[input.client_id].position.y] = 'B';
                     // printf("acao = %c, id = %d", teste_envia.acao, teste_envia.id_acao);
                         broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
                     }else if(jogada.todosJogadores[input.client_id].team == 2 && mapa[jogada.todosJogadores[input.client_id].position.x] [ jogada.todosJogadores[input.client_id].position.y] != 'R' && jogada.todosJogadores[input.client_id].armadilhas > 0){
-                        puts("traps");
+                        // puts("traps");
                         for(int i = 0; i < qntJogadores; i++){
                             teste_envia.todosJogadores[i] = players[i];
                         }
@@ -813,13 +820,13 @@ void runGameTest(){
                         teste_envia.traps[tp].posiT.y = jogada.todosJogadores[input.client_id].position.y;
                         teste_envia.traps[tp].team = 2;
                         teste_envia.tp++;
-                        printf("%d %d\n", teste_envia.traps[tp].posiT.x, teste_envia.traps[tp].posiT.y);
+                        // printf("%d %d\n", teste_envia.traps[tp].posiT.x, teste_envia.traps[tp].posiT.y);
                         tp++;
                         mapa[jogada.todosJogadores[input.client_id].position.x] [ jogada.todosJogadores[input.client_id].position.y] = 'R';
                     // printf("acao = %c, id = %d", teste_envia.acao, teste_envia.id_acao);
                         broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
                     }
-                    printf("%s \n", mapa[jogada.todosJogadores[input.client_id].position.x]);
+                    // printf("%s \n", mapa[jogada.todosJogadores[input.client_id].position.x]);
                 }
             }
             // else if(jogada.tipo == CONGELA){
