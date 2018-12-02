@@ -671,11 +671,11 @@ void runGameTest(){
         // printf("x = %d, Y = %d", jogada.todosJogadores[input.client_id].position.x, jogada.todosJogadores[input.client_id].position.y);
 
         if(input.status != NO_MESSAGE){
-            printf("X = %d, Y = %d,", jogada.todosJogadores[input.client_id].position.x, jogada.todosJogadores[input.client_id].position.y);
-            printf(" Mc = %c",  mapa[jogada.todosJogadores[input.client_id].position.x -1] [ jogada.todosJogadores[input.client_id].position.y]);
-            printf(" Mb = %c",  mapa[jogada.todosJogadores[input.client_id].position.x +1] [ jogada.todosJogadores[input.client_id].position.y]);
-            printf(" Me = %c",  mapa[jogada.todosJogadores[input.client_id].position.x] [ jogada.todosJogadores[input.client_id].position.y -1]);
-            printf(" Md = %c\n",  mapa[jogada.todosJogadores[input.client_id].position.x] [ jogada.todosJogadores[input.client_id].position.y + 1]);
+            // printf("X = %d, Y = %d,", jogada.todosJogadores[input.client_id].position.x, jogada.todosJogadores[input.client_id].position.y);
+            // printf(" Mc = %c",  mapa[jogada.todosJogadores[input.client_id].position.x -1] [ jogada.todosJogadores[input.client_id].position.y]);
+            // printf(" Mb = %c",  mapa[jogada.todosJogadores[input.client_id].position.x +1] [ jogada.todosJogadores[input.client_id].position.y]);
+            // printf(" Me = %c",  mapa[jogada.todosJogadores[input.client_id].position.x] [ jogada.todosJogadores[input.client_id].position.y -1]);
+            // printf(" Md = %c\n",  mapa[jogada.todosJogadores[input.client_id].position.x] [ jogada.todosJogadores[input.client_id].position.y + 1]);
 
              for(int i = 0; i < qntJogadores; i++){
                 players[i] = jogada.todosJogadores[i];

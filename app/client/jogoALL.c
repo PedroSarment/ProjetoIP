@@ -405,7 +405,7 @@ void runGame(){
     // }
 
     al_draw_bitmap(mapa,0+19,0+19,0);
-    printf("xtela: %d \nytela: %d", x_tela, y_tela);
+    // printf("xtela: %d \nytela: %d", x_tela, y_tela);
     // printf("qnt = %d",qntJogadores);
     for(i = 0; i < qntJogadores; i++){
         if(jogadores[i].team == 1){
