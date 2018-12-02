@@ -76,7 +76,7 @@ int current_x = 0, current_y = 0;
 int checkType = 1;
 int idCLient, j;
 int tecla, ret, i, n, capaEscolhido;
-char flag='s';
+char flag='s', congelou='n';
 PROTOCOLO_JOGO msg;
 PROTOCOLO_TESTE teste_recebe;
 int sairLobby = 1,opcao = 1, server=0, jogadorReady = 0, qntJogadores = 0, jogoInicio = 1, x_tela = 0,y_tela = 0;
@@ -443,7 +443,6 @@ void runGame(){
     msg.tipo = GAME;
 
     checkType = 1;
-    if(!jogador.estaCongelado){
     while(!al_event_queue_is_empty(fila_eventos) && checkType){
 
         al_wait_for_event(fila_eventos,&evento);
@@ -606,11 +605,13 @@ void runGame(){
                     // }
                     for(i = 0; i < qntJogadores; i++){
                         jogadoresServer[i] = teste_recebe.todosJogadores[i];
-                        jogadores[i] = teste_recebe.todosJogadores[i]; 
-                        if(i == teste_recebe.id_acao){
+                        jogadores[i] = teste_recebe.todosJogadores[i];
+                        // printf("%d - congelado? %d\n", i, teste_recebe.todosJogadores[i].estaCongelado);  
+                        if(i == teste_recebe.id_acao && congelou=='n'){
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
                             jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y - 19);
                             jogadoresServer[i].position.x -= 1;
+                            if(teste_recebe.todosJogadores[i].estaCongelado) congelou='s';
                         } 
                         else{
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
@@ -618,7 +619,7 @@ void runGame(){
                         }
                         
                         jogadoresServer[i].posicaoPrint = jogadores[i].position;
-                        printf("x: %d, y: %d\n", jogadores[i].position.x, jogadores[i].position.y);
+                        // printf("x: %d, y: %d\n", jogadores[i].position.x, jogadores[i].position.y);
                         msg.todosJogadores[i] = jogadoresServer[i];
                         
                     }
@@ -641,11 +642,13 @@ void runGame(){
                     // }
                     for(i = 0; i < qntJogadores; i++){
                         jogadoresServer[i] = teste_recebe.todosJogadores[i];
-                        jogadores[i] = teste_recebe.todosJogadores[i]; 
-                        if(i == teste_recebe.id_acao){
+                        jogadores[i] = teste_recebe.todosJogadores[i];
+                        // printf("%d - congelado? %d\n", i, teste_recebe.todosJogadores[i].estaCongelado); 
+                        if(i == teste_recebe.id_acao && congelou=='n'){
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
                             jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y + 19);
                             jogadoresServer[i].position.x += 1;
+                            if(teste_recebe.todosJogadores[i].estaCongelado) congelou='s';
                         } 
                         else{
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
@@ -653,7 +656,7 @@ void runGame(){
                         }
                         
                         jogadoresServer[i].posicaoPrint = jogadores[i].position;
-                        printf("x: %d, y: %d\n", jogadores[i].position.x, jogadores[i].position.y);
+                        // printf("x: %d, y: %d\n", jogadores[i].position.x, jogadores[i].position.y);
                         msg.todosJogadores[i] = jogadoresServer[i];
                         
                     }
@@ -678,11 +681,13 @@ void runGame(){
                     // }
                     for(i = 0; i < qntJogadores; i++){
                         jogadoresServer[i] = teste_recebe.todosJogadores[i];
-                        jogadores[i] = teste_recebe.todosJogadores[i]; 
-                        if(i == teste_recebe.id_acao){
+                        jogadores[i] = teste_recebe.todosJogadores[i];
+                        // printf("%d - congelado? %d\n", i, teste_recebe.todosJogadores[i].estaCongelado);  
+                        if(i == teste_recebe.id_acao && congelou=='n'){
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x - 19);
                             jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y);
                             jogadoresServer[i].position.y -= 1;
+                            if(teste_recebe.todosJogadores[i].estaCongelado) congelou='s';
                         } 
                         else{
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
@@ -690,7 +695,7 @@ void runGame(){
                         }
                         
                         jogadoresServer[i].posicaoPrint = jogadores[i].position;
-                        printf("x: %d, y: %d\n", jogadores[i].position.x, jogadores[i].position.y);
+                        // printf("x: %d, y: %d\n", jogadores[i].position.x, jogadores[i].position.y);
                         msg.todosJogadores[i] = jogadoresServer[i];          
                     }
                     msg.tipo = -1;
@@ -709,11 +714,13 @@ void runGame(){
                     for(i = 0; i < qntJogadores; i++){
                         jogadoresServer[i] = teste_recebe.todosJogadores[i];
                         // printf("%d", jogadoresServer[i].position.y);
-                        jogadores[i] = teste_recebe.todosJogadores[i]; 
-                        if(i == teste_recebe.id_acao){
+                        jogadores[i] = teste_recebe.todosJogadores[i];
+                        // printf("%d - congelado? %d\n", i, teste_recebe.todosJogadores[i].estaCongelado);  
+                        if(i == teste_recebe.id_acao && congelou=='n'){
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x + 19);
                             jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y);
                             jogadoresServer[i].position.y += 1;
+                            if(teste_recebe.todosJogadores[i].estaCongelado) congelou='s';
                         } 
                         else{
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
@@ -721,7 +728,7 @@ void runGame(){
                         }
                         
                         jogadoresServer[i].posicaoPrint = jogadores[i].position;
-                        printf("x: %d, y: %d\n", jogadores[i].position.x, jogadores[i].position.y);
+                        // printf("x: %d, y: %d\n", jogadores[i].position.x, jogadores[i].position.y);
                         msg.todosJogadores[i] = jogadoresServer[i];
                         
                     }
@@ -781,18 +788,18 @@ void runGame(){
                 }
             }
         }
-    }
-    else{
-    // al_draw_bitmap(mapa,0,0,0);
-        al_draw_bitmap(congelado,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
-        for(i=0;i < qntJogadores;i++){
-            if(teste_recebe.todosJogadores[i].congelou && teste_recebe.todosJogadores[i].team==jogador.team){
-                al_draw_bitmap(mapa,0+19,0+19,0);
-                al_draw_bitmap(congelado,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
-                al_flip_display();
-            }
-        }
-    }
+    
+    // else{
+    // // al_draw_bitmap(mapa,0,0,0);
+    //     al_draw_bitmap(congelado,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
+    //     for(i=0;i < qntJogadores;i++){
+    //         if(teste_recebe.todosJogadores[i].congelou && teste_recebe.todosJogadores[i].team==jogador.team){
+    //             al_draw_bitmap(mapa,0+19,0+19,0);
+    //             al_draw_bitmap(congelado,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
+    //             al_flip_display();
+    //         }
+    //     }
+    // }
 
 }
 
