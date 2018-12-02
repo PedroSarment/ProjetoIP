@@ -467,6 +467,7 @@ void runGame(){
                         checkType = 0;
                     }
                     else{
+                        puts("server disconnected");
                         endGame();
                     }
 
@@ -605,11 +606,11 @@ void runGame(){
                     // }
                     for(i = 0; i < qntJogadores; i++){
                         jogadoresServer[i] = teste_recebe.todosJogadores[i];
-                        jogadoresServer[i].position.x -= 19;
                         jogadores[i] = teste_recebe.todosJogadores[i]; 
                         if(i == teste_recebe.id_acao){
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
                             jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y - 19);
+                            jogadoresServer[i].position.x -= 1;
                         } 
                         else{
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
@@ -617,6 +618,7 @@ void runGame(){
                         }
                         
                         jogadoresServer[i].posicaoPrint = jogadores[i].position;
+                        printf("x: %d, y: %d\n", jogadores[i].position.x, jogadores[i].position.y);
                         msg.todosJogadores[i] = jogadoresServer[i];
                         
                     }
@@ -639,11 +641,11 @@ void runGame(){
                     // }
                     for(i = 0; i < qntJogadores; i++){
                         jogadoresServer[i] = teste_recebe.todosJogadores[i];
-                        jogadoresServer[i].position.x += 19;
                         jogadores[i] = teste_recebe.todosJogadores[i]; 
                         if(i == teste_recebe.id_acao){
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
                             jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y + 19);
+                            jogadoresServer[i].position.x += 1;
                         } 
                         else{
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
@@ -651,6 +653,7 @@ void runGame(){
                         }
                         
                         jogadoresServer[i].posicaoPrint = jogadores[i].position;
+                        printf("x: %d, y: %d\n", jogadores[i].position.x, jogadores[i].position.y);
                         msg.todosJogadores[i] = jogadoresServer[i];
                         
                     }
@@ -675,11 +678,11 @@ void runGame(){
                     // }
                     for(i = 0; i < qntJogadores; i++){
                         jogadoresServer[i] = teste_recebe.todosJogadores[i];
-                        jogadoresServer[i].position.y -= 19;
                         jogadores[i] = teste_recebe.todosJogadores[i]; 
                         if(i == teste_recebe.id_acao){
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x - 19);
                             jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y);
+                            jogadoresServer[i].position.y -= 1;
                         } 
                         else{
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
@@ -687,6 +690,7 @@ void runGame(){
                         }
                         
                         jogadoresServer[i].posicaoPrint = jogadores[i].position;
+                        printf("x: %d, y: %d\n", jogadores[i].position.x, jogadores[i].position.y);
                         msg.todosJogadores[i] = jogadoresServer[i];          
                     }
                     msg.tipo = -1;
@@ -704,11 +708,12 @@ void runGame(){
                     // jogadores[teste_recebe.id_acao].position.x = (10 * jogadores[teste_recebe.id_acao].position.x) + 40;
                     for(i = 0; i < qntJogadores; i++){
                         jogadoresServer[i] = teste_recebe.todosJogadores[i];
-                        jogadoresServer[i].position.y += 19;
+                        // printf("%d", jogadoresServer[i].position.y);
                         jogadores[i] = teste_recebe.todosJogadores[i]; 
                         if(i == teste_recebe.id_acao){
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x + 19);
                             jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y);
+                            jogadoresServer[i].position.y += 1;
                         } 
                         else{
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
@@ -716,6 +721,7 @@ void runGame(){
                         }
                         
                         jogadoresServer[i].posicaoPrint = jogadores[i].position;
+                        printf("x: %d, y: %d\n", jogadores[i].position.x, jogadores[i].position.y);
                         msg.todosJogadores[i] = jogadoresServer[i];
                         
                     }
@@ -729,12 +735,12 @@ void runGame(){
                     // }
                 }
                 else if(teste_recebe.acao == 't'){
-                    puts("trap");
+                    // puts("trap");
                     for(i=0;i<=tp;i++){
                         armadilhas[i].posiT.x = teste_recebe.traps[i].posiT.x;
                         armadilhas[i].posiT.y = teste_recebe.traps[i].posiT.y;
                         armadilhas[i].team = teste_recebe.traps[i].team;
-                        printf("%d: %d %d\n", i, armadilhas[i].posiT.x, armadilhas[i].posiT.y);
+                        // printf("%d: %d %d\n", i, armadilhas[i].posiT.x, armadilhas[i].posiT.y);
                     }
                     // recebeuTrap='s';
                     tp++;

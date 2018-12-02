@@ -685,6 +685,7 @@ void runGameTest(){
 
              for(int i = 0; i < qntJogadores; i++){
                 players[i] = jogada.todosJogadores[i];
+                printf("posicao print::: x: %d, y:%d, posicao:: x: %d, y:%d\n", jogada.todosJogadores[i].posicaoPrint.x, jogada.todosJogadores[i].posicaoPrint.y, jogada.todosJogadores[i].position.x, jogada.todosJogadores[i].position.y);
            // printf("id = %d team = %d", players[i].id, players[i].team);
             }
             // printf("x = %d, Y = %d", players[input.client_id].position.x, players[input.client_id].position.y);
