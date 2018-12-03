@@ -447,12 +447,12 @@ void runGame(){
             }
         }
     }
-    if(jogadores[idCLient].estaCongelado==1){
+    if(jogadores[idCLient].estaCongelado == 1){
         printTimer();
     }
     else{
-        auxtempo=0;
-        tempocongelado=20;
+        auxtempo = 0;
+        tempocongelado = 20;
     }
     // if(jogoInicio){
        al_flip_display();
@@ -465,147 +465,150 @@ void runGame(){
 
         al_wait_for_event(fila_eventos,&evento);
         if (evento.type == ALLEGRO_EVENT_KEY_DOWN){
-            //verifica qual tecla foi pressionada
-            switch(evento.keyboard.keycode){
-                //seta para cima
-                case ALLEGRO_KEY_W:
-                  //  puts("cima");
-                    msg.tipo = ANDAR_CIMA;
-                  //  msg.todosJogadores[idCLient] = jogador;
-                    checkType = 0;
-
-                    for(i = 0; i < qntJogadores; i++){
-                        msg.todosJogadores[i] = jogadoresServer[i]; 
-                    }
-
-                    ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
-                    if(ret != SERVER_DISCONNECTED){
-                    //printf("1 - enviou tipo %d\n", msg.tipo);
+            if(!jogador.estaCongelado){
+                //verifica qual tecla foi pressionada
+                switch(evento.keyboard.keycode){
+                    //seta para cima
+                    case ALLEGRO_KEY_W:
+                    //  puts("cima");
+                        msg.tipo = ANDAR_CIMA;
+                    //  msg.todosJogadores[idCLient] = jogador;
                         checkType = 0;
-                    }
-                    else{
-                        puts("server disconnected");
-                        endGame();
-                    }
 
-                    // printf("tipo %d enviou", msg.tipo);
-                    break;
-                //Baixo
-                case ALLEGRO_KEY_S:
-                   // puts("baixo");
-                    msg.tipo= ANDAR_BAIXO;
-                    //msg.todosJogadores[idCLient] = jogador;
-                    checkType = 0;
-                    for(i = 0; i < qntJogadores; i++){
-                        msg.todosJogadores[i] = jogadoresServer[i]; 
-                    }
-                    ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
-                    if(ret != SERVER_DISCONNECTED){
-                    //printf("1 - enviou tipo %d\n", msg.tipo);
+                        for(i = 0; i < qntJogadores; i++){
+                            msg.todosJogadores[i] = jogadoresServer[i]; 
+                        }
+
+                        ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
+                        if(ret != SERVER_DISCONNECTED){
+                        //printf("1 - enviou tipo %d\n", msg.tipo);
+                            checkType = 0;
+                        }
+                        else{
+                            puts("server disconnected");
+                            endGame();
+                        }
+
+                        // printf("tipo %d enviou", msg.tipo);
+                        break;
+                    //Baixo
+                    case ALLEGRO_KEY_S:
+                    // puts("baixo");
+                        msg.tipo= ANDAR_BAIXO;
+                        //msg.todosJogadores[idCLient] = jogador;
                         checkType = 0;
-                    }
-                    else{
-                        endGame();
-                    }
+                        for(i = 0; i < qntJogadores; i++){
+                            msg.todosJogadores[i] = jogadoresServer[i]; 
+                        }
+                        ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
+                        if(ret != SERVER_DISCONNECTED){
+                        //printf("1 - enviou tipo %d\n", msg.tipo);
+                            checkType = 0;
+                        }
+                        else{
+                            endGame();
+                        }
 
-                    // printf("tipo %d enviou", msg.tipo);
-                    break;
-                //Esquerda
-                case ALLEGRO_KEY_A:
-                   // puts("esquerda");
-                    msg.tipo = ANDAR_ESQUERDA;
-                    //msg.todosJogadores[idCLient] = jogador;
-                    checkType = 0;
-                    for(i = 0; i < qntJogadores; i++){
-                        msg.todosJogadores[i] = jogadoresServer[i]; 
-                    }
-                    ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
-                    if(ret != SERVER_DISCONNECTED){
-                    //printf("1 - enviou tipo %d\n", msg.tipo);
+                        // printf("tipo %d enviou", msg.tipo);
+                        break;
+                    //Esquerda
+                    case ALLEGRO_KEY_A:
+                    // puts("esquerda");
+                        msg.tipo = ANDAR_ESQUERDA;
+                        //msg.todosJogadores[idCLient] = jogador;
                         checkType = 0;
-                    }
-                    else{
-                        endGame();
-                    }
+                        for(i = 0; i < qntJogadores; i++){
+                            msg.todosJogadores[i] = jogadoresServer[i]; 
+                        }
+                        ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
+                        if(ret != SERVER_DISCONNECTED){
+                        //printf("1 - enviou tipo %d\n", msg.tipo);
+                            checkType = 0;
+                        }
+                        else{
+                            endGame();
+                        }
 
-                    // printf("tipo %d enviou", msg.tipo);
-                    break;
-                    //Direita.
-                case ALLEGRO_KEY_D:
-                  //  puts("direita");
-                    msg.tipo= ANDAR_DIREITA;
-                    //msg.todosJogadores[idCLient] = jogador;
-                    checkType = 0;
-                    for(i = 0; i < qntJogadores; i++){
-                        msg.todosJogadores[i] = jogadoresServer[i]; 
-                    }
-                    ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
-                    if(ret != SERVER_DISCONNECTED){
-                    //printf("1 - enviou tipo %d\n", msg.tipo);
+                        // printf("tipo %d enviou", msg.tipo);
+                        break;
+                        //Direita.
+                    case ALLEGRO_KEY_D:
+                    //  puts("direita");
+                        msg.tipo= ANDAR_DIREITA;
+                        //msg.todosJogadores[idCLient] = jogador;
                         checkType = 0;
-                    }
-                    else{
-                        endGame();
-                    }
-                    
+                        for(i = 0; i < qntJogadores; i++){
+                            msg.todosJogadores[i] = jogadoresServer[i]; 
+                        }
+                        ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
+                        if(ret != SERVER_DISCONNECTED){
+                        //printf("1 - enviou tipo %d\n", msg.tipo);
+                            checkType = 0;
+                        }
+                        else{
+                            endGame();
+                        }
+                        
 
-                    // printf("tipo %d enviou", msg.tipo);
-                    break;
-                //bota trap
-                case ALLEGRO_KEY_SPACE:
-                    msg.tipo= BOTARTRAPS;
-                    //msg.todosJogadores[idCLient] = jogador;
-                    for(i = 0; i < qntJogadores; i++){
-                        msg.todosJogadores[i] = jogadoresServer[i]; 
-                    }
-                    ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
-                    if(ret != SERVER_DISCONNECTED){
-                    //printf("1 - enviou tipo %d\n", msg.tipo);
-                        checkType = 0;
-                    }
-                    else{
-                        endGame();
-                    }
+                        // printf("tipo %d enviou", msg.tipo);
+                        break;
+                    //bota trap
+                    case ALLEGRO_KEY_SPACE:
+                        msg.tipo= BOTARTRAPS;
+                        //msg.todosJogadores[idCLient] = jogador;
+                        for(i = 0; i < qntJogadores; i++){
+                            msg.todosJogadores[i] = jogadoresServer[i]; 
+                        }
+                        ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
+                        if(ret != SERVER_DISCONNECTED){
+                        //printf("1 - enviou tipo %d\n", msg.tipo);
+                            checkType = 0;
+                        }
+                        else{
+                            endGame();
+                        }
 
-                    // printf("tipo %d enviou", msg.tipo);
-                    break;
-                case ALLEGRO_KEY_J:
-                    msg.tipo = CONGELA;
-                   // msg.todosJogadores[idCLient] = jogador;
-                    for(i = 0; i < qntJogadores; i++){
-                        msg.todosJogadores[i] = jogadoresServer[i]; 
-                    }
-                    ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
-                    if(ret != SERVER_DISCONNECTED){
-                    //printf("1 - enviou tipo %d\n", msg.tipo);
-                        checkType = 0;
-                    }
-                    else{
-                        endGame();
-                    }
+                        // printf("tipo %d enviou", msg.tipo);
+                        break;
+                    case ALLEGRO_KEY_J:
+                        msg.tipo = CONGELA;
+                    // msg.todosJogadores[idCLient] = jogador;
+                        for(i = 0; i < qntJogadores; i++){
+                            msg.todosJogadores[i] = jogadoresServer[i]; 
+                        }
+                        ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
+                        if(ret != SERVER_DISCONNECTED){
+                        //printf("1 - enviou tipo %d\n", msg.tipo);
+                            checkType = 0;
+                        }
+                        else{
+                            endGame();
+                        }
 
-                    // printf("tipo %d enviou", msg.tipo);
-                    break;
-                // esc. sair=1 faz com que o programa saia do loop principal
-                case ALLEGRO_KEY_ESCAPE:
-                    msg.tipo = ENDGAME;
-                    ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
-                    if(ret != SERVER_DISCONNECTED){
-                        sair = 0;
-                    }
-                    break;
-                default:
-                    break;
+                        // printf("tipo %d enviou", msg.tipo);
+                        break;
+                    // esc. sair=1 faz com que o programa saia do loop principal
+                    case ALLEGRO_KEY_ESCAPE:
+                        msg.tipo = ENDGAME;
+                        ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
+                        if(ret != SERVER_DISCONNECTED){
+                            sair = 0;
+                        }
+                        break;
+                    default:
+                        break;
                 }
                 //printf("%i\n",msg.tipo);
                 
+            }
+           
                 
                     //al_flip_display();
             //al_draw_bitmap(mapa,0,0,0);
             
         }
         else if(evento.type == ALLEGRO_EVENT_TIMER){
-            if(jogadores[idCLient].estaCongelado==1){
+            if(jogadores[idCLient].estaCongelado == 1){
                 auxtempo++;
                 if(auxtempo==fps){
                     auxtempo=0;
@@ -639,7 +642,7 @@ void runGame(){
                         jogadoresServer[i] = teste_recebe.todosJogadores[i];
                         jogadores[i] = teste_recebe.todosJogadores[i];
                         // printf("%d - congelado? %d\n", i, teste_recebe.todosJogadores[i].estaCongelado);  
-                        if(i == teste_recebe.id_acao && congelou=='n'){
+                        if(i == teste_recebe.id_acao && congelou == 'n'){
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
                             jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y - 19);
                             jogadoresServer[i].position.x -= 1;
@@ -650,6 +653,7 @@ void runGame(){
                         else{
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
                             jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y);
+                            congelou = 'n';
                         }
                         jogadoresServer[i].posicaoPrint = jogadores[i].position;
                         // printf("x: %d, y: %d\n", jogadores[i].position.x, jogadores[i].position.y);
@@ -685,6 +689,7 @@ void runGame(){
                         else{
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
                             jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y);
+                            congelou = 'n';
                         }
                         
                         jogadoresServer[i].posicaoPrint = jogadores[i].position;
@@ -724,6 +729,7 @@ void runGame(){
                         else{
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
                             jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y);
+                            congelou = 'n';
                         }
                         
                         jogadoresServer[i].posicaoPrint = jogadores[i].position;
@@ -757,6 +763,7 @@ void runGame(){
                         else{
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
                             jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y);
+                            congelou = 'n';
                         }
                         
                         jogadoresServer[i].posicaoPrint = jogadores[i].position;

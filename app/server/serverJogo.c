@@ -88,12 +88,21 @@ void imprimeMatriz(){
 }
 
 void inicializaMapa(){
-    
+    //LEGENDA:
+    //N -> Player não pode andar
+    //X -> Player anda e pode botar trap
+    //S -> Player anda e não pode botar trap
+    //V -> player anda camuflado e pode botar trap
+    //Q -> bandeira vermelha
+    //A - > bandeira azul
+    //B -> trap azul
+    //R -> trap vermelha
+
     strcpy(mapa[0],"NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
     strcpy(mapa[1],"NNNNNNNNNNNNNNNNNNNXXXXNNNNXXXXXXXXXXXXXNNNNNXNNNN");
     strcpy(mapa[2],"NNNNNNNNNNNNNNNNNNNXXXXNNNNXXXXXXXXXXXXXNNNNNXNNNN");
     strcpy(mapa[3],"NXXXXXXXXXXXXXXXXXXXXXXNNNNXXXXXXXXXXXXXNNNNSSSSSN");
-    strcpy(mapa[4],"NXXXXXXXXXXXXXXXXXXXXXXNNNNXXXXXXXXXXXXXSNNZSSSSSN");
+    strcpy(mapa[4],"NXXXXXXXXXXXXXXXXXXXXXXNNNNXXXXXXXXXXXXXSNNZSSASSN");
     strcpy(mapa[5],"NXXXXXXXXXXXXXXXXXXXXXXNNNNXXXXXXXXXXXXXSSNZZSSSSN");
     strcpy(mapa[6],"NXXXXXXXXXXXXXXXXXXXXXXNNNNXXXXXXXXXXXXXSSNZZSSSSN");
     strcpy(mapa[7],"NXXXXXXXXXXXXXXXXXXXXXXNNNNXXXXXXXXXXXXXXXSSZZSNNN");
@@ -134,7 +143,7 @@ void inicializaMapa(){
     strcpy(mapa[42],"NNSZZSSSXXXXXXXXXXXXXXSSSSSSXXXXXXXXXXXXXXXXXXXXXN");
     strcpy(mapa[43],"NNSSZZZNXXXXXXXXXXXXXXXNNNNXXXXXXXXXXXXXXXXXXXXXXN");
     strcpy(mapa[44],"NSSSSZZNSSXXVVVVVXXVVVVNNNNVVVVXXVVVVVXXXXXXXXXXXN");
-    strcpy(mapa[45],"NSSSSSZZNSSXXXXXXXXXXXXNNNNXXXXXXXXXXXXXXXXXXXXXXN");
+    strcpy(mapa[45],"NSQSSSZZNSSXXXXXXXXXXXXNNNNXXXXXXXXXXXXXXXXXXXXXXN");
     strcpy(mapa[46],"NSSSSSZZNNSXXXXXXXXXXXXNNNNXXXXXXXXXXXXXXXXXXXXXXN");
     strcpy(mapa[47],"NNNSSNNNNNSXXXXXXXXXXXXNNNNXXXXNNNNNNNNNNNNNNNNNNN");
     strcpy(mapa[48],"NNNNSNNNNNSXXXXXXXXXXXXNNNNXXXXNNNNNNNNNNNNNNNNNNN");
@@ -287,18 +296,18 @@ void runGameTest(){
         // printf("x = %d, Y = %d", jogada.todosJogadores[input.client_id].position.x, jogada.todosJogadores[input.client_id].position.y);
 
         if(input.status != NO_MESSAGE){
-            // printf("X = %d, Y = %d,", jogada.todosJogadores[input.client_id].position.x, jogada.todosJogadores[input.client_id].position.y);
-            printf("congelado = %d\n", jogada.todosJogadores[input.client_id].estaCongelado);
-            printf(" Mc = %c",  mapa[jogada.todosJogadores[input.client_id].position.x -1] [ jogada.todosJogadores[input.client_id].position.y]);
-            printf(" Mb = %c",  mapa[jogada.todosJogadores[input.client_id].position.x +1] [ jogada.todosJogadores[input.client_id].position.y]);
-            printf(" Me = %c",  mapa[jogada.todosJogadores[input.client_id].position.x] [ jogada.todosJogadores[input.client_id].position.y -1]);
-            printf(" Md = %c\n",  mapa[jogada.todosJogadores[input.client_id].position.x] [ jogada.todosJogadores[input.client_id].position.y + 1]);
+           // printf("X = %d, Y = %d,", jogada.todosJogadores[input.client_id].position.x, jogada.todosJogadores[input.client_id].position.y);
+            //printf("congelado = %d", jogada.todosJogadores[input.client_id].estaCongelado);
+            //printf(" M = %c\n",  mapa[jogada.todosJogadores[input.client_id].position.x] [ jogada.todosJogadores[input.client_id].position.y]);
+          //printf(" Mb = %c",  mapa[jogada.todosJogadores[input.client_id].position.x +1] [ jogada.todosJogadores[input.client_id].position.y]);
+            //printf(" Me = %c",  mapa[jogada.todosJogadores[input.client_id].position.x] [ jogada.todosJogadores[input.client_id].position.y -1]);
+            //printf(" Md = %c\n",  mapa[jogada.todosJogadores[input.client_id].position.x] [ jogada.todosJogadores[input.client_id].position.y + 1]);
 
             if(!jogada.todosJogadores[input.client_id].estaCongelado){
                for(int i = 0; i < qntJogadores; i++){
                     players[i] = jogada.todosJogadores[i];
                     // printf("posicao print::: x: %d, y:%d, posicao:: x: %d, y:%d\n", jogada.todosJogadores[i].posicaoPrint.x, jogada.todosJogadores[i].posicaoPrint.y, jogada.todosJogadores[i].position.x, jogada.todosJogadores[i].position.y);
-                    // printf("%d congelado? %d\n",-- i, players[i].estaCongelado);
+                    printf("%d congelado? %d\n",i, players[i].estaCongelado);
                     // printf("id = %d team = %d", players[i].id, players[i].team);
                 }
                 // printf("x = %d, Y = %d", players[input.client_id].position.x, players[input.client_id].position.y);
