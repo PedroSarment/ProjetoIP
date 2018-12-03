@@ -468,7 +468,7 @@ void runGame(){
     }
     else{
         auxtempo = 0;
-        tempocongelado = 20;
+        tempocongelado = 5;
     }
     // if(jogoInicio){
        al_flip_display();
@@ -611,7 +611,7 @@ void runGame(){
                             sair = 0;
                         }
                         break;
-                    default:
+                    default:                      
                         break;
                 }
                 //printf("%i\n",msg.tipo);
@@ -634,6 +634,18 @@ void runGame(){
                     congelou='n';
                     jogadores[idCLient].estaCongelado = 0;
                     jogadoresServer[idCLient].estaCongelado = 0;
+                    msg.tipo = DESCONGELA;
+                        for(i = 0; i < qntJogadores; i++){
+                            msg.todosJogadores[i] = jogadoresServer[i]; 
+                        }
+                        ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
+                        if(ret != SERVER_DISCONNECTED){
+                        //printf("1 - enviou tipo %d\n", msg.tipo);
+                            checkType = 0;
+                        }
+                        else{
+                            endGame();
+                    }
                 }
             }
         }
@@ -796,6 +808,18 @@ void runGame(){
                     //         // els x_tela = -640;
                     //     }
                     // }
+                }
+                else if(teste_recebe.acao == 'n'){
+                     for(i = 0; i < qntJogadores; i++){
+                        jogadoresServer[i] = teste_recebe.todosJogadores[i];
+                        jogadores[i] = teste_recebe.todosJogadores[i];
+                        jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
+                        jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y);
+                        jogadoresServer[i].posicaoPrint = jogadores[i].position;
+                        msg.todosJogadores[i] = jogadoresServer[i];
+                     }
+                     congelou = 'n';
+                     msg.tipo = -1;
                 }
                 else if(teste_recebe.acao == 't'){
                     // puts("trap");
