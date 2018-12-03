@@ -31,6 +31,7 @@ ALLEGRO_FONT *fonte_grande = NULL;
 ALLEGRO_DISPLAY *janela = NULL;
 ALLEGRO_AUDIO_STREAM *musica_fundo = NULL;
 ALLEGRO_BITMAP *mapa = NULL;
+ALLEGRO_BITMAP *frontmapa = NULL;
 ALLEGRO_EVENT_QUEUE *fila_eventos = NULL;
 ALLEGRO_BITMAP *fundo = NULL;
 ALLEGRO_BITMAP *fundo_pergaminho = NULL;
@@ -55,6 +56,10 @@ ALLEGRO_BITMAP *capaceteAzul_1 = NULL;
 ALLEGRO_BITMAP *capaceteVerm_1 = NULL;
 ALLEGRO_BITMAP *capaceteAzul_2 = NULL;
 ALLEGRO_BITMAP *capaceteVerm_2 = NULL;
+ALLEGRO_BITMAP *capaceteAzul_1C = NULL;
+ALLEGRO_BITMAP *capaceteVerm_1C = NULL;
+ALLEGRO_BITMAP *capaceteAzul_2C = NULL;
+ALLEGRO_BITMAP *capaceteVerm_2C = NULL;
 ALLEGRO_BITMAP *capacetes = NULL;
 ALLEGRO_BITMAP *trap = NULL;
 ALLEGRO_BITMAP *shuriken = NULL;
@@ -270,6 +275,7 @@ void carrega_arquivos(){
     fundo_pergaminho = al_load_bitmap("./app/Resources/Icons/Plano_de_fundo_perg.jpeg");
     telaError = al_load_bitmap("./app/Resources/Icons/tela_erro.jpg");
     mapa = al_load_bitmap("./app/Resources/Characters/mapa.jpg");
+    frontmapa = al_load_bitmap("./app/Resources/Characters/arvore.png");
     setinha_dir = al_load_bitmap("./app/Resources/Icons/yellow_sliderRight.png");
     setinha_esq = al_load_bitmap("./app/Resources/Icons/yellow_sliderLeft.png");
     fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 24, 0);
@@ -286,6 +292,10 @@ void carrega_arquivos(){
     capaceteVerm_1 = al_load_bitmap("./app/Resources/Characters/C1V.png");
     capaceteAzul_2 = al_load_bitmap("./app/Resources/Characters/C2A.png");
     capaceteVerm_2 = al_load_bitmap("./app/Resources/Characters/C2V.png");
+    capaceteAzul_1C = al_load_bitmap("./app/Resources/capacetes/capacete_azul_1C.png");
+    capaceteVerm_1C = al_load_bitmap("./app/Resources/capacetes/capacete_vermelho_1C.png");
+    capaceteAzul_2C = al_load_bitmap("./app/Resources/capacetes/capacete_azul_2C.png");
+    capaceteVerm_2C = al_load_bitmap("./app/Resources/capacetes/capacete_vermelho_2C.png");
     if(!botao1 || !botao1_pressionado || !fundo || !mapa || !capaceteVerm_2_menu || !capaceteAzul_2_menu){
         //checar se foram abertos, adicionar o nome do arquivo depois de um ou (||!).
         printf("Nao foi possivel carregar um dos botoes.");
@@ -434,21 +444,26 @@ void runGame(){
     for(i = 0; i < qntJogadores; i++){
         if(jogadores[i].team == 1){
             if(jogadores[i].helmet == 1){
-                al_draw_bitmap(capaceteAzul_1,jogadores[i].position.x,jogadores[i].position.y,0);
+                if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteAzul_1C,jogadores[i].position.x,jogadores[i].position.y,0);
+                else al_draw_bitmap(capaceteAzul_1,jogadores[i].position.x,jogadores[i].position.y,0);
             }
             else{
-                al_draw_bitmap(capaceteAzul_2,jogadores[i].position.x,jogadores[i].position.y,0);
+                if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteAzul_2C,jogadores[i].position.x,jogadores[i].position.y,0);
+                else al_draw_bitmap(capaceteAzul_2,jogadores[i].position.x,jogadores[i].position.y,0);
             }
         }
         else{
             if(jogadores[i].helmet == 1){
-                al_draw_bitmap(capaceteVerm_1,jogadores[i].position.x,jogadores[i].position.y,0);
+                if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteVerm_1C,jogadores[i].position.x,jogadores[i].position.y,0);
+                else al_draw_bitmap(capaceteVerm_1,jogadores[i].position.x,jogadores[i].position.y,0);
             }
             else{
-                al_draw_bitmap(capaceteVerm_2,jogadores[i].position.x,jogadores[i].position.y,0);
+                if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteVerm_2C,jogadores[i].position.x,jogadores[i].position.y,0);
+                else al_draw_bitmap(capaceteVerm_2,jogadores[i].position.x,jogadores[i].position.y,0);
             }
         }  
     }
+    al_draw_bitmap(frontmapa,19,19,0);
     if(teste_recebe.ganhou=='s'){
         for(i=0;i<qntJogadores;i++){
             if(jogadores[i].comBandeira){
