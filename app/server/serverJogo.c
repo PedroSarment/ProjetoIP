@@ -658,8 +658,16 @@ void runGameTest(){
                 //     for(int i = 0; i < qntJogadores; i++);
                 // }
                 else if(jogada.tipo == ENDGAME){
+                    teste_envia.acao = 'n';
+                    teste_envia.tipo = 'G';
+                    teste_envia.id_acao = input.client_id;
                     disconnectClient(input.client_id);
                     printf("%s disconnected id = %d\n", players[input.client_id].name, input.client_id);
+                    for(i=0;i<qntJogadores;i++){
+                            teste_envia.todosJogadores[i] = players[i];
+                    }
+                    teste_envia.todosJogadores[input.client_id].id = -1;
+                    broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
                 }
                 else{
                     teste_envia.acao = 'n';
