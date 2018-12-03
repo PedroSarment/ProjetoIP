@@ -25,8 +25,6 @@
 #define MAX_LOG_SIZE 17
 
 //gcc Jogo.c -lm -lallegro -lallegro_image -lallegro_primitives -lallegro_font -lallegro_ttf -lallegro_audio -lallegro_acodec
-
-ALLEGRO_FONT *fonte_titulo = NULL;
 ALLEGRO_TIMER *timer = NULL;
 ALLEGRO_FONT *fonte = NULL;
 ALLEGRO_FONT *fonte_grande = NULL;
@@ -106,8 +104,8 @@ void readInput2(ALLEGRO_EVENT event, char str[], int limit);
 void readLogin();
 void readHelmet();
 int readIP();
-//void tutorial();
-//void creditos();
+void tutorial();
+void creditos();
 void lobby();
 void printTimer();
 void printStatus(Player jogador);
@@ -121,10 +119,6 @@ int main(){
     startScreen();
     //printf("%lf", sizeof(PROTOCOLO_JOGO));
     ret = menu();
-    al_destroy_event_queue(fila_eventos);
-    ALLEGRO_EVENT_QUEUE *fila_eventos = NULL;
-    fila_eventos = al_create_event_queue();
-    al_register_event_source(fila_eventos,al_get_keyboard_event_source());
     if(ret ==1){
         while(loopLobby)
             lobby();
@@ -138,10 +132,10 @@ int main(){
         endGame();
     }
     else if(ret == 2){
-        menu();
+        tutorial();
     }            
     else if(ret == 3){
-        menu();
+        creditos();
     }
     al_flip_display();
 
@@ -158,20 +152,18 @@ void error_msg(char *text){
 }
 
 int menu(){
-    int ret = 0;
-    al_destroy_event_queue(fila_eventos);
-    ALLEGRO_EVENT_QUEUE *fila_eventos = NULL;
-    fila_eventos = al_create_event_queue();
-    al_register_event_source(fila_eventos,al_get_keyboard_event_source());
+    int ret;
     //aqui puxa a tela inicial.
     // al_draw_bitmap(mapa,0,0,0);
     // al_flip_display();
     al_draw_bitmap(fundo,0,0,0);
+    al_flip_display();
     al_draw_bitmap(botao1,545,240+40,0);
     al_draw_bitmap(botao1,545,240+120,0);
     al_draw_bitmap(botao1,545,320+120,0);
     al_draw_bitmap(setinha_dir,510,285,0);
     al_draw_bitmap(setinha_esq,730,285,0);
+    fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 20, 0);
     fonte_grande = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 52, 0);
     al_draw_text(fonte,al_map_rgb(5,5,5),645,290,ALLEGRO_ALIGN_CENTER,"Iniciar o jogo");
     al_draw_text(fonte,al_map_rgb(5,5,5),645,370,ALLEGRO_ALIGN_CENTER,"Tutorial");
@@ -215,87 +207,12 @@ int menu(){
                             sairMenu=1;
                         }
                         else if(opcao == 2){
-                            al_destroy_event_queue(fila_eventos);
-                            ALLEGRO_EVENT_QUEUE *fila_eventos = NULL;
-                            fila_eventos = al_create_event_queue();
-                            al_register_event_source(fila_eventos,al_get_keyboard_event_source());
-                            al_draw_bitmap(fundo,0,0,0);
-                            al_draw_text(fonte_titulo,al_map_rgb(255,255,255),LARGURA_TELA/2,ALTURA_TELA/3-35,ALLEGRO_ALIGN_CENTER,"Controles:");
-                            al_draw_text(fonte_titulo,al_map_rgb(255,255,255),LARGURA_TELA/2,ALTURA_TELA/3+10,ALLEGRO_ALIGN_CENTER,"Movimentacao:");
-                            al_draw_text(fonte,al_map_rgb(255,255,255),LARGURA_TELA/2,ALTURA_TELA/3+60,ALLEGRO_ALIGN_CENTER,"W - Mover para cima");
-                            al_draw_text(fonte,al_map_rgb(255,255,255),LARGURA_TELA/2,ALTURA_TELA/3+90,ALLEGRO_ALIGN_CENTER,"S - Mover para baixo");
-                            al_draw_text(fonte,al_map_rgb(255,255,255),LARGURA_TELA/2,ALTURA_TELA/3+120,ALLEGRO_ALIGN_CENTER,"A -Mover para esquerda");
-                            al_draw_text(fonte,al_map_rgb(255,255,255),LARGURA_TELA/2,ALTURA_TELA/3+150,ALLEGRO_ALIGN_CENTER,"D - Mover para direita");
-                            al_draw_text(fonte_titulo,al_map_rgb(255,255,255),LARGURA_TELA/2,ALTURA_TELA/3+180,ALLEGRO_ALIGN_CENTER,"Taticos:");
-                            al_draw_text(fonte,al_map_rgb(255,255,255),LARGURA_TELA/2,ALTURA_TELA/3+240,ALLEGRO_ALIGN_CENTER,"SPACE - Solta a trap");
-                            al_flip_display();
-                            while(!sairMenu){
-                                //enquanto esc nao for pressionado
-                                if(!al_event_queue_is_empty(fila_eventos)){
-                                    ALLEGRO_EVENT evento;
-                                    al_wait_for_event(fila_eventos,&evento);
-                                    if (evento.type == ALLEGRO_EVENT_KEY_DOWN){
-                                        //verifica qual tecla foi pressionada
-                                        switch(evento.keyboard.keycode){
-                                            case ALLEGRO_KEY_ESCAPE:
-                                            //esc = sair do loop.
-                                                sairMenu = 1;
-                                                break;
-
-                                            case ALLEGRO_KEY_ENTER:
-                                            //enter pra selecionar a opcao
-                                            menu();
-                                            break;
-
-                                            default:
-                                                break;
-                                        }
-                                    }
-                                }
-                            }
+                            ret=2;
+                            sairMenu=1;
                         }
                         else if(opcao == 3){
-                            al_destroy_event_queue(fila_eventos);
-                            ALLEGRO_EVENT_QUEUE *fila_eventos = NULL;
-                            fila_eventos = al_create_event_queue();
-                            al_register_event_source(fila_eventos,al_get_keyboard_event_source());
-                            al_draw_bitmap(fundo,0,0,0);
-                            al_draw_text(fonte_titulo,al_map_rgb(255,255,255),LARGURA_TELA/2,ALTURA_TELA/3-30,ALLEGRO_ALIGN_CENTER,"Equipe: Devassa");
-                            al_draw_text(fonte_titulo,al_map_rgb(255,255,255),LARGURA_TELA/2,ALTURA_TELA/3+10,ALLEGRO_ALIGN_CENTER,"BACK-END:");
-                            al_draw_text(fonte,al_map_rgb(255,255,255),LARGURA_TELA/2,ALTURA_TELA/3+60,ALLEGRO_ALIGN_CENTER,"Elisson Rodrigo");
-                            al_draw_text(fonte,al_map_rgb(255,255,255),LARGURA_TELA/2,ALTURA_TELA/3+90,ALLEGRO_ALIGN_CENTER,"Natalia Soares");
-                            al_draw_text(fonte,al_map_rgb(255,255,255),LARGURA_TELA/2,ALTURA_TELA/3+120,ALLEGRO_ALIGN_CENTER,"Lucas Grisi");
-                            al_draw_text(fonte,al_map_rgb(255,255,255),LARGURA_TELA/2,ALTURA_TELA/3+150,ALLEGRO_ALIGN_CENTER,"Matheus Viana");
-                            al_draw_text(fonte_titulo,al_map_rgb(255,255,255),LARGURA_TELA/2,ALTURA_TELA/3+175,ALLEGRO_ALIGN_CENTER,"FRONT-END:");
-                            al_draw_text(fonte,al_map_rgb(255,255,255),LARGURA_TELA/2,ALTURA_TELA/3+230,ALLEGRO_ALIGN_CENTER,"Pedro Sarmento");
-                            al_draw_text(fonte,al_map_rgb(255,255,255),LARGURA_TELA/2,ALTURA_TELA/3+260,ALLEGRO_ALIGN_CENTER,"Arthur Henrique");
-                            al_draw_text(fonte_titulo,al_map_rgb(255,255,255),LARGURA_TELA/2,ALTURA_TELA/3+290,ALLEGRO_ALIGN_CENTER,"FEATURING:");
-                            al_draw_text(fonte,al_map_rgb(255,255,255),LARGURA_TELA/2,ALTURA_TELA/3+340,ALLEGRO_ALIGN_CENTER,"Gabriel de Melo");
-                            al_flip_display();
-                            int sairMenu = 0,opcao = 1, server=0;
-                            while(!sairMenu){
-                                //enquanto esc nao for pressionado
-                                while(!al_event_queue_is_empty(fila_eventos)){
-                                    ALLEGRO_EVENT evento;
-                                    al_wait_for_event(fila_eventos,&evento);
-                                    if (evento.type == ALLEGRO_EVENT_KEY_DOWN){
-                                        //verifica qual tecla foi pressionada
-                                        switch(evento.keyboard.keycode){
-                                            case ALLEGRO_KEY_ESCAPE:
-                                            //esc = sair do loop.
-                                                sairMenu = 1;
-                                                break;
-
-                                            case ALLEGRO_KEY_ENTER:
-                                            //enter pra selecionar a opcao
-                                            menu();
-
-                                            default:
-                                                break;
-                                        }
-                                    }
-                                }
-                            }
+                            ret=3;
+                            sairMenu=1;
                         }
 
                     default:
@@ -354,22 +271,21 @@ int menu(){
 
 void carrega_arquivos(){
     //aqui serao colocados todos os arquivos a serem carregados no jogo
-
     botao1 = al_load_bitmap("./app/Resources/Icons/grey_button03.png");
     botao1_pressionado = al_load_bitmap("./app/Resources/Icons/grey_button04.png");
-    fundo = al_load_bitmap("./app/Resources/Icons/Plano_de_fundo.jpeg");
-    fundo_pergaminho = al_load_bitmap("./app/Resources/Icons/Plano_de_fundo_perg.jpeg");
+    fundo = al_load_bitmap("./app/Resources/Icons/Plano_de_fundo.jpg");
+    fundo_pergaminho = al_load_bitmap("./app/Resources/Icons/Plano_de_fundo_perg.jpg");
     telaError = al_load_bitmap("./app/Resources/Icons/tela_erro.jpg");
     mapa = al_load_bitmap("./app/Resources/Characters/mapa.jpg");
-    fonte_titulo = al_load_font("./app/Resources/Fontes/kenvector_future_thin.ttf", 44, 0);
     frontmapa = al_load_bitmap("./app/Resources/Characters/arvore.png");
     setinha_dir = al_load_bitmap("./app/Resources/Icons/yellow_sliderRight.png");
     setinha_esq = al_load_bitmap("./app/Resources/Icons/yellow_sliderLeft.png");
     fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 24, 0);
     trap = al_load_bitmap("./app/Resources/Characters/trap.png");
+    ice = al_load_bitmap("./app/Resources/Etc/congelares.png");
     nao_pronto = al_load_bitmap("./app/Resources/Icons/red_cross.png");
     pronto = al_load_bitmap("./app/Resources/Icons/green_checkmark.png");
-    ice = al_load_bitmap("./app/Resources/Etc/congelares.png");
+    shuriken = al_load_bitmap("./app/Resources/Icons/shuriken.png");
     congelado = al_load_bitmap("./app/Resources/Icons/congelado.png");
     capaceteAzul_1_menu = al_load_bitmap("./app/Resources/capacetes/capacete_azul_1.png");
     capaceteVerm_1_menu = al_load_bitmap("./app/Resources/capacetes/capacete_vermelho_1.png");
@@ -516,7 +432,7 @@ void runGame(){
     //     x_tela = jogadores[idCLient].position.x/40;
     //     // flag='n';
     // }
-
+    al_clear_to_color(al_map_rgb(0,0,0));
     al_draw_bitmap(mapa,0+19,0+19,0);
     // printf("xtela: %d \nytela: %d", x_tela, y_tela);
     // printf("qnt = %d",qntJogadores);
@@ -531,22 +447,22 @@ void runGame(){
     for(i = 0; i < qntJogadores; i++){
         if(jogadores[i].team == 1){
             if(jogadores[i].helmet == 1){
-                if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteAzul_1C,jogadores[i].position.x,jogadores[i].position.y,0);
-                else al_draw_bitmap(capaceteAzul_1,jogadores[i].position.x,jogadores[i].position.y,0);
+                //if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteAzul_1C,jogadores[i].position.x,jogadores[i].position.y,0);
+                /*else*/ al_draw_bitmap(capaceteAzul_1,jogadores[i].position.x,jogadores[i].position.y,0);
             }
             else{
-                if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteAzul_2C,jogadores[i].position.x,jogadores[i].position.y,0);
-                else al_draw_bitmap(capaceteAzul_2,jogadores[i].position.x,jogadores[i].position.y,0);
+                //if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteAzul_2C,jogadores[i].position.x,jogadores[i].position.y,0);
+                /* else*/ al_draw_bitmap(capaceteAzul_2,jogadores[i].position.x,jogadores[i].position.y,0);
             }
         }
         else{
             if(jogadores[i].helmet == 1){
-                if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteVerm_1C,jogadores[i].position.x,jogadores[i].position.y,0);
-                else al_draw_bitmap(capaceteVerm_1,jogadores[i].position.x,jogadores[i].position.y,0);
+                //if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteVerm_1C,jogadores[i].position.x,jogadores[i].position.y,0);
+               /* else*/ al_draw_bitmap(capaceteVerm_1,jogadores[i].position.x,jogadores[i].position.y,0);
             }
             else{
-                if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteVerm_2C,jogadores[i].position.x,jogadores[i].position.y,0);
-                else al_draw_bitmap(capaceteVerm_2,jogadores[i].position.x,jogadores[i].position.y,0);
+                //if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteVerm_2C,jogadores[i].position.x,jogadores[i].position.y,0);
+                /* else*/ al_draw_bitmap(capaceteVerm_2,jogadores[i].position.x,jogadores[i].position.y,0);
             }
         }  
     }
@@ -588,6 +504,7 @@ void runGame(){
                 //verifica qual tecla foi pressionada
                 switch(evento.keyboard.keycode){
                     //seta para cima
+                    case ALLEGRO_KEY_UP:
                     case ALLEGRO_KEY_W:
                     //  puts("cima");
                         msg.tipo = ANDAR_CIMA;
@@ -597,7 +514,6 @@ void runGame(){
                         for(i = 0; i < qntJogadores; i++){
                             msg.todosJogadores[i] = jogadoresServer[i]; 
                         }
-
                         ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                         if(ret != SERVER_DISCONNECTED){
                         //printf("1 - enviou tipo %d\n", msg.tipo);
@@ -611,6 +527,7 @@ void runGame(){
                         // printf("tipo %d enviou", msg.tipo);
                         break;
                     //Baixo
+                    case ALLEGRO_KEY_DOWN:
                     case ALLEGRO_KEY_S:
                     // puts("baixo");
                         msg.tipo= ANDAR_BAIXO;
@@ -631,6 +548,7 @@ void runGame(){
                         // printf("tipo %d enviou", msg.tipo);
                         break;
                     //Esquerda
+                    case ALLEGRO_KEY_LEFT:
                     case ALLEGRO_KEY_A:
                     // puts("esquerda");
                         msg.tipo = ANDAR_ESQUERDA;
@@ -651,6 +569,7 @@ void runGame(){
                         // printf("tipo %d enviou", msg.tipo);
                         break;
                         //Direita.
+                    case ALLEGRO_KEY_RIGHT:
                     case ALLEGRO_KEY_D:
                     //  puts("direita");
                         msg.tipo= ANDAR_DIREITA;
@@ -1019,10 +938,10 @@ void printTimer(){
     }
 }
 void printStatus(Player jogador){
-    al_draw_bitmap(trap,39,39,0);
+    al_draw_bitmap(trap,38,39,0);
     al_draw_textf(fonte,al_map_rgb(0,0,0),80,39,ALLEGRO_ALIGN_CENTRE,"%d",jogador.armadilhas);
-    al_draw_bitmap(ice, 39,80,0);
-    al_draw_textf(fonte,al_map_rgb(0,0,0),80,80,ALLEGRO_ALIGN_CENTRE,"%d",jogador.congelamentos);
+    al_draw_bitmap(ice,38,62,0);
+    al_draw_textf(fonte,al_map_rgb(0,0,0),80,62,ALLEGRO_ALIGN_CENTRE,"%d",jogador.congelamentos);
 }
 void timeAzulGanhou(int c){
     al_clear_to_color(al_map_rgb(255,255,255));
@@ -1146,8 +1065,9 @@ void readLogin(){
                             puts(jogador.name);
                             login = false;
                         }else{
-                            al_draw_bitmap(fundo,0,0,0);
+                            al_clear_to_color(al_map_rgb(255,255,255));
                            // al_draw_bitmap(espaco_branco,ALTURA_TELA/2,LARGURA_TELA/4+42,0);
+                            al_draw_text(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Login: ");
                             al_draw_textf(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "%s", loginP);
                             al_draw_text(fonte, al_map_rgb(255,0,0), LARGURA_TELA/2, ALTURA_TELA/4, ALLEGRO_ALIGN_CENTRE, "Digite um nick de no minimo 2 caracteres!");
                             al_flip_display();
@@ -1509,4 +1429,12 @@ void lobby(){
 
         }
     }
+}
+
+void tutorial(){
+    menu();
+}
+
+void creditos(){
+    menu();
 }
