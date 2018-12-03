@@ -19,11 +19,11 @@
 #define BUFFER_SIZE (MSG_MAX_SIZE + 100)
 #define LOGIN_MAX_SIZE 13
 #define HIST_MAX_SIZE 200
-
+#define fps 60
 #define MAX_LOG_SIZE 17
 
 //gcc Jogo.c -lm -lallegro -lallegro_image -lallegro_primitives -lallegro_font -lallegro_ttf -lallegro_audio -lallegro_acodec
-
+ALLEGRO_TIMER *timer = NULL;
 ALLEGRO_FONT *fonte = NULL;
 ALLEGRO_FONT *fonte_grande = NULL;
 ALLEGRO_DISPLAY *janela = NULL;
@@ -65,6 +65,8 @@ ALLEGRO_EVENT evento;
 PROTOCOLO_INICIAL sendPlayer, rcvPlayer;
 PROTOCOLO_JOGO estado_jogo;
 Traps armadilhas[20];
+int tempocongelado=20;
+int auxtempo=0;
 int tp = 0;
 Player jogador;
 Player jogadores[6], jogadoresServer[6];
@@ -97,6 +99,7 @@ int readIP();
 void tutorial();
 void creditos();
 void lobby();
+void printTimer();
 
 int main(){
     int ret, oi = 0;
@@ -350,6 +353,12 @@ int iniciar(){
         al_destroy_display(janela);
         return 0;
     }
+    timer = al_create_timer(1.0/fps);
+    if(!timer){
+        erro_msg("Erro ao criar timer.");
+        al_destroy_display(janela);
+        return 0;
+    }
     // if (!al_install_mouse())
     // {
     //     printf("Falha ao inicializar o mouse.\n");
@@ -364,6 +373,7 @@ int iniciar(){
     // }
     al_clear_to_color(al_map_rgb(255,255,255));
     carrega_arquivos();
+    al_register_event_source(fila_eventos, al_get_timer_event_source(timer));
     al_register_event_source(fila_eventos, al_get_keyboard_event_source());
     // al_register_event_source(fila_eventos, al_get_mouse_event_source());
     al_register_event_source(evento_ip, al_get_keyboard_event_source());
@@ -397,7 +407,7 @@ void startScreen(){
 }
 
 void runGame(){
-   
+    al_start_timer(timer);
 
     //printf("1 - %d %d\n", jogador.position.x, jogador.position.y);
     // if(flag=='s'){
@@ -435,7 +445,13 @@ void runGame(){
             }
         }
     }
-    
+    if(jogadores[idCLient].estaCongelado==1){
+        printTimer();
+    }
+    else{
+        auxtempo=0;
+        tempocongelado=20;
+    }
     // if(jogoInicio){
        al_flip_display();
         // jogoInicio = 0;
@@ -586,6 +602,18 @@ void runGame(){
             //al_draw_bitmap(mapa,0,0,0);
             }
         }
+        else if(evento.type == ALLEGRO_EVENT_TIMER){
+            if(jogadores[idCLient].estaCongelado==1){
+                auxtempo++;
+                if(auxtempo==fps){
+                    aux=0;
+                    tempocongelado--;
+                }
+                if(tempocongelado<=0){
+                    jogadores[idClient].estaCongelado=0;
+                }
+            }
+        }
         //printf("x = %d, Y = %d\n", jogadores[idCLient].position.x, jogadores[idCLient].position.y);
         // n = recvMsgFromServer((PROTOCOLO_JOGO *) &estado_jogo, DONT_WAIT);
         n = recvMsgFromServer((PROTOCOLO_TESTE *) &teste_recebe, DONT_WAIT);
@@ -611,17 +639,17 @@ void runGame(){
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
                             jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y - 19);
                             jogadoresServer[i].position.x -= 1;
-                            if(teste_recebe.todosJogadores[i].estaCongelado) congelou='s';
+                            if(teste_recebe.todosJogadores[i].estaCongelado) {
+                                congelou='s';
+                            }
                         } 
                         else{
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
                             jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y);
                         }
-                        
                         jogadoresServer[i].posicaoPrint = jogadores[i].position;
                         // printf("x: %d, y: %d\n", jogadores[i].position.x, jogadores[i].position.y);
-                        msg.todosJogadores[i] = jogadoresServer[i];
-                        
+                        msg.todosJogadores[i] = jogadoresServer[i];   
                     }
                     msg.tipo = -1;
                     // if(teste_recebe.id_acao == idCLient){
@@ -649,7 +677,7 @@ void runGame(){
                             jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y + 19);
                             jogadoresServer[i].position.x += 1;
                             if(teste_recebe.todosJogadores[i].estaCongelado) congelou='s';
-                        } 
+                        }
                         else{
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
                             jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y);
@@ -802,7 +830,18 @@ void runGame(){
     // }
 
 }
-
+void printTimer(){
+    int min;
+    int seg;
+    min=tempocongelado/60;
+    seg=tempocongelado%60;
+    if(seg<10){
+        al_draw_textf(fonte,al_map_rgb(0,0,0),LARGURA_TELA/2,10,ALLEGRO_ALIGN_CENTRE,"%i:0%i",min,seg);
+    }
+    else{
+        al_draw_textf(fonte,al_map_rgb(0,0,0),LARGURA_TELA/2,10,ALLEGRO_ALIGN_CENTRE,"%i:%i",min,seg);
+    }
+}
 void endGame(){
     al_clear_to_color(al_map_rgb(0,0,0));
     al_draw_bitmap(telaError,0,0,0);
