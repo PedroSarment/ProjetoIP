@@ -169,7 +169,9 @@ void inicializaJogadores(){
         int id = acceptConnection();
         input = recvMsg((PROTOCOLO_INICIAL *) &msg_client);
         if(input.status != NO_MESSAGE){
+            printf("%d\n", id);
             if (id != NO_CONNECTION) {
+                // puts("recebe");
                     // Recebe o nick, capacete e id das novas conexões
                     if(msg_client.tipo == INICIAL ){
                         ++qntJogadores;
@@ -207,6 +209,7 @@ void inicializaJogadores(){
                             msg_inicial_server.tipo = INICIAL;
                             msg_inicial_server.jogador = players[id];                
                             sendMsgToClient((PROTOCOLO_INICIAL *) &msg_inicial_server, sizeof(PROTOCOLO_INICIAL), id);
+                            // puts("envia");
 
                             //qntJogadores++;                                       
                         }

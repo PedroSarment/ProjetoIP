@@ -463,7 +463,7 @@ void runGame(){
             }
         }
     }
-    if(jogadores[idCLient].estaCongelado == 1){
+    if(teste_recebe.todosJogadores[idCLient].estaCongelado == 1){
         printTimer();
     }
     else{
