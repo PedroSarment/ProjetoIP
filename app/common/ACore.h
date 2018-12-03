@@ -98,6 +98,7 @@ typedef struct{
     int qntJogadores;
     Traps traps[20];
     int tp;
+    char ganhou;
 }PROTOCOLO_TESTE;
 
 // Estrutura para o protocolo da mensagem  inicial do server para o client

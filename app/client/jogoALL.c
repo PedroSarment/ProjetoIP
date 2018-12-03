@@ -102,6 +102,8 @@ void tutorial();
 void creditos();
 void lobby();
 void printTimer();
+void timeAzulGanhou(int id);
+void timeVermGanhou(int id);
 
 int main(){
     int ret, oi = 0;
@@ -445,6 +447,20 @@ void runGame(){
             else{
                 al_draw_bitmap(capaceteVerm_2,jogadores[i].position.x,jogadores[i].position.y,0);
             }
+        }  
+    }
+    if(teste_recebe.ganhou=='s'){
+        for(i=0;i<qntJogadores;i++){
+            if(jogadores[i].comBandeira){
+                if(jogadores[i].team==1){
+                    puts("azul ganhou");
+                    timeAzulGanhou(i);
+                } 
+                else{
+                    puts("vermelho ganhou");
+                    timeVermGanhou(i);
+                } 
+            }
         }
     }
     if(jogadores[idCLient].estaCongelado == 1){
@@ -759,7 +775,8 @@ void runGame(){
                             jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y);
                             jogadoresServer[i].position.y += 1;
                             if(teste_recebe.todosJogadores[i].estaCongelado) congelou='s';
-                        } 
+                        }
+                         
                         else{
                             jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
                             jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y);
@@ -814,6 +831,27 @@ void runGame(){
                     msg.tipo = -1;
                 }
 
+                // else if(teste_recebe.acao == 'g'){
+                //     for(i = 0; i < qntJogadores; i++){
+                //         jogadoresServer[i] = teste_recebe.todosJogadores[i];
+                //         jogadores[i] = teste_recebe.todosJogadores[i];
+                //         // printf("%d - congelado? %d\n", i, teste_recebe.todosJogadores[i].estaCongelado); 
+                        
+                        
+                //         jogadores[i].position.x = (teste_recebe.todosJogadores[i].posicaoPrint.x);
+                //         jogadores[i].position.y = (teste_recebe.todosJogadores[i].posicaoPrint.y);
+
+                //         if(jogadores[i].comBandeira){
+                //             if(jogadores[i].team==1) timeAzulGanhou(jogadores[i].id);
+                //             else timeVermGanhou(jogadores[i].id);
+                //         }
+                //         jogadoresServer[i].posicaoPrint = jogadores[i].position;
+                //         // printf("x: %d, y: %d\n", jogadores[i].position.x, jogadores[i].position.y);
+                //         msg.todosJogadores[i] = jogadoresServer[i];
+                        
+                //     }
+                // }
+
                 if(jogador.id == teste_recebe.id_acao){
                     ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
 
@@ -853,6 +891,29 @@ void printTimer(){
         al_draw_textf(fonte,al_map_rgb(0,0,0),ALTURA_TELA_JOGO/2 + 10,LARGURA_TELA_JOGO/2,ALLEGRO_ALIGN_CENTRE,"%i:%i",min,seg);
     }
 }
+
+void timeAzulGanhou(int c){
+    al_clear_to_color(al_map_rgb(255,255,255));
+    al_draw_textf(fonte_grande, al_map_rgb(0, 0, 0), 912/2, 912/2, ALLEGRO_ALIGN_CENTRE, "Time Azul Ganhou! Carry: %s", jogadores[c].name);
+    al_flip_display();
+    al_rest(2.0);
+
+    al_destroy_display(janela);
+    al_destroy_audio_stream(musica_fundo);
+    al_destroy_event_queue(fila_eventos);
+}
+
+void timeVermGanhou(int c){
+    al_clear_to_color(al_map_rgb(255,255,255));
+    al_draw_textf(fonte_grande, al_map_rgb(0, 0, 0), 912/2, 912/2, ALLEGRO_ALIGN_CENTRE, "Time Vermelho Ganhou! Carry: %s", jogadores[c].name);
+    al_flip_display();
+    al_rest(2.0);
+
+    al_destroy_display(janela);
+    al_destroy_audio_stream(musica_fundo);
+    al_destroy_event_queue(fila_eventos);
+}
+
 void endGame(){
     al_clear_to_color(al_map_rgb(0,0,0));
     al_draw_bitmap(telaError,0,0,0);
