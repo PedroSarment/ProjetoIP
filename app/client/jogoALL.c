@@ -445,26 +445,44 @@ void runGame(){
     // recebeuTrap='n';
     // printf("%d %d", teste_recebe.traps[0].posiT.x,teste_recebe.traps[0].posiT.y);
     for(i = 0; i < qntJogadores; i++){
-        if(jogadores[i].team == 1){
-            if(jogadores[i].helmet == 1){
-                if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteAzul_1C,jogadores[i].position.x,jogadores[i].position.y,0);
-                else al_draw_bitmap(capaceteAzul_1,jogadores[i].position.x,jogadores[i].position.y,0);
+        if(jogadores[i].id >= 0){
+            if(jogadores[i].team == 1){
+                if(jogadores[i].helmet == 1){
+                    if(jogadores[i].estaCongelado){
+                        al_draw_bitmap(capaceteAzul_1C,jogadores[i].position.x,jogadores[i].position.y,0);
+                    }
+                    else {
+                        al_draw_bitmap(capaceteAzul_1,jogadores[i].position.x,jogadores[i].position.y,0);
+                    }
+                }
+                else{
+                    if(jogadores[i].estaCongelado){
+                        al_draw_bitmap(capaceteAzul_2C,jogadores[i].position.x,jogadores[i].position.y,0);
+                    }
+                    else {
+                        al_draw_bitmap(capaceteAzul_2,jogadores[i].position.x,jogadores[i].position.y,0);
+                    }
+                }
             }
             else{
-                if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteAzul_2C,jogadores[i].position.x,jogadores[i].position.y,0);
-                else al_draw_bitmap(capaceteAzul_2,jogadores[i].position.x,jogadores[i].position.y,0);
+                if(jogadores[i].helmet == 1){
+                    if(jogadores[i].estaCongelado){
+                        al_draw_bitmap(capaceteVerm_1C,jogadores[i].position.x,jogadores[i].position.y,0);
+                    }
+                    else {
+                        al_draw_bitmap(capaceteVerm_1,jogadores[i].position.x,jogadores[i].position.y,0);
+                    }
+                }
+                else{
+                    if(jogadores[i].estaCongelado){
+                        al_draw_bitmap(capaceteVerm_2C,jogadores[i].position.x,jogadores[i].position.y,0);
+                    }
+                    else{
+                        al_draw_bitmap(capaceteVerm_2,jogadores[i].position.x,jogadores[i].position.y,0);
+                    }
+                }
             }
         }
-        else{
-            if(jogadores[i].helmet == 1){
-                if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteVerm_1C,jogadores[i].position.x,jogadores[i].position.y,0);
-                else al_draw_bitmap(capaceteVerm_1,jogadores[i].position.x,jogadores[i].position.y,0);
-            }
-            else{
-                if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteVerm_2C,jogadores[i].position.x,jogadores[i].position.y,0);
-                else al_draw_bitmap(capaceteVerm_2,jogadores[i].position.x,jogadores[i].position.y,0);
-            }
-        }  
     }
     printStatus(jogadoresServer[idCLient]);
     al_draw_bitmap(frontmapa,19,19,0);
