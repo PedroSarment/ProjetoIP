@@ -295,10 +295,10 @@ void carrega_arquivos(){
     capaceteVerm_1 = al_load_bitmap("./app/Resources/Characters/C1V.png");
     capaceteAzul_2 = al_load_bitmap("./app/Resources/Characters/C2A.png");
     capaceteVerm_2 = al_load_bitmap("./app/Resources/Characters/C2V.png");
-    capaceteAzul_1C = al_load_bitmap("./app/Resources/capacetes/capacete_azul_1C.png");
-    capaceteVerm_1C = al_load_bitmap("./app/Resources/capacetes/capacete_vermelho_1C.png");
-    capaceteAzul_2C = al_load_bitmap("./app/Resources/capacetes/capacete_azul_2C.png");
-    capaceteVerm_2C = al_load_bitmap("./app/Resources/capacetes/capacete_vermelho_2C.png");
+    capaceteAzul_1C = al_load_bitmap("./app/Resources/Characters/capacete_azul_1C.png");
+    capaceteVerm_1C = al_load_bitmap("./app/Resources/Characters/capacetebugado.png");
+    capaceteAzul_2C = al_load_bitmap("./app/Resources/Characters/capacete_azul_2C.png");
+    capaceteVerm_2C = al_load_bitmap("./app/Resources/Characters/capacete_vermelho_2C.png");
     if(!botao1 || !botao1_pressionado || !fundo || !mapa || !capaceteVerm_2_menu || !capaceteAzul_2_menu){
         //checar se foram abertos, adicionar o nome do arquivo depois de um ou (||!).
         printf("Nao foi possivel carregar um dos botoes.");
@@ -447,22 +447,22 @@ void runGame(){
     for(i = 0; i < qntJogadores; i++){
         if(jogadores[i].team == 1){
             if(jogadores[i].helmet == 1){
-                //if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteAzul_1C,jogadores[i].position.x,jogadores[i].position.y,0);
-                /*else*/ al_draw_bitmap(capaceteAzul_1,jogadores[i].position.x,jogadores[i].position.y,0);
+                if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteAzul_1C,jogadores[i].position.x,jogadores[i].position.y,0);
+                else al_draw_bitmap(capaceteAzul_1,jogadores[i].position.x,jogadores[i].position.y,0);
             }
             else{
-                //if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteAzul_2C,jogadores[i].position.x,jogadores[i].position.y,0);
-                /* else*/ al_draw_bitmap(capaceteAzul_2,jogadores[i].position.x,jogadores[i].position.y,0);
+                if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteAzul_2C,jogadores[i].position.x,jogadores[i].position.y,0);
+                else al_draw_bitmap(capaceteAzul_2,jogadores[i].position.x,jogadores[i].position.y,0);
             }
         }
         else{
             if(jogadores[i].helmet == 1){
-                //if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteVerm_1C,jogadores[i].position.x,jogadores[i].position.y,0);
-               /* else*/ al_draw_bitmap(capaceteVerm_1,jogadores[i].position.x,jogadores[i].position.y,0);
+                if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteVerm_1C,jogadores[i].position.x,jogadores[i].position.y,0);
+                else al_draw_bitmap(capaceteVerm_1,jogadores[i].position.x,jogadores[i].position.y,0);
             }
             else{
-                //if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteVerm_2C,jogadores[i].position.x,jogadores[i].position.y,0);
-                /* else*/ al_draw_bitmap(capaceteVerm_2,jogadores[i].position.x,jogadores[i].position.y,0);
+                if(jogadores[i].estaCongelado) al_draw_bitmap(capaceteVerm_2C,jogadores[i].position.x,jogadores[i].position.y,0);
+                else al_draw_bitmap(capaceteVerm_2,jogadores[i].position.x,jogadores[i].position.y,0);
             }
         }  
     }
@@ -593,10 +593,11 @@ void runGame(){
                     //bota trap
                     case ALLEGRO_KEY_SPACE:
                         msg.tipo= BOTARTRAPS;
-                        //msg.todosJogadores[idCLient] = jogador;
+                
                         for(i = 0; i < qntJogadores; i++){
                             msg.todosJogadores[i] = jogadoresServer[i]; 
                         }
+                      
                         ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
                         if(ret != SERVER_DISCONNECTED){
                         //printf("1 - enviou tipo %d\n", msg.tipo);
@@ -605,6 +606,8 @@ void runGame(){
                         else{
                             endGame();
                         }
+                        
+                        
 
                         // printf("tipo %d enviou", msg.tipo);
                         break;

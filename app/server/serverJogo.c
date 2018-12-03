@@ -272,7 +272,6 @@ void inicializaJogadores(){
                     }
                 }
         }
-  
     }
 }
 
