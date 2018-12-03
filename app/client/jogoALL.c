@@ -14,6 +14,8 @@
 
 #define LARGURA_TELA 1280
 #define ALTURA_TELA 720
+#define LARGURA_TELA_JOGO 934
+#define ALTURA_TELA_JOGO 934
 
 #define MSG_MAX_SIZE 350
 #define BUFFER_SIZE (MSG_MAX_SIZE + 100)
@@ -81,7 +83,7 @@ int tecla, ret, i, n, capaEscolhido;
 char flag='s', congelou='n';
 PROTOCOLO_JOGO msg;
 PROTOCOLO_TESTE teste_recebe;
-int sairLobby = 1,opcao = 1, server=0, jogadorReady = 0, qntJogadores = 0, jogoInicio = 1, x_tela = 0,y_tela = 0;
+int sairLobby = 1,opcao = 1, server=0, jogadorReady = 0, qntJogadores = 0, jogoInicio = 1, x_tela = 0,y_tela = 0, aux;
 
 
 void error_msg(char *text);
@@ -122,7 +124,7 @@ int main(){
     }
     else if(ret == 2){
         tutorial();
-    }
+    }            
     else if(ret == 3){
         creditos();
     }
@@ -355,7 +357,7 @@ int iniciar(){
     }
     timer = al_create_timer(1.0/fps);
     if(!timer){
-        erro_msg("Erro ao criar timer.");
+        error_msg("Erro ao criar timer.");
         al_destroy_display(janela);
         return 0;
     }
@@ -600,17 +602,19 @@ void runGame(){
                 
                     //al_flip_display();
             //al_draw_bitmap(mapa,0,0,0);
-            }
+            
         }
         else if(evento.type == ALLEGRO_EVENT_TIMER){
             if(jogadores[idCLient].estaCongelado==1){
                 auxtempo++;
                 if(auxtempo==fps){
-                    aux=0;
+                    auxtempo=0;
                     tempocongelado--;
                 }
-                if(tempocongelado<=0){
-                    jogadores[idClient].estaCongelado=0;
+                if(tempocongelado <= 0){
+                    congelou='n';
+                    jogadores[idCLient].estaCongelado = 0;
+                    jogadoresServer[idCLient].estaCongelado = 0;
                 }
             }
         }
@@ -816,7 +820,7 @@ void runGame(){
                 }
             }
         }
-    
+    }
     // else{
     // // al_draw_bitmap(mapa,0,0,0);
     //     al_draw_bitmap(congelado,jogador.position.x,jogador.position.y,ALLEGRO_FLIP_HORIZONTAL);
@@ -833,13 +837,13 @@ void runGame(){
 void printTimer(){
     int min;
     int seg;
-    min=tempocongelado/60;
-    seg=tempocongelado%60;
+    min = tempocongelado/60;
+    seg = tempocongelado%60;
     if(seg<10){
-        al_draw_textf(fonte,al_map_rgb(0,0,0),LARGURA_TELA/2,10,ALLEGRO_ALIGN_CENTRE,"%i:0%i",min,seg);
+        al_draw_textf(fonte,al_map_rgb(0,0,0),ALTURA_TELA_JOGO/2 + 10,LARGURA_TELA_JOGO/2,ALLEGRO_ALIGN_CENTRE,"%i:0%i",min,seg);
     }
     else{
-        al_draw_textf(fonte,al_map_rgb(0,0,0),LARGURA_TELA/2,10,ALLEGRO_ALIGN_CENTRE,"%i:%i",min,seg);
+        al_draw_textf(fonte,al_map_rgb(0,0,0),ALTURA_TELA_JOGO/2 + 10,LARGURA_TELA_JOGO/2,ALLEGRO_ALIGN_CENTRE,"%i:%i",min,seg);
     }
 }
 void endGame(){
