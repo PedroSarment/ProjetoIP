@@ -485,57 +485,86 @@ void runGameTest(){
                         teste_envia.todosJogadores[i] = players[i];
                     }
                     for(i = 0; i < qntJogadores; i++){
-                        if(players[i].position.x == players[input.client_id].position.x + 1){
-                            puts("baixo");
-                            players[i].estaCongelado = 1;
-                            teste_envia.acao = 'n';
-                            teste_envia.tipo = 'G';
-                            teste_envia.ganhou = 'n';
-                            teste_envia.id_acao = i;
-                            teste_envia.todosJogadores[i] = players[i];
-                            broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
-                        }
-                        else if(players[i].position.x == players[input.client_id].position.x - 1){
-                            puts("cima");
-                            players[i].estaCongelado = 1;
-                            teste_envia.acao = 'n';
-                            teste_envia.tipo = 'G';
-                            teste_envia.ganhou = 'n';
-                            teste_envia.id_acao = i;
-                            teste_envia.todosJogadores[i] = players[i];
-                            broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
-                        }
-                        else if(players[i].position.y == players[input.client_id].position.y + 1){
-                            puts("dir");
-                            players[i].estaCongelado = 1;
-                            teste_envia.acao = 'n';
-                            teste_envia.tipo = 'G';
-                            teste_envia.ganhou = 'n';
-                            teste_envia.id_acao = i;
-                            teste_envia.todosJogadores[i] = players[i];
-                            broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
-                        }
-                        else if(players[i].position.y == players[input.client_id].position.y - 1){
-                            puts("esq");
-                            players[i].estaCongelado = 1;
-                            teste_envia.acao = 'n';
-                            teste_envia.tipo = 'G';
-                            teste_envia.ganhou = 'n';
-                            teste_envia.id_acao = i;
-                            teste_envia.todosJogadores[i] = players[i];
-                            broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
+                        if(jogada.todosJogadores[input.client_id].congelamentos > 0){
+                            if(players[i].position.x == players[input.client_id].position.x + 1){
+                                puts("baixo");
+                                players[i].estaCongelado = 1;
+                                players[input.client_id].congelamentos--;
+                                players[input.client_id].congelou = 1;
+                                teste_envia.acao = 'n';
+                                teste_envia.tipo = 'G';
+                                teste_envia.ganhou = 'n';
+                                teste_envia.id_acao = i;
+                                teste_envia.todosJogadores[i] = players[i];
+                                teste_envia.todosJogadores[input.client_id] = players[input.client_id];
+                                broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
+                            }
+                            else if(players[i].position.x == players[input.client_id].position.x - 1){
+                                puts("cima");
+                                players[i].estaCongelado = 1;
+                                players[input.client_id].congelamentos--;
+                                players[input.client_id].congelou = 1;
+                                teste_envia.acao = 'n';
+                                teste_envia.tipo = 'G';
+                                teste_envia.ganhou = 'n';
+                                teste_envia.id_acao = i;
+                                teste_envia.todosJogadores[i] = players[i];
+                                teste_envia.todosJogadores[input.client_id] = players[input.client_id];
+                                broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
+                            }
+                            else if(players[i].position.y == players[input.client_id].position.y + 1){
+                                puts("dir");
+                                players[i].estaCongelado = 1;
+                                players[input.client_id].congelamentos--;
+                                players[input.client_id].congelou = 1;
+                                teste_envia.acao = 'n';
+                                teste_envia.tipo = 'G';
+                                teste_envia.ganhou = 'n';
+                                teste_envia.id_acao = i;
+                                teste_envia.todosJogadores[i] = players[i];
+                                teste_envia.todosJogadores[input.client_id] = players[input.client_id];
+                                broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
+                            }
+                            else if(players[i].position.y == players[input.client_id].position.y - 1){
+                                puts("esq");
+                                players[i].estaCongelado = 1;
+                                players[input.client_id].congelamentos--;
+                                players[input.client_id].congelou = 1;
+                                teste_envia.acao = 'n';
+                                teste_envia.tipo = 'G';
+                                teste_envia.ganhou = 'n';
+                                teste_envia.id_acao = i;
+                                teste_envia.todosJogadores[i] = players[i];
+                                teste_envia.todosJogadores[input.client_id] = players[input.client_id];
+                                broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
+                            }
+                            else{
+                                puts("nada");
+                                players[i].estaCongelado = 0;
+                                players[input.client_id].congelou = 0;
+                                teste_envia.acao = 'n';
+                                teste_envia.tipo = 'G';
+                                teste_envia.ganhou = 'n';
+                                teste_envia.id_acao = i;
+                                teste_envia.todosJogadores[i] = players[i];
+                                teste_envia.todosJogadores[input.client_id] = players[input.client_id];
+                                broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
+                            }
                         }
                         else{
-                            puts("nada");
-                            players[i].estaCongelado = 0;
-                            teste_envia.acao = 'n';
-                            teste_envia.tipo = 'G';
-                            teste_envia.ganhou = 'n';
-                            teste_envia.id_acao = i;
-                            teste_envia.todosJogadores[i] = players[i];
-                            broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
-                        }
+                             puts("nada2");
+                                players[i].estaCongelado = 0;
+                                players[input.client_id].congelou = 0;
+                                teste_envia.acao = 'n';
+                                teste_envia.tipo = 'G';
+                                teste_envia.ganhou = 'n';
+                                teste_envia.id_acao = i;
+                                teste_envia.todosJogadores[i] = players[i];
+                                teste_envia.todosJogadores[input.client_id] = players[input.client_id];
+                                broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
+                        }     
                     }
+                    //broadcast(&teste_envia, sizeof(PROTOCOLO_TESTE));
                 }
                 else if(jogada.tipo == DESCONGELA && jogada.todosJogadores[input.client_id].estaCongelado == 0){
                     players[input.client_id].estaCongelado = 0;
