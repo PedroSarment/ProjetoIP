@@ -31,6 +31,8 @@ ALLEGRO_FONT *fonte_grande = NULL;
 ALLEGRO_FONT *fonte_titulo = NULL;
 ALLEGRO_DISPLAY *janela = NULL;
 ALLEGRO_AUDIO_STREAM *musica_fundo = NULL;
+ALLEGRO_AUDIO_STREAM *musicaVitoria = NULL;
+ALLEGRO_AUDIO_STREAM *musicaDerrota = NULL;
 ALLEGRO_BITMAP *mapa = NULL;
 ALLEGRO_BITMAP *frontmapa = NULL;
 ALLEGRO_EVENT_QUEUE *fila_eventos = NULL;
@@ -60,6 +62,8 @@ ALLEGRO_BITMAP *capaceteAzul_1C = NULL;
 ALLEGRO_BITMAP *capaceteVerm_1C = NULL;
 ALLEGRO_BITMAP *capaceteAzul_2C = NULL;
 ALLEGRO_BITMAP *capaceteVerm_2C = NULL;
+ALLEGRO_BITMAP *vitoriaVermelho = NULL;
+ALLEGRO_BITMAP *vitoriaAzul = NULL;
 ALLEGRO_BITMAP *capacetes = NULL;
 ALLEGRO_BITMAP *trap = NULL;
 ALLEGRO_BITMAP *ice = NULL;
@@ -67,6 +71,8 @@ ALLEGRO_BITMAP *shuriken = NULL;
 ALLEGRO_BITMAP *congelado = NULL;
 ALLEGRO_BITMAP *pronto = NULL;
 ALLEGRO_BITMAP *nao_pronto = NULL;
+ALLEGRO_BITMAP *idPlayer = NULL;
+ALLEGRO_BITMAP *logo = NULL;
 
 ALLEGRO_EVENT evento;
 PROTOCOLO_INICIAL sendPlayer, rcvPlayer;
@@ -204,18 +210,6 @@ int iniciar(){
         al_destroy_display(janela);
         return 0;
     }
-    // if (!al_install_mouse())
-    // {
-    //     printf("Falha ao inicializar o mouse.\n");
-    //     al_destroy_display(janela);
-    //     return 0;
-    // }
-    // if (!al_set_system_mouse_cursor(janela, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT))
-    // {
-    //     printf("Falha ao atribuir ponteiro do mouse.\n");
-    //     al_destroy_display(janela);
-    //     return 0;
-    // }
     al_clear_to_color(al_map_rgb(255,255,255));
     carrega_arquivos();
     al_register_event_source(fila_eventos, al_get_timer_event_source(timer));
@@ -227,12 +221,16 @@ int iniciar(){
 
 void carrega_arquivos(){
     //aqui serao colocados todos os arquivos a serem carregados no jogo
+    idPlayer = al_load_bitmap("./app/Resources/Icons/idplay.png");
+    vitoriaAzul = al_load_bitmap("./app/Resources/Characters/vitoria_blue.png");
+    vitoriaVermelho = al_load_bitmap("./app/Resources/Characters/vitoria_vermelho.png");
     botao1 = al_load_bitmap("./app/Resources/Icons/grey_button03.png");
     botao1_pressionado = al_load_bitmap("./app/Resources/Icons/grey_button04.png");
     fundo = al_load_bitmap("./app/Resources/Icons/Plano_de_fundo.jpg");
     fundo_pergaminho = al_load_bitmap("./app/Resources/Icons/Plano_de_fundo_perg.jpg");
     telaError = al_load_bitmap("./app/Resources/Icons/tela_erro.jpg");
     mapa = al_load_bitmap("./app/Resources/Characters/mapa.jpg");
+    logo = al_load_bitmap("./app/Resources/Characters/logo2.png");
     frontmapa = al_load_bitmap("./app/Resources/Characters/arvore.png");
     setinha_dir = al_load_bitmap("./app/Resources/Icons/yellow_sliderRight.png");
     setinha_esq = al_load_bitmap("./app/Resources/Icons/yellow_sliderLeft.png");
@@ -261,8 +259,18 @@ void carrega_arquivos(){
         printf("Nao foi possivel carregar um dos botoes.");
         al_destroy_audio_stream(musica_fundo);
     }
+    musicaDerrota = al_load_audio_stream("./app/Resources/Musics/musicaDerrota.ogg",4,1024);
+    musicaVitoria = al_load_audio_stream("./app/Resources/Musics/musicaVitoria.ogg",4,1024);
     musica_fundo = al_load_audio_stream("./app/Resources/Musics/Musica_fundo.ogg",4,1024);
     escolha = al_load_sample("./app/Resources/Musics/switch3.ogg");
+    if(!musicaDerrota || !escolha){
+        //aqui sao apenas os arquivos sonoros.
+        puts("Musica nao foi carregada.");
+    }
+    if(!musicaVitoria || !escolha){
+        //aqui sao apenas os arquivos sonoros.
+        puts("Musica nao foi carregada.");
+    }
     if(!musica_fundo || !escolha){
         //aqui sao apenas os arquivos sonoros.
         puts("Musica nao foi carregada.");
@@ -273,7 +281,7 @@ void carrega_arquivos(){
 
 void startScreen(){
     // printf("%ld", sizeof(PROTOCOLO_JOGO));
-    al_draw_bitmap(fundo,0,0,0);
+    al_draw_bitmap(logo,0,0,0);
     fonte = al_load_font("./app/Resources/Fontes/Minecraft.ttf", 48, 0);
     al_draw_text(fonte, al_map_rgb(255, 255, 255), 640, 600, ALLEGRO_ALIGN_CENTRE, "PRESS ENTER TO START!");
     al_flip_display();
@@ -493,7 +501,7 @@ int menu(){
 }
 
 void readLogin(){
-    fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
+    fonte = al_load_font("./app/Resources/Fontes/kenvector_future.ttf", 48, 0);
     al_draw_text(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Login: ");
     al_flip_display();
     ALLEGRO_EVENT_QUEUE *eventsQueue3;
@@ -560,7 +568,7 @@ void readInput2(ALLEGRO_EVENT event, char str[], int limit){
             str[strlen(str) - 1] = '\0';
         }
         al_draw_bitmap(fundo_pergaminho,0,0,0);
-        fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 48, 0);
+        fonte = al_load_font("./app/Resources/Fontes/kenvector_future.ttf", 48, 0);
         al_draw_text(fonte_grande, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/3, ALLEGRO_ALIGN_CENTRE, "Login: ");
         al_draw_textf(fonte, al_map_rgb(0, 0, 0), LARGURA_TELA/2, ALTURA_TELA/2, ALLEGRO_ALIGN_CENTRE, "%s", loginP);
         al_flip_display();
@@ -571,7 +579,7 @@ void readHelmet(){
     int capaCheck=1;
     int foi=1;
     al_draw_bitmap(fundo_pergaminho,0,0,0);
-    fonte = al_load_font("./app/Resources/Fontes/OldLondon.ttf", 32, 0);
+    fonte = al_load_font("./app/Resources/Fontes/kenvector_future.ttf", 32, 0);
     al_flip_display();
     while(capaCheck){
         while(!al_is_event_queue_empty(fila_eventos)){
@@ -914,6 +922,9 @@ void runGame(){
                         }
                     }
                 }
+            }
+            if(msg.todosJogadores[i].id == idCLient){
+                al_draw_bitmap(idPlayer,msg.todosJogadores[i].posicaoPrint.x+4,msg.todosJogadores[i].posicaoPrint.y-10,0);
             }
         }
         printStatus(msg.todosJogadores[idCLient]);
@@ -1380,10 +1391,17 @@ void printTela(Player jogadores[6]){
 }
 
 void timeAzulGanhou(int c){
-    al_clear_to_color(al_map_rgb(255,255,255));
-    al_draw_textf(fonte_grande, al_map_rgb(0, 0, 0), 912/2, 912/2, ALLEGRO_ALIGN_CENTRE, "Time Azul Ganhou! Carry: %s", msg.todosJogadores[c].name);
+    if(msg.todosJogadores[idCLient].team == 1){
+        al_attach_audio_stream_to_mixer(musicaVitoria, al_get_default_mixer());
+        al_set_audio_stream_playmode(musicaVitoria,ALLEGRO_PLAYMODE_LOOP);
+    }else{
+        al_attach_audio_stream_to_mixer(musicaDerrota, al_get_default_mixer());
+        al_set_audio_stream_playmode(musicaDerrota,ALLEGRO_PLAYMODE_LOOP);
+    }
+    al_draw_bitmap(vitoriaAzul,912/4,912/4,0);
+    //al_draw_textf(fonte_grande, al_map_rgb(0, 0, 0), 912/2, 912/2, ALLEGRO_ALIGN_CENTRE, "Time Azul Ganhou! Carry: %s", msg.todosJogadores[c].name);
     al_flip_display();
-    al_rest(2.0);
+    al_rest(10.0);
 
     al_destroy_display(janela);
     al_destroy_audio_stream(musica_fundo);
@@ -1391,13 +1409,21 @@ void timeAzulGanhou(int c){
 }
 
 void timeVermGanhou(int c){
-    al_clear_to_color(al_map_rgb(255,255,255));
-    al_draw_textf(fonte_grande, al_map_rgb(0, 0, 0), 912/2, 912/2, ALLEGRO_ALIGN_CENTRE, "Time Vermelho Ganhou! Carry: %s", msg.todosJogadores[c].name);
+    if(msg.todosJogadores[idCLient].team == 2){
+        al_attach_audio_stream_to_mixer(musicaVitoria, al_get_default_mixer());
+        al_set_audio_stream_playmode(musicaVitoria,ALLEGRO_PLAYMODE_LOOP);
+    }else{
+        al_attach_audio_stream_to_mixer(musicaDerrota, al_get_default_mixer());
+        al_set_audio_stream_playmode(musicaDerrota,ALLEGRO_PLAYMODE_LOOP);
+    }
+    al_draw_bitmap(vitoriaVermelho, 912/5, 912/5, 0);
+    //al_draw_textf(fonte_grande, al_map_rgb(0, 0, 0), 912/2, 912/2, ALLEGRO_ALIGN_CENTRE, "Time Vermelho Ganhou! Carry: %s", msg.todosJogadores[c].name);
     al_flip_display();
-    al_rest(2.0);
+    al_rest(10.0);
 
     al_destroy_display(janela);
-    al_destroy_audio_stream(musica_fundo);
+    al_destroy_audio_stream(musicaVitoria);
+    al_destroy_audio_stream(musicaDerrota);
     al_destroy_event_queue(fila_eventos);
 }
 
@@ -1410,7 +1436,8 @@ void endGame(){
     al_rest(2.0);
 
     al_destroy_display(janela);
-    al_destroy_audio_stream(musica_fundo);
+    al_destroy_audio_stream(musicaVitoria);
+    al_destroy_audio_stream(musicaDerrota);
     al_destroy_event_queue(fila_eventos);
 }
 
