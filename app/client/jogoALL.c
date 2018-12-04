@@ -864,7 +864,6 @@ void lobby(){
 }
 
 void runGame(){
-    // printf("x = %d, y = %d\n", teste_recebe.todosJogadores[idCLient].posicaoPrint.x,teste_recebe.todosJogadores[idCLient].posicaoPrint.y);
     al_start_timer(timer);
     if(redraw && al_event_queue_is_empty(fila_eventos)){
         redraw = false;

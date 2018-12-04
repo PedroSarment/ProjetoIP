@@ -219,9 +219,9 @@ void runGameTest(){
         input = recvMsg((PROTOCOLO_TESTE *) &jogada);
         if(input.status != NO_MESSAGE){           
             if(!jogada.todosJogadores[input.client_id].estaCongelado){
-               for(int i = 0; i < qntJogadores; i++){
-                    players[i] = jogada.todosJogadores[i];                   
-                }
+               //for(int i = 0; i < qntJogadores; i++){
+                    players[input.client_id] = jogada.todosJogadores[input.client_id];                   
+                //}
                 if(jogada.tipo == ANDAR_CIMA && mapa[jogada.todosJogadores[input.client_id].position.x - 1] [ jogada.todosJogadores[input.client_id].position.y] != 'N'){
                     if(jogada.todosJogadores[input.client_id].team == 1 && mapa[jogada.todosJogadores[input.client_id].position.x - 1] [ jogada.todosJogadores[input.client_id].position.y] == 'R'  || jogada.todosJogadores[input.client_id].team == 2 && mapa[jogada.todosJogadores[input.client_id].position.x - 1] [ jogada.todosJogadores[input.client_id].position.y] == 'B'){
                         players[input.client_id].estaCongelado = 1;
