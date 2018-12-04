@@ -6,61 +6,25 @@
 
 
 //DEFINIÇÕES DAS CONSTANTES
-// #define MSG_MAX_SIZE 350
-// #define BUFFER_SIZE (MSG_MAX_SIZE + 100)
 #define LOGIN_MAX_SIZE 13
 #define MAX_CLIENTS 6
-#define QTD_TIMES 2
 #define X_MAX 1280
 #define Y_MAX 720
-#define TEMPO_LIMITE 120
-#define DIREITA 0x44            //D
-#define ESQUERDA 0x41           //A
-#define CIMA 0x57               //W
-#define BAIXO 0x53              //S
-#define VAZIO 0x30              //0
-#define INVALIDO 0x49           //input.client_id
-#define BANDEIRA_BLUE 0x42      //B  
-#define BANDEIRA_RED 0x50       //P
-#define CONGELAR 0x20           //SPACE
-#define TRAP_TEAM_BLUE 0x54     //T
-#define TRAP_TEAM_RED 0x56      //V
-#define PLAYER_COM_TRAP 0x51    //Q
-#define TRAP 0x4A               //J
-#define X_FLAG_BLUE 1280
-#define Y_FLAG_BLUE 0
-#define X_FLAG_RED 0
-#define Y_FLAG_RED 720
-#define X_ENTRADA_1_BLUE 1275
-#define Y_ENTRADA_1_BLUE 8
-#define X_ENTRADA_2_BLUE 1273
-#define Y_ENTRADA_2_BLUE 5
-#define X_ENTRADA_3_BLUE 1270
-#define Y_ENTRADA_3_BLUE 2
-#define X_ENTRADA_1_RED 0
-#define Y_ENTRADA_1_RED 719
-#define X_ENTRADA_2_RED 5
-#define Y_ENTRADA_2_RED 715
-#define X_ENTRADA_3_RED 8
-#define Y_ENTRADA_3_RED 710
 
 //INICIALIZAÇÃO DAS VARIÁVEIS GLOBAIS
 char mapa [50][51];
 Player players[6];
 int qntJogadores = 0;
-PROTOCOLO_JOGO jogada_client, jogada_server, tempo;                 // Protocolo de envio a ser enviado para o cliente com as infos do jogo;
 struct msg_ret_t input;
-PROTOCOLO_JOGO jogada, updateServer;
-PROTOCOLO_TESTE teste_envia, teste_lobby;
+PROTOCOLO_TESTE teste_envia, teste_lobby, jogada;
 double tempoInicio, tempoAtual;
-int i, j, fim = 0, tp=0, flagCongelamento = 0; 
+int i, j, fim = 0, tp = 0, flagCongelamento = 0; 
 
 //INICIALIZAÇÃO DAS FUNÇÕES
 void inicializaMapa();
 void inicializaJogadores();
 void runGame();
 void runGameTest();
-
 
 int main() {
     //CRIANDO MAPA 
@@ -72,8 +36,6 @@ int main() {
     
     //INICIALIZAÇÃO DOS JOGADORES
     inicializaJogadores();
-
-    // puts("saiu");
 
     //JOGO
     runGameTest();
@@ -149,7 +111,6 @@ void inicializaMapa(){
     strcpy(mapa[48],"NNNNSNNNNNSXXXXXXXXXXXXNNNNXXXXNNNNNNNNNNNNNNNNNNN");
     strcpy(mapa[49],"NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN");
 }
-
 
 void inicializaJogadores(){
     int notReady = 1;
@@ -247,8 +208,6 @@ void inicializaJogadores(){
     }
 }
 
-
-
 void runGameTest(){
 
     for(i = 0; i < qntJogadores; i++){
@@ -257,7 +216,7 @@ void runGameTest(){
         }
     }
     while(!fim){
-        input = recvMsg((PROTOCOLO_JOGO *) &jogada);
+        input = recvMsg((PROTOCOLO_TESTE *) &jogada);
         if(input.status != NO_MESSAGE){           
             if(!jogada.todosJogadores[input.client_id].estaCongelado){
                for(int i = 0; i < qntJogadores; i++){
