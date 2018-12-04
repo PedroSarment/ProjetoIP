@@ -1070,12 +1070,26 @@ void runGame(){
                             congelou = 'n';
                         }
                     }
+                    else{
+                        if(msg.todosJogadores[idCLient].estaCongelado)
+                            congelou = 's';
+                        else{
+                            congelou = 'n';
+                        }
+                    }
                     msg.tipo = -1;
                 }
                 else if(msg.acao == 'b'){
                     if(idCLient == msg.id_acao && congelou == 'n'){
                         msg.todosJogadores[idCLient].posicaoPrint.y += 19;
                         msg.todosJogadores[idCLient].position.x += 1;
+                        if(msg.todosJogadores[idCLient].estaCongelado)
+                            congelou = 's';
+                        else{
+                            congelou = 'n';
+                        }
+                    }
+                    else{
                         if(msg.todosJogadores[idCLient].estaCongelado)
                             congelou = 's';
                         else{
@@ -1094,12 +1108,26 @@ void runGame(){
                             congelou = 'n';
                         }
                     }
+                    else{
+                        if(msg.todosJogadores[idCLient].estaCongelado)
+                            congelou = 's';
+                        else{
+                            congelou = 'n';
+                        }
+                    }
                     msg.tipo = -1;
                 }
                 else if(msg.acao == 'd'){
                     if(idCLient == msg.id_acao && congelou == 'n'){
                         msg.todosJogadores[idCLient].posicaoPrint.x += 19;
                         msg.todosJogadores[idCLient].position.y += 1;
+                        if(msg.todosJogadores[idCLient].estaCongelado)
+                            congelou = 's';
+                        else{
+                            congelou = 'n';
+                        }
+                    }
+                    else{
                         if(msg.todosJogadores[idCLient].estaCongelado)
                             congelou = 's';
                         else{
