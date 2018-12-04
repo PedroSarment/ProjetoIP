@@ -1092,9 +1092,9 @@ void runGame(){
                         msg.todosJogadores[idCLient].position.x -= 1;
                         if(msg.todosJogadores[idCLient].estaCongelado)
                             congelou = 's';
-                    }
-                    else{
-                        congelou = 'n';
+                        else{
+                            congelou = 'n';
+                        }
                     }
                     msg.tipo = -1;
                 }
@@ -1104,9 +1104,9 @@ void runGame(){
                         msg.todosJogadores[idCLient].position.x += 1;
                         if(msg.todosJogadores[idCLient].estaCongelado)
                             congelou = 's';
-                    }
-                    else{
-                        congelou = 'n';
+                        else{
+                            congelou = 'n';
+                        }
                     }
                     msg.tipo = -1;
                 }
@@ -1116,9 +1116,9 @@ void runGame(){
                         msg.todosJogadores[idCLient].position.y -= 1;
                         if(msg.todosJogadores[idCLient].estaCongelado)
                             congelou = 's';
-                    }
-                    else{
-                        congelou = 'n';
+                        else{
+                            congelou = 'n';
+                        }
                     }
                     msg.tipo = -1;
                 }
@@ -1128,9 +1128,9 @@ void runGame(){
                         msg.todosJogadores[idCLient].position.y += 1;
                         if(msg.todosJogadores[idCLient].estaCongelado)
                             congelou = 's';
-                    }
-                    else{
-                        congelou = 'n';
+                        else{
+                            congelou = 'n';
+                        }
                     }
                     msg.tipo = -1;
                 }
