@@ -877,7 +877,7 @@ void runGame(){
     if(redraw && al_event_queue_is_empty(fila_eventos)){
         redraw = false;
         al_clear_to_color(al_map_rgb(0,0,0));
-        al_draw_bitmap(mapa,0+19,0+19,0);
+        al_draw_bitmap(mapa,19,19,0);
         for(j = 0; j < msg.tp; j++){
             if(armadilhas[j].team == msg.todosJogadores[idCLient].team){
                 al_draw_bitmap(trap,armadilhas[j].posiT.y*19,armadilhas[j].posiT.x*19,0);
@@ -1085,8 +1085,6 @@ void runGame(){
         
         n = recvMsgFromServer((PROTOCOLO_JOGO *) &msg, DONT_WAIT);
         if(n!=NO_MESSAGE){
-            
-
             if(msg.tipo == 'G'){                   
                 if(msg.acao == 'c'){
                     if(idCLient == msg.id_acao && congelou == 'n'){
