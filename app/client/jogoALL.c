@@ -933,11 +933,9 @@ void runGame(){
             for(i=0;i<qntJogadores;i++){
                 if(msg.todosJogadores[i].comBandeira){
                     if(msg.todosJogadores[i].team==1){
-                        puts("azul ganhou");
                         timeAzulGanhou(i);
                     } 
                     else{
-                        puts("vermelho ganhou");
                         timeVermGanhou(i);
                     } 
                 }
@@ -963,9 +961,6 @@ void runGame(){
                     case ALLEGRO_KEY_W:          
                         msg_client.tipo = ANDAR_CIMA;
                         msg_client.jogador = msg.todosJogadores[idCLient];
-                        /*for(i = 0; i < qntJogadores; i++){
-                            msg.todosJogadores[i] = jogadoresServer[i]; 
-                        }*/
                         ret = sendMsgToServer((PROTOCOLO_ENVIO_CLIENT*) &msg_client, sizeof(PROTOCOLO_ENVIO_CLIENT));
                         if(ret == SERVER_DISCONNECTED){
                             puts("server disconnected");
@@ -977,9 +972,6 @@ void runGame(){
                     case ALLEGRO_KEY_S:
                         msg_client.tipo = ANDAR_BAIXO;
                         msg_client.jogador = msg.todosJogadores[idCLient];
-                        /*for(i = 0; i < qntJogadores; i++){
-                            msg.todosJogadores[i] = jogadoresServer[i]; 
-                        }*/
                         ret = sendMsgToServer((PROTOCOLO_ENVIO_CLIENT*) &msg_client, sizeof(PROTOCOLO_ENVIO_CLIENT));
                         if(ret == SERVER_DISCONNECTED){
                             puts("server disconnected");
@@ -991,9 +983,6 @@ void runGame(){
                     case ALLEGRO_KEY_A:
                         msg_client.tipo = ANDAR_ESQUERDA;
                         msg_client.jogador = msg.todosJogadores[idCLient];
-                        /*for(i = 0; i < qntJogadores; i++){
-                            msg.todosJogadores[i] = jogadoresServer[i]; 
-                        }*/
                         ret = sendMsgToServer((PROTOCOLO_ENVIO_CLIENT*) &msg_client, sizeof(PROTOCOLO_ENVIO_CLIENT));
                         if(ret == SERVER_DISCONNECTED){
                             puts("server disconnected");
@@ -1005,9 +994,6 @@ void runGame(){
                     case ALLEGRO_KEY_D:
                         msg_client.tipo = ANDAR_DIREITA;
                         msg_client.jogador = msg.todosJogadores[idCLient];
-                        /*for(i = 0; i < qntJogadores; i++){
-                            msg.todosJogadores[i] = jogadoresServer[i]; 
-                        }*/
                         ret = sendMsgToServer((PROTOCOLO_ENVIO_CLIENT*) &msg_client, sizeof(PROTOCOLO_ENVIO_CLIENT));
                         if(ret == SERVER_DISCONNECTED){
                             puts("server disconnected");
@@ -1018,9 +1004,6 @@ void runGame(){
                     case ALLEGRO_KEY_SPACE:
                         msg_client.tipo = BOTARTRAPS;
                         msg_client.jogador = msg.todosJogadores[idCLient];
-                        /*for(i = 0; i < qntJogadores; i++){
-                            msg.todosJogadores[i] = jogadoresServer[i]; 
-                        }*/
                         ret = sendMsgToServer((PROTOCOLO_ENVIO_CLIENT*) &msg_client, sizeof(PROTOCOLO_ENVIO_CLIENT));
                         if(ret == SERVER_DISCONNECTED){
                             puts("server disconnected");
@@ -1031,9 +1014,6 @@ void runGame(){
                     case ALLEGRO_KEY_J:
                         msg_client.tipo = CONGELA;
                         msg_client.jogador = msg.todosJogadores[idCLient];
-                        /*for(i = 0; i < qntJogadores; i++){
-                            msg.todosJogadores[i] = jogadoresServer[i]; 
-                        }*/
                         ret = sendMsgToServer((PROTOCOLO_ENVIO_CLIENT*) &msg_client, sizeof(PROTOCOLO_ENVIO_CLIENT));
                         if(ret == SERVER_DISCONNECTED){
                             puts("server disconnected");
@@ -1044,9 +1024,6 @@ void runGame(){
                     case ALLEGRO_KEY_ESCAPE:
                         msg_client.tipo = ENDGAME;
                         msg_client.jogador = msg.todosJogadores[idCLient];
-                        /*for(i = 0; i < qntJogadores; i++){
-                            msg.todosJogadores[i] = jogadoresServer[i]; 
-                        }*/
                         ret = sendMsgToServer((PROTOCOLO_ENVIO_CLIENT*) &msg_client, sizeof(PROTOCOLO_ENVIO_CLIENT));
                         if(ret == SERVER_DISCONNECTED){
                             sair = 0;
@@ -1068,12 +1045,9 @@ void runGame(){
                 if(tempocongelado <= 0){
                     congelou='n';
                     msg.todosJogadores[idCLient].estaCongelado = 0;
-                    //jogadoresServer[idCLient].estaCongelado = 0;
                     msg_client.tipo = DESCONGELA;
                     msg_client.jogador = msg.todosJogadores[idCLient];
-                    /*for(i = 0; i < qntJogadores; i++){
-                        msg.todosJogadores[i] = jogadoresServer[i]; 
-                    }*/
+                   
                     ret = sendMsgToServer((PROTOCOLO_ENVIO_CLIENT*) &msg_client, sizeof(PROTOCOLO_ENVIO_CLIENT));
                     if(ret == SERVER_DISCONNECTED){
                         puts("server disconnected");
