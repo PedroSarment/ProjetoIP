@@ -89,6 +89,16 @@ typedef struct{
     Traps traps[20];
     int tp;
     char ganhou;
+}PROTOCOLO_TESTE;
+
+typedef struct{
+    int tipo; 
+    int xAnterior, yAnterior;
+    char itemAnterior;
+    char winner;
+    Player todosJogadores[6];
+    //Player jogadorSofreuAcao;
+    int qntJogadores;
 }PROTOCOLO_JOGO;
 
 typedef struct{
