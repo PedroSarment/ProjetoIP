@@ -89,7 +89,7 @@ typedef struct{
     Traps traps[20];
     int tp;
     char ganhou;
-}PROTOCOLO_TESTE;
+}PROTOCOLO_JOGO;
 
 typedef struct{
     char tipo;

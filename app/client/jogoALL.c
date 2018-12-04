@@ -70,7 +70,7 @@ ALLEGRO_BITMAP *nao_pronto = NULL;
 
 ALLEGRO_EVENT evento;
 PROTOCOLO_INICIAL sendPlayer, rcvPlayer;
-PROTOCOLO_TESTE teste_recebe;
+PROTOCOLO_JOGO msg;
 PROTOCOLO_ENVIO_CLIENT msg_client;
 Traps armadilhas[20];
 Player jogador;
@@ -118,6 +118,7 @@ int main(){
             lobby();
         al_destroy_display(janela);
         janela = al_create_display(912+22,912+22);
+        al_destroy_audio_stream(musica_fundo);
         while(sair){
             runGame();
         }
@@ -683,7 +684,7 @@ int readIP(){
             recvMsgFromServer((PROTOCOLO_INICIAL *) &rcvPlayer, WAIT_FOR_IT);
             if(rcvPlayer.tipo==INICIAL){
                 idCLient = rcvPlayer.jogador.id;
-                teste_recebe.todosJogadores[idCLient] = rcvPlayer.jogador;
+                msg.todosJogadores[idCLient] = rcvPlayer.jogador;
 
             }
             if (ret == SERVER_DISCONNECTED){
@@ -777,7 +778,7 @@ void lobby(){
     sairLobby = 1;
     while(sairLobby){
         sendPlayer.tipo = -1;
-        while(!al_event_queue_is_empty(fila_eventos) && !teste_recebe.todosJogadores[idCLient].ready){
+        while(!al_event_queue_is_empty(fila_eventos) && !msg.todosJogadores[idCLient].ready){
             ALLEGRO_EVENT evento;
             al_wait_for_event(fila_eventos,&evento);
             if(!jogadorReady){
@@ -786,7 +787,7 @@ void lobby(){
                         case ALLEGRO_KEY_ESCAPE:
                             puts("esc");
                             sairLobby = 0;
-                            sendPlayer.jogador = teste_recebe.todosJogadores[idCLient];
+                            sendPlayer.jogador = msg.todosJogadores[idCLient];
                             sendPlayer.tipo=ENDGAME;
                             ret = sendMsgToServer((PROTOCOLO_INICIAL *) &sendPlayer, sizeof(PROTOCOLO_INICIAL));
                             if(ret == SERVER_DISCONNECTED){
@@ -818,15 +819,15 @@ void lobby(){
                 }
             }
             else{
-                if(!teste_recebe.todosJogadores[idCLient].ready){
+                if(!msg.todosJogadores[idCLient].ready){
                     sendPlayer.tipo = COMECOU;
-                    sendPlayer.jogador = teste_recebe.todosJogadores[idCLient];
+                    sendPlayer.jogador = msg.todosJogadores[idCLient];
                     ret = sendMsgToServer((PROTOCOLO_INICIAL *) &sendPlayer, sizeof(PROTOCOLO_INICIAL));
                     if(ret != SERVER_DISCONNECTED){
-                        int retLobby = recvMsgFromServer((PROTOCOLO_TESTE*) &teste_recebe, WAIT_FOR_IT);
+                        int retLobby = recvMsgFromServer((PROTOCOLO_JOGO*) &msg, WAIT_FOR_IT);
                         if(retLobby > 0){
-                            qntJogadores = teste_recebe.qntJogadores;
-                            if(teste_recebe.tipo == 'l'){
+                            qntJogadores = msg.qntJogadores;
+                            if(msg.tipo == 'l'){
                                 sairLobby = 0;
                                 sair=1;
                                 loopLobby = 0;
@@ -839,20 +840,20 @@ void lobby(){
                 }
             }
         }
-        if(teste_recebe.todosJogadores[idCLient].ready == 1){
+        if(msg.todosJogadores[idCLient].ready == 1){
             if(idCLient == 0){
                 sairLobby = 0;
                 sair=1;
                 loopLobby = 0;
             }
             else{
-                int retLobby = recvMsgFromServer((PROTOCOLO_TESTE*) &teste_recebe, WAIT_FOR_IT);
-                qntJogadores = teste_recebe.qntJogadores;
+                int retLobby = recvMsgFromServer((PROTOCOLO_JOGO*) &msg, WAIT_FOR_IT);
+                qntJogadores = msg.qntJogadores;
                 if(retLobby > 0){
                     
-                    qntJogadores = teste_recebe.qntJogadores;
+                    qntJogadores = msg.qntJogadores;
                     
-                    if(teste_recebe.tipo == 'l'){
+                    if(msg.tipo == 'l'){
                         sairLobby = 0;
                         sair=1;
                         loopLobby = 0;
@@ -869,58 +870,58 @@ void runGame(){
         redraw = false;
         al_clear_to_color(al_map_rgb(0,0,0));
         al_draw_bitmap(mapa,0+19,0+19,0);
-        for(j = 0; j < teste_recebe.tp; j++){
-            if(armadilhas[j].team == teste_recebe.todosJogadores[idCLient].team){
+        for(j = 0; j < msg.tp; j++){
+            if(armadilhas[j].team == msg.todosJogadores[idCLient].team){
                 al_draw_bitmap(trap,armadilhas[j].posiT.y*19,armadilhas[j].posiT.x*19,0);
             }            
         }
     
         for(i = 0; i < qntJogadores; i++){
-            if(teste_recebe.todosJogadores[i].id >= 0){
-                if(teste_recebe.todosJogadores[i].team == 1){
-                    if(teste_recebe.todosJogadores[i].helmet == 1){
-                        if(teste_recebe.todosJogadores[i].estaCongelado){
-                            al_draw_bitmap(capaceteAzul_1C,teste_recebe.todosJogadores[i].posicaoPrint.x,teste_recebe.todosJogadores[i].posicaoPrint.y,0);
+            if(msg.todosJogadores[i].id >= 0){
+                if(msg.todosJogadores[i].team == 1){
+                    if(msg.todosJogadores[i].helmet == 1){
+                        if(msg.todosJogadores[i].estaCongelado){
+                            al_draw_bitmap(capaceteAzul_1C,msg.todosJogadores[i].posicaoPrint.x,msg.todosJogadores[i].posicaoPrint.y,0);
                         }
                         else {
-                            al_draw_bitmap(capaceteAzul_1,teste_recebe.todosJogadores[i].posicaoPrint.x,teste_recebe.todosJogadores[i].posicaoPrint.y,0);
+                            al_draw_bitmap(capaceteAzul_1,msg.todosJogadores[i].posicaoPrint.x,msg.todosJogadores[i].posicaoPrint.y,0);
                         }
                     }
                     else{
-                        if(teste_recebe.todosJogadores[i].estaCongelado){
-                            al_draw_bitmap(capaceteAzul_2C,teste_recebe.todosJogadores[i].posicaoPrint.x,teste_recebe.todosJogadores[i].posicaoPrint.y,0);
+                        if(msg.todosJogadores[i].estaCongelado){
+                            al_draw_bitmap(capaceteAzul_2C,msg.todosJogadores[i].posicaoPrint.x,msg.todosJogadores[i].posicaoPrint.y,0);
                         }
                         else {
-                            al_draw_bitmap(capaceteAzul_2,teste_recebe.todosJogadores[i].posicaoPrint.x,teste_recebe.todosJogadores[i].posicaoPrint.y,0);
+                            al_draw_bitmap(capaceteAzul_2,msg.todosJogadores[i].posicaoPrint.x,msg.todosJogadores[i].posicaoPrint.y,0);
                         }
                     }
                 }
                 else{
-                    if(teste_recebe.todosJogadores[i].helmet == 1){
-                        if(teste_recebe.todosJogadores[i].estaCongelado){
-                            al_draw_bitmap(capaceteVerm_1C,teste_recebe.todosJogadores[i].posicaoPrint.x,teste_recebe.todosJogadores[i].posicaoPrint.y,0);
+                    if(msg.todosJogadores[i].helmet == 1){
+                        if(msg.todosJogadores[i].estaCongelado){
+                            al_draw_bitmap(capaceteVerm_1C,msg.todosJogadores[i].posicaoPrint.x,msg.todosJogadores[i].posicaoPrint.y,0);
                         }
                         else {
-                            al_draw_bitmap(capaceteVerm_1,teste_recebe.todosJogadores[i].posicaoPrint.x,teste_recebe.todosJogadores[i].posicaoPrint.y,0);
+                            al_draw_bitmap(capaceteVerm_1,msg.todosJogadores[i].posicaoPrint.x,msg.todosJogadores[i].posicaoPrint.y,0);
                         }
                     }
                     else{
-                        if(teste_recebe.todosJogadores[i].estaCongelado){
-                            al_draw_bitmap(capaceteVerm_2C,teste_recebe.todosJogadores[i].posicaoPrint.x,teste_recebe.todosJogadores[i].posicaoPrint.y,0);
+                        if(msg.todosJogadores[i].estaCongelado){
+                            al_draw_bitmap(capaceteVerm_2C,msg.todosJogadores[i].posicaoPrint.x,msg.todosJogadores[i].posicaoPrint.y,0);
                         }
                         else{
-                            al_draw_bitmap(capaceteVerm_2,teste_recebe.todosJogadores[i].posicaoPrint.x,teste_recebe.todosJogadores[i].posicaoPrint.y,0);
+                            al_draw_bitmap(capaceteVerm_2,msg.todosJogadores[i].posicaoPrint.x,msg.todosJogadores[i].posicaoPrint.y,0);
                         }
                     }
                 }
             }
         }
-        printStatus(teste_recebe.todosJogadores[idCLient]);
+        printStatus(msg.todosJogadores[idCLient]);
         al_draw_bitmap(frontmapa,19,19,0);
-        if(teste_recebe.ganhou=='s'){
+        if(msg.ganhou=='s'){
             for(i=0;i<qntJogadores;i++){
-                if(teste_recebe.todosJogadores[i].comBandeira){
-                    if(teste_recebe.todosJogadores[i].team==1){
+                if(msg.todosJogadores[i].comBandeira){
+                    if(msg.todosJogadores[i].team==1){
                         puts("azul ganhou");
                         timeAzulGanhou(i);
                     } 
@@ -931,7 +932,7 @@ void runGame(){
                 }
             }
         }
-        if(teste_recebe.todosJogadores[idCLient].estaCongelado == 1){
+        if(msg.todosJogadores[idCLient].estaCongelado == 1){
             printTimer();
         }
         else{
@@ -940,19 +941,19 @@ void runGame(){
         }
         al_flip_display();
     }
-    teste_recebe.tipo = GAME;
+    msg.tipo = GAME;
     while(!al_event_queue_is_empty(fila_eventos)){
         al_wait_for_event(fila_eventos,&evento);
         if (evento.type == ALLEGRO_EVENT_KEY_DOWN){
-            if(!teste_recebe.todosJogadores[idCLient].estaCongelado){
+            if(!msg.todosJogadores[idCLient].estaCongelado){
                 //verifica qual tecla foi pressionada
                 switch(evento.keyboard.keycode){
                     case ALLEGRO_KEY_UP:
                     case ALLEGRO_KEY_W:          
                         msg_client.tipo = ANDAR_CIMA;
-                        msg_client.jogador = teste_recebe.todosJogadores[idCLient];
+                        msg_client.jogador = msg.todosJogadores[idCLient];
                         /*for(i = 0; i < qntJogadores; i++){
-                            teste_recebe.todosJogadores[i] = jogadoresServer[i]; 
+                            msg.todosJogadores[i] = jogadoresServer[i]; 
                         }*/
                         ret = sendMsgToServer((PROTOCOLO_ENVIO_CLIENT*) &msg_client, sizeof(PROTOCOLO_ENVIO_CLIENT));
                         if(ret == SERVER_DISCONNECTED){
@@ -964,9 +965,9 @@ void runGame(){
                     case ALLEGRO_KEY_DOWN:
                     case ALLEGRO_KEY_S:
                         msg_client.tipo = ANDAR_BAIXO;
-                        msg_client.jogador = teste_recebe.todosJogadores[idCLient];
+                        msg_client.jogador = msg.todosJogadores[idCLient];
                         /*for(i = 0; i < qntJogadores; i++){
-                            teste_recebe.todosJogadores[i] = jogadoresServer[i]; 
+                            msg.todosJogadores[i] = jogadoresServer[i]; 
                         }*/
                         ret = sendMsgToServer((PROTOCOLO_ENVIO_CLIENT*) &msg_client, sizeof(PROTOCOLO_ENVIO_CLIENT));
                         if(ret == SERVER_DISCONNECTED){
@@ -978,9 +979,9 @@ void runGame(){
                     case ALLEGRO_KEY_LEFT:
                     case ALLEGRO_KEY_A:
                         msg_client.tipo = ANDAR_ESQUERDA;
-                        msg_client.jogador = teste_recebe.todosJogadores[idCLient];
+                        msg_client.jogador = msg.todosJogadores[idCLient];
                         /*for(i = 0; i < qntJogadores; i++){
-                            teste_recebe.todosJogadores[i] = jogadoresServer[i]; 
+                            msg.todosJogadores[i] = jogadoresServer[i]; 
                         }*/
                         ret = sendMsgToServer((PROTOCOLO_ENVIO_CLIENT*) &msg_client, sizeof(PROTOCOLO_ENVIO_CLIENT));
                         if(ret == SERVER_DISCONNECTED){
@@ -992,9 +993,9 @@ void runGame(){
                     case ALLEGRO_KEY_RIGHT:
                     case ALLEGRO_KEY_D:
                         msg_client.tipo = ANDAR_DIREITA;
-                        msg_client.jogador = teste_recebe.todosJogadores[idCLient];
+                        msg_client.jogador = msg.todosJogadores[idCLient];
                         /*for(i = 0; i < qntJogadores; i++){
-                            teste_recebe.todosJogadores[i] = jogadoresServer[i]; 
+                            msg.todosJogadores[i] = jogadoresServer[i]; 
                         }*/
                         ret = sendMsgToServer((PROTOCOLO_ENVIO_CLIENT*) &msg_client, sizeof(PROTOCOLO_ENVIO_CLIENT));
                         if(ret == SERVER_DISCONNECTED){
@@ -1005,9 +1006,9 @@ void runGame(){
 
                     case ALLEGRO_KEY_SPACE:
                         msg_client.tipo = BOTARTRAPS;
-                        msg_client.jogador = teste_recebe.todosJogadores[idCLient];
+                        msg_client.jogador = msg.todosJogadores[idCLient];
                         /*for(i = 0; i < qntJogadores; i++){
-                            teste_recebe.todosJogadores[i] = jogadoresServer[i]; 
+                            msg.todosJogadores[i] = jogadoresServer[i]; 
                         }*/
                         ret = sendMsgToServer((PROTOCOLO_ENVIO_CLIENT*) &msg_client, sizeof(PROTOCOLO_ENVIO_CLIENT));
                         if(ret == SERVER_DISCONNECTED){
@@ -1018,9 +1019,9 @@ void runGame(){
 
                     case ALLEGRO_KEY_J:
                         msg_client.tipo = CONGELA;
-                        msg_client.jogador = teste_recebe.todosJogadores[idCLient];
+                        msg_client.jogador = msg.todosJogadores[idCLient];
                         /*for(i = 0; i < qntJogadores; i++){
-                            teste_recebe.todosJogadores[i] = jogadoresServer[i]; 
+                            msg.todosJogadores[i] = jogadoresServer[i]; 
                         }*/
                         ret = sendMsgToServer((PROTOCOLO_ENVIO_CLIENT*) &msg_client, sizeof(PROTOCOLO_ENVIO_CLIENT));
                         if(ret == SERVER_DISCONNECTED){
@@ -1031,9 +1032,9 @@ void runGame(){
 
                     case ALLEGRO_KEY_ESCAPE:
                         msg_client.tipo = ENDGAME;
-                        msg_client.jogador = teste_recebe.todosJogadores[idCLient];
+                        msg_client.jogador = msg.todosJogadores[idCLient];
                         /*for(i = 0; i < qntJogadores; i++){
-                            teste_recebe.todosJogadores[i] = jogadoresServer[i]; 
+                            msg.todosJogadores[i] = jogadoresServer[i]; 
                         }*/
                         ret = sendMsgToServer((PROTOCOLO_ENVIO_CLIENT*) &msg_client, sizeof(PROTOCOLO_ENVIO_CLIENT));
                         if(ret == SERVER_DISCONNECTED){
@@ -1047,7 +1048,7 @@ void runGame(){
         }
         else if(evento.type == ALLEGRO_EVENT_TIMER){
             redraw = true;
-            if(teste_recebe.todosJogadores[idCLient].estaCongelado == 1){
+            if(msg.todosJogadores[idCLient].estaCongelado == 1){
                 auxtempo++;
                 if(auxtempo==FPS){
                     auxtempo=0;
@@ -1055,12 +1056,12 @@ void runGame(){
                 }
                 if(tempocongelado <= 0){
                     congelou='n';
-                    teste_recebe.todosJogadores[idCLient].estaCongelado = 0;
+                    msg.todosJogadores[idCLient].estaCongelado = 0;
                     //jogadoresServer[idCLient].estaCongelado = 0;
                     msg_client.tipo = DESCONGELA;
-                    msg_client.jogador = teste_recebe.todosJogadores[idCLient];
+                    msg_client.jogador = msg.todosJogadores[idCLient];
                     /*for(i = 0; i < qntJogadores; i++){
-                        teste_recebe.todosJogadores[i] = jogadoresServer[i]; 
+                        msg.todosJogadores[i] = jogadoresServer[i]; 
                     }*/
                     ret = sendMsgToServer((PROTOCOLO_ENVIO_CLIENT*) &msg_client, sizeof(PROTOCOLO_ENVIO_CLIENT));
                     if(ret == SERVER_DISCONNECTED){
@@ -1071,80 +1072,80 @@ void runGame(){
             }
         }
         
-        n = recvMsgFromServer((PROTOCOLO_TESTE *) &teste_recebe, DONT_WAIT);
+        n = recvMsgFromServer((PROTOCOLO_JOGO *) &msg, DONT_WAIT);
         if(n!=NO_MESSAGE){
             
 
-            if(teste_recebe.tipo == 'G'){                   
-                if(teste_recebe.acao == 'c'){
-                    if(idCLient == teste_recebe.id_acao && congelou == 'n'){
-                        teste_recebe.todosJogadores[idCLient].posicaoPrint.y -= 19;
-                        teste_recebe.todosJogadores[idCLient].position.x -= 1;
-                        if(teste_recebe.todosJogadores[idCLient].estaCongelado)
+            if(msg.tipo == 'G'){                   
+                if(msg.acao == 'c'){
+                    if(idCLient == msg.id_acao && congelou == 'n'){
+                        msg.todosJogadores[idCLient].posicaoPrint.y -= 19;
+                        msg.todosJogadores[idCLient].position.x -= 1;
+                        if(msg.todosJogadores[idCLient].estaCongelado)
                             congelou = 's';
                     }
                     else{
                         congelou = 'n';
                     }
-                    teste_recebe.tipo = -1;
+                    msg.tipo = -1;
                 }
-                else if(teste_recebe.acao == 'b'){
-                    if(idCLient == teste_recebe.id_acao && congelou == 'n'){
-                        teste_recebe.todosJogadores[idCLient].posicaoPrint.y += 19;
-                        teste_recebe.todosJogadores[idCLient].position.x += 1;
-                        if(teste_recebe.todosJogadores[idCLient].estaCongelado)
+                else if(msg.acao == 'b'){
+                    if(idCLient == msg.id_acao && congelou == 'n'){
+                        msg.todosJogadores[idCLient].posicaoPrint.y += 19;
+                        msg.todosJogadores[idCLient].position.x += 1;
+                        if(msg.todosJogadores[idCLient].estaCongelado)
                             congelou = 's';
                     }
                     else{
                         congelou = 'n';
                     }
-                    teste_recebe.tipo = -1;
+                    msg.tipo = -1;
                 }
-                else if(teste_recebe.acao == 'e'){
-                    if(idCLient == teste_recebe.id_acao && congelou == 'n'){
-                        teste_recebe.todosJogadores[idCLient].posicaoPrint.x -= 19;
-                        teste_recebe.todosJogadores[idCLient].position.y -= 1;
-                        if(teste_recebe.todosJogadores[idCLient].estaCongelado)
+                else if(msg.acao == 'e'){
+                    if(idCLient == msg.id_acao && congelou == 'n'){
+                        msg.todosJogadores[idCLient].posicaoPrint.x -= 19;
+                        msg.todosJogadores[idCLient].position.y -= 1;
+                        if(msg.todosJogadores[idCLient].estaCongelado)
                             congelou = 's';
                     }
                     else{
                         congelou = 'n';
                     }
-                    teste_recebe.tipo = -1;
+                    msg.tipo = -1;
                 }
-                else if(teste_recebe.acao == 'd'){
-                    if(idCLient == teste_recebe.id_acao && congelou == 'n'){
-                        teste_recebe.todosJogadores[idCLient].posicaoPrint.x += 19;
-                        teste_recebe.todosJogadores[idCLient].position.y += 1;
-                        if(teste_recebe.todosJogadores[idCLient].estaCongelado)
+                else if(msg.acao == 'd'){
+                    if(idCLient == msg.id_acao && congelou == 'n'){
+                        msg.todosJogadores[idCLient].posicaoPrint.x += 19;
+                        msg.todosJogadores[idCLient].position.y += 1;
+                        if(msg.todosJogadores[idCLient].estaCongelado)
                             congelou = 's';
                     }
                     else{
                         congelou = 'n';
                     }
-                    teste_recebe.tipo = -1;
+                    msg.tipo = -1;
                 }
-                else if(teste_recebe.acao == 'n'){                     
+                else if(msg.acao == 'n'){                     
                      congelou = 'n';
-                     teste_recebe.tipo = -1;
+                     msg.tipo = -1;
                 }
-                else if(teste_recebe.acao == 't'){
+                else if(msg.acao == 't'){
                     for(i=0;i<=tp;i++){
-                        armadilhas[i].posiT.x = teste_recebe.traps[i].posiT.x;
-                        armadilhas[i].posiT.y = teste_recebe.traps[i].posiT.y;
-                        armadilhas[i].team = teste_recebe.traps[i].team;
+                        armadilhas[i].posiT.x = msg.traps[i].posiT.x;
+                        armadilhas[i].posiT.y = msg.traps[i].posiT.y;
+                        armadilhas[i].team = msg.traps[i].team;
                     }
                     tp++;
                 
-                    if(idCLient == teste_recebe.id_acao){
-                       teste_recebe.todosJogadores[idCLient].armadilhas--;
+                    if(idCLient == msg.id_acao){
+                       msg.todosJogadores[idCLient].armadilhas--;
                     } 
                                    
-                    teste_recebe.tipo = -1;
+                    msg.tipo = -1;
                 }
 
-                if(idCLient == teste_recebe.id_acao){
-                    ret = sendMsgToServer((PROTOCOLO_TESTE *) &teste_recebe, sizeof(PROTOCOLO_TESTE));
+                if(idCLient == msg.id_acao){
+                    ret = sendMsgToServer((PROTOCOLO_JOGO *) &msg, sizeof(PROTOCOLO_JOGO));
 
                     if(ret == SERVER_DISCONNECTED){
                         endGame();
@@ -1178,8 +1179,8 @@ void printStatus(Player jogador){
 void printTela(Player jogadores[6]){
     if(jogadores[idCLient].posicaoPrint.x <= WIDTH && jogadores[idCLient].posicaoPrint.y <= HEIGHT){
         al_draw_bitmap(mapa,19,19,0);
-        for(j = 0; j < teste_recebe.tp; j++){
-            if(armadilhas[j].team == teste_recebe.todosJogadores[idCLient].team){
+        for(j = 0; j < msg.tp; j++){
+            if(armadilhas[j].team == msg.todosJogadores[idCLient].team){
                 al_draw_bitmap(trap,armadilhas[j].posiT.y*19,armadilhas[j].posiT.x*19,0);
             }            
         }
@@ -1223,13 +1224,13 @@ void printTela(Player jogadores[6]){
                 }
             }
         }
-        printStatus(teste_recebe.todosJogadores[idCLient]);
+        printStatus(msg.todosJogadores[idCLient]);
         al_draw_bitmap(frontmapa,19,19,0);
     }
     else if(jogadores[idCLient].posicaoPrint.x > WIDTH && jogadores[idCLient].posicaoPrint.y <= HEIGHT){
         al_draw_bitmap(mapa,19, -HEIGHT+19,0);
-        for(j = 0; j < teste_recebe.tp; j++){
-            if(armadilhas[j].team == teste_recebe.todosJogadores[idCLient].team){
+        for(j = 0; j < msg.tp; j++){
+            if(armadilhas[j].team == msg.todosJogadores[idCLient].team){
                 al_draw_bitmap(trap,armadilhas[j].posiT.y*19,armadilhas[j].posiT.x*19,0);
             }            
         }
@@ -1273,13 +1274,13 @@ void printTela(Player jogadores[6]){
                 }
             }
         }
-        printStatus(teste_recebe.todosJogadores[idCLient]);
+        printStatus(msg.todosJogadores[idCLient]);
         al_draw_bitmap(frontmapa,19,-HEIGHT+19,0);
     }
     else if(jogadores[idCLient].posicaoPrint.x <= WIDTH && jogadores[idCLient].posicaoPrint.y > HEIGHT){
         al_draw_bitmap(mapa,-WIDTH+19,19,0);
-        for(j = 0; j < teste_recebe.tp; j++){
-            if(armadilhas[j].team == teste_recebe.todosJogadores[idCLient].team){
+        for(j = 0; j < msg.tp; j++){
+            if(armadilhas[j].team == msg.todosJogadores[idCLient].team){
                 al_draw_bitmap(trap,armadilhas[j].posiT.y*19,armadilhas[j].posiT.x*19,0);
             }            
         }
@@ -1323,13 +1324,13 @@ void printTela(Player jogadores[6]){
                 }
             }
         }
-        printStatus(teste_recebe.todosJogadores[idCLient]);
+        printStatus(msg.todosJogadores[idCLient]);
         al_draw_bitmap(frontmapa,-WIDTH+19,19,0);
     }
     else{
         al_draw_bitmap(mapa, -WIDTH+19,-HEIGHT+19,0);
-        for(j = 0; j < teste_recebe.tp; j++){
-            if(armadilhas[j].team == teste_recebe.todosJogadores[idCLient].team){
+        for(j = 0; j < msg.tp; j++){
+            if(armadilhas[j].team == msg.todosJogadores[idCLient].team){
                 al_draw_bitmap(trap,armadilhas[j].posiT.y*19,armadilhas[j].posiT.x*19,0);
             }            
         }
@@ -1373,14 +1374,14 @@ void printTela(Player jogadores[6]){
                 }
             }
         }
-        printStatus(teste_recebe.todosJogadores[idCLient]);
+        printStatus(msg.todosJogadores[idCLient]);
         al_draw_bitmap(frontmapa,-WIDTH+19,-HEIGHT+19,0);
     }
 }
 
 void timeAzulGanhou(int c){
     al_clear_to_color(al_map_rgb(255,255,255));
-    al_draw_textf(fonte_grande, al_map_rgb(0, 0, 0), 912/2, 912/2, ALLEGRO_ALIGN_CENTRE, "Time Azul Ganhou! Carry: %s", teste_recebe.todosJogadores[c].name);
+    al_draw_textf(fonte_grande, al_map_rgb(0, 0, 0), 912/2, 912/2, ALLEGRO_ALIGN_CENTRE, "Time Azul Ganhou! Carry: %s", msg.todosJogadores[c].name);
     al_flip_display();
     al_rest(2.0);
 
@@ -1391,7 +1392,7 @@ void timeAzulGanhou(int c){
 
 void timeVermGanhou(int c){
     al_clear_to_color(al_map_rgb(255,255,255));
-    al_draw_textf(fonte_grande, al_map_rgb(0, 0, 0), 912/2, 912/2, ALLEGRO_ALIGN_CENTRE, "Time Vermelho Ganhou! Carry: %s", teste_recebe.todosJogadores[c].name);
+    al_draw_textf(fonte_grande, al_map_rgb(0, 0, 0), 912/2, 912/2, ALLEGRO_ALIGN_CENTRE, "Time Vermelho Ganhou! Carry: %s", msg.todosJogadores[c].name);
     al_flip_display();
     al_rest(2.0);
 
